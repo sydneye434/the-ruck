@@ -10,10 +10,6 @@ import { useToast } from "../../components/feedback/ToastProvider";
 import { TeamMemberDrawer, type TeamMemberFormInput } from "./TeamMemberDrawer";
 import { TeamDetailDrawer } from "./TeamDetailDrawer";
 
-type ChartNodeDatum =
-  | { kind: "team"; team: TeamTreeNode; members: TeamMember[] }
-  | { kind: "member"; member: TeamMember; teamId: string };
-
 function roleLabel(member: TeamMember) {
   if (member.roleType === "coordinator") return member.coordinatorTitle || "Coordinator";
   if (member.roleType === "scrum_master") return "Scrum Master";
@@ -21,9 +17,34 @@ function roleLabel(member: TeamMember) {
   return "Team Member";
 }
 
+type ChartNodeDatum =
+  | { kind: "team"; team: TeamTreeNode; members: TeamMember[]; children?: ChartNodeDatum[] }
+  | { kind: "member"; member: TeamMember; teamId: string; children?: ChartNodeDatum[] };
+
+function PlainTreePreview({
+  nodes
+}: {
+  nodes: TeamTreeNode[];
+}) {
+  function render(node: TeamTreeNode) {
+    return (
+      <div key={node.id} className="space-y-1">
+        <div className="flex items-center gap-2" style={{ marginLeft: `${node.depth * 18}px` }}>
+          <span className="h-2.5 w-2.5 rounded-full" style={{ background: node.color }} />
+          <span className="text-xs text-[var(--color-text-secondary)]">
+            {node.name} (Level {node.depth})
+          </span>
+        </div>
+        {node.children.map((child) => render(child))}
+      </div>
+    );
+  }
+  return <div className="space-y-1">{nodes.map((node) => render(node))}</div>;
+}
+
 export function OrgChartPage() {
   const toast = useToast();
-  const svgRef = useRef<SVGSVGElement | null>(null);
+  const chartRef = useRef<HTMLDivElement | null>(null);
   const [teams, setTeams] = useState<TeamWithDepth[]>([]);
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [memberships, setMemberships] = useState<TeamMemberLink[]>([]);
@@ -67,8 +88,8 @@ export function OrgChartPage() {
     return members.filter((m) => !assigned.has(m.id));
   }, [members, memberships]);
 
-  const chartData = useMemo(() => {
-    const root = {
+  const chartData = useMemo<ChartNodeDatum>(() => {
+    const root: ChartNodeDatum = {
       kind: "team" as const,
       team: {
         id: "root",
@@ -80,18 +101,18 @@ export function OrgChartPage() {
         children: teamTree
       },
       members: [] as TeamMember[],
-      children: teamTree.map(function mapTeam(team): any {
+      children: teamTree.map(function mapTeam(team): ChartNodeDatum {
         return {
           kind: "team" as const,
           team,
           members: byTeam.get(team.id) ?? [],
           children: [
-            ...(team.children.map(mapTeam) as any[]),
-            ...((byTeam.get(team.id) ?? []).map((member) => ({
+            ...team.children.map(mapTeam),
+            ...(byTeam.get(team.id) ?? []).map((member) => ({
               kind: "member" as const,
               member,
               teamId: team.id
-            })) as any[])
+            }))
           ]
         };
       })
@@ -100,21 +121,24 @@ export function OrgChartPage() {
   }, [byTeam, teamTree]);
 
   const layout = useMemo(() => {
-    const h = hierarchy<any>(chartData as any, (d: any) => d.children);
-    const root = tree<any>().nodeSize([220, 120])(h);
+    const h = hierarchy<ChartNodeDatum>(chartData, (d) => d.children ?? []);
+    const root = tree<ChartNodeDatum>().nodeSize([250, 130])(h);
     return root;
   }, [chartData]);
 
-  const nodes = layout.descendants() as Array<HierarchyPointNode<any>>;
-  const links = layout.links() as Array<HierarchyPointLink<any>>;
-  const width = Math.max(...nodes.map((n: HierarchyPointNode<any>) => n.x), 0) - Math.min(...nodes.map((n: HierarchyPointNode<any>) => n.x), 0) + 600;
-  const height = Math.max(...nodes.map((n: HierarchyPointNode<any>) => n.y), 0) + 500;
-  const minX = Math.min(...nodes.map((n: HierarchyPointNode<any>) => n.x), 0) - 240;
+  const nodes = layout.descendants() as Array<HierarchyPointNode<ChartNodeDatum>>;
+  const links = layout.links() as Array<HierarchyPointLink<ChartNodeDatum>>;
+  const width =
+    Math.max(...nodes.map((n) => n.x), 0) -
+    Math.min(...nodes.map((n) => n.x), 0) +
+    700;
+  const height = Math.max(...nodes.map((n) => n.y), 0) + 550;
+  const minX = Math.min(...nodes.map((n) => n.x), 0) - 300;
   const minY = -120;
 
   const teamPosition = useMemo(() => {
     const map = new Map<string, { x: number; y: number }>();
-    nodes.forEach((n: HierarchyPointNode<any>) => {
+    nodes.forEach((n) => {
       if (n.data.kind === "team" && n.data.team.id !== "root") {
         map.set(n.data.team.id, { x: n.x, y: n.y });
       }
@@ -181,16 +205,24 @@ export function OrgChartPage() {
   }
 
   function exportPng() {
-    if (!svgRef.current) return;
-    const serializer = new XMLSerializer();
-    const svgString = serializer.serializeToString(svgRef.current);
+    if (!chartRef.current) return;
+    const width = chartRef.current.scrollWidth;
+    const height = chartRef.current.scrollHeight;
+    const serialized = new XMLSerializer().serializeToString(chartRef.current);
+    const svgString = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
+        <foreignObject width="100%" height="100%">
+          ${serialized}
+        </foreignObject>
+      </svg>
+    `;
     const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement("canvas");
-      canvas.width = svgRef.current?.clientWidth || 1600;
-      canvas.height = svgRef.current?.clientHeight || 900;
+      canvas.width = width;
+      canvas.height = height;
       const ctx = canvas.getContext("2d");
       if (ctx) {
         ctx.fillStyle = "white";
@@ -232,31 +264,59 @@ export function OrgChartPage() {
         }
       />
 
-      <Card padding="sm" className="relative h-[78vh] overflow-auto">
-        <svg ref={svgRef} width={Math.max(width * scale, 1200)} height={Math.max(height * scale, 700)}>
-          <g transform={`translate(${(-minX + 120) * scale}, ${(-minY + 80) * scale}) scale(${scale})`}>
-            {links.map((link: HierarchyPointLink<any>, i: number) => (
-              <path
-                key={i}
-                d={`M${link.source.x},${link.source.y + 20} C${link.source.x},${(link.source.y + link.target.y) / 2} ${link.target.x},${(link.source.y + link.target.y) / 2} ${link.target.x},${link.target.y - 20}`}
-                fill="none"
-                stroke="var(--color-border)"
-              />
-            ))}
+      <Card padding="md">
+        <h3 className="font-heading text-2xl text-[var(--color-text-primary)]">Tree Sanity Preview (CSS/Flex)</h3>
+        <p className="mb-2 text-xs text-[var(--color-text-muted)]">
+          This plain recursive renderer validates hierarchy correctness before d3 coordinate placement.
+        </p>
+        <PlainTreePreview nodes={teamTree} />
+      </Card>
 
-            {coordinatorNodes.map((node) => (
-              <g key={node.member.id}>
-                {node.targets.map((target, idx) => (
+      <Card padding="sm" className="relative h-[78vh] overflow-auto">
+        <div
+          ref={chartRef}
+          className="relative"
+          style={{ width: Math.max(width * scale, 1200), height: Math.max(height * scale, 700) }}
+        >
+          <svg className="absolute inset-0" width="100%" height="100%">
+            <g transform={`translate(${(-minX + 120) * scale}, ${(-minY + 80) * scale}) scale(${scale})`}>
+              {links.map((link, i) => (
+                link.target.data.kind === "team" || link.target.data.kind === "member" ? (
+                <path
+                  key={`link-${i}`}
+                  d={`M${link.source.x},${link.source.y + 20} C${link.source.x},${(link.source.y + link.target.y) / 2} ${link.target.x},${(link.source.y + link.target.y) / 2} ${link.target.x},${link.target.y - 20}`}
+                  fill="none"
+                  stroke="var(--color-border)"
+                />
+                ) : null
+              ))}
+
+              {coordinatorNodes.map((node) =>
+                node.targets.map((target, idx) => (
                   <path
-                    key={idx}
+                    key={`coord-${node.member.id}-${idx}`}
                     d={`M${node.x},${node.y + 12} C${node.x},${(node.y + target.y) / 2} ${target.x},${(node.y + target.y) / 2} ${target.x},${target.y - 24}`}
                     fill="none"
                     stroke="var(--color-role-coordinator)"
                     strokeDasharray="6,4"
                   />
-                ))}
-                <g
-                  transform={`translate(${node.x - 64}, ${node.y - 18})`}
+                ))
+              )}
+            </g>
+          </svg>
+
+          <div className="absolute inset-0">
+            <div
+              className="absolute"
+              style={{
+                transform: `translate(${(-minX + 120) * scale}px, ${(-minY + 80) * scale}px) scale(${scale})`,
+                transformOrigin: "top left"
+              }}
+            >
+              {coordinatorNodes.map((node) => (
+                <button
+                  key={`coordinator-node-${node.member.id}`}
+                  type="button"
                   onMouseEnter={() =>
                     setTooltip({
                       x: node.x,
@@ -266,92 +326,91 @@ export function OrgChartPage() {
                   }
                   onMouseLeave={() => setTooltip(null)}
                   onClick={() => setEditingMember(node.member)}
+                  className="absolute flex h-9 w-32 items-center border border-[var(--color-role-coordinator)] bg-[var(--color-bg-secondary)] px-2 text-xs text-[var(--color-text-primary)]"
+                  style={{ left: node.x - 64, top: node.y - 18 }}
                 >
-                  <rect width="128" height="36" rx="4" fill="var(--color-bg-secondary)" stroke="var(--color-role-coordinator)" />
-                  <text x="8" y="23" fill="var(--color-text-primary)" fontSize="12">
-                    {node.member.coordinatorTitle || "Coordinator"}
-                  </text>
-                </g>
-              </g>
-            ))}
+                  {node.member.coordinatorTitle || "Coordinator"}
+                </button>
+              ))}
 
-            {nodes.map((node: HierarchyPointNode<any>, idx: number) => {
-              if (node.data.kind === "team") {
-                if (node.data.team.id === "root") return null;
-                const depthShade = Math.max(0, 100 - node.data.team.depth * 8);
+              {nodes.map((node, idx) => {
+                if (node.data.kind === "team") {
+                  const teamNode = node.data;
+                  if (teamNode.team.id === "root") return null;
+                  const depthShade = Math.max(0, 100 - teamNode.team.depth * 8);
+                  return (
+                    <button
+                      type="button"
+                      key={`team-node-${idx}`}
+                      onMouseEnter={() => {
+                        const chain = teams
+                          .filter((t) => t.id === teamNode.team.id || t.id === teamNode.team.parentTeamId)
+                          .map((t) => t.name)
+                          .join(" -> ");
+                        setTooltip({
+                          x: node.x,
+                          y: node.y,
+                          text: `${teamNode.team.name} | depth ${teamNode.team.depth} | parent chain ${chain || "root"}`
+                        });
+                      }}
+                      onMouseLeave={() => setTooltip(null)}
+                      onClick={() => setTeamDetailId(teamNode.team.id)}
+                      className="absolute flex h-[42px] w-[172px] items-center border border-[var(--color-border)] text-left"
+                      style={{
+                        left: node.x - 86,
+                        top: node.y - 20,
+                        background: `color-mix(in srgb, var(--color-bg-secondary) ${depthShade}%, var(--color-bg-primary))`
+                      }}
+                    >
+                      <span className="h-full w-[6px]" style={{ background: teamNode.team.color }} />
+                      <span className="ml-2 flex flex-col">
+                        <span className="text-xs text-[var(--color-text-primary)]">{teamNode.team.name}</span>
+                        <span className="text-[10px] text-[var(--color-text-muted)]">
+                          {(byTeam.get(teamNode.team.id) ?? []).length} members
+                        </span>
+                      </span>
+                    </button>
+                  );
+                }
+
+                const member = node.data.member;
                 return (
-                  <g
-                    key={idx}
-                    transform={`translate(${node.x - 86}, ${node.y - 20})`}
-                    onMouseEnter={() => {
-                      const chain = teams
-                        .filter((t) => t.id === node.data.team.id || t.id === node.data.team.parentTeamId)
-                        .map((t) => t.name)
-                        .join(" -> ");
+                  <button
+                    type="button"
+                    key={`member-node-${idx}`}
+                    onMouseEnter={() =>
                       setTooltip({
                         x: node.x,
                         y: node.y,
-                        text: `${node.data.team.name} | depth ${node.data.team.depth} | parent chain ${chain || "root"}`
-                      });
-                    }}
+                        text: `${member.name} | ${roleLabel(member)} | ${Math.round(
+                          member.defaultAvailabilityDays * ((member.capacityMultiplier ?? 100) / 100)
+                        )} effective days`
+                      })
+                    }
                     onMouseLeave={() => setTooltip(null)}
-                    onClick={() => setTeamDetailId(node.data.team.id)}
+                    onClick={() => setEditingMember(member)}
+                    className="absolute flex w-[180px] items-center gap-2 text-left"
+                    style={{ left: node.x - 52, top: node.y - 12 }}
                   >
-                    <rect
-                      width="172"
-                      height="42"
-                      rx="6"
-                      fill={`color-mix(in srgb, var(--color-bg-secondary) ${depthShade}%, var(--color-bg-primary))`}
-                      stroke="var(--color-border)"
-                    />
-                    <rect width="6" height="42" rx="4" fill={node.data.team.color} />
-                    <text x="12" y="18" fill="var(--color-text-primary)" fontSize="12">
-                      {node.data.team.name}
-                    </text>
-                    <text x="12" y="33" fill="var(--color-text-muted)" fontSize="10">
-                      {(byTeam.get(node.data.team.id) ?? []).length} members
-                    </text>
-                  </g>
+                    <span
+                      className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-[var(--color-border)] text-[10px] text-[var(--color-text-primary)]"
+                      style={{ background: member.avatar.color }}
+                    >
+                      {member.avatar.initials}
+                    </span>
+                    <span className="flex min-w-0 flex-col">
+                      <span className="truncate text-[11px] text-[var(--color-text-primary)]">{member.name}</span>
+                      <span className="truncate text-[10px] text-[var(--color-text-muted)]">{roleLabel(member)}</span>
+                      {(member.capacityMultiplier ?? 100) < 100 ? (
+                        <span className="text-[10px] text-[var(--color-warning)]">{member.capacityMultiplier}% capacity</span>
+                      ) : null}
+                    </span>
+                  </button>
                 );
-              }
-
-              const member: TeamMember = node.data.member;
-              return (
-                <g
-                  key={idx}
-                  transform={`translate(${node.x - 52}, ${node.y - 12})`}
-                  onMouseEnter={() =>
-                    setTooltip({
-                      x: node.x,
-                      y: node.y,
-                      text: `${member.name} | ${roleLabel(member)} | ${Math.round(
-                        member.defaultAvailabilityDays * ((member.capacityMultiplier ?? 100) / 100)
-                      )} effective days`
-                    })
-                  }
-                  onMouseLeave={() => setTooltip(null)}
-                  onClick={() => setEditingMember(member)}
-                >
-                  <circle cx="12" cy="12" r="12" fill={member.avatar.color} stroke="var(--color-border)" />
-                  <text x="6" y="16" fill="var(--color-text-primary)" fontSize="10">
-                    {member.avatar.initials}
-                  </text>
-                  <text x="30" y="11" fill="var(--color-text-primary)" fontSize="11">
-                    {member.name}
-                  </text>
-                  <text x="30" y="24" fill="var(--color-text-muted)" fontSize="10">
-                    {roleLabel(member)}
-                  </text>
-                  {(member.capacityMultiplier ?? 100) < 100 ? (
-                    <text x="30" y="36" fill="var(--color-warning)" fontSize="10">
-                      {member.capacityMultiplier}% capacity
-                    </text>
-                  ) : null}
-                </g>
-              );
-            })}
-          </g>
-        </svg>
+              })}
+            </div>
+          </div>
+        </div>
 
         <div className="absolute bottom-4 right-4 h-28 w-40 border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-2 text-[10px] text-[var(--color-text-muted)]">
           <div>Minimap</div>
