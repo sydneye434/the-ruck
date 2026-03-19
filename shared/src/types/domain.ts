@@ -7,7 +7,7 @@ export type StoryPoints = 1 | 2 | 3 | 5 | 8 | 13;
 
 export type StoryBoardColumn = "backlog" | "in_progress" | "in_review" | "done";
 
-export type SprintStatus = "active" | "completed";
+export type SprintStatus = "planning" | "active" | "completed";
 
 export type RetroPhase = "reflect" | "discuss" | "action_items";
 

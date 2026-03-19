@@ -13,18 +13,18 @@ sprintsRoutes.get("/", async (_req, res) => {
 
 sprintsRoutes.post("/", async (req, res) => {
   const input = req.body as any;
-  if (!input?.name || !input?.startDate || !input?.endDate || !input?.goal) {
+  if (!input?.name || !input?.startDate || !input?.endDate) {
     throw new HttpError({ statusCode: 400, code: "INVALID_REQUEST", message: "Missing required sprint fields" });
   }
 
-  // Default to "active" unless explicitly provided.
-  const status: Sprint["status"] = input.status ?? "active";
+  // Default to "planning" unless explicitly provided.
+  const status: Sprint["status"] = input.status ?? "planning";
 
   const created = await sprintsRepository.create({
     name: String(input.name),
     startDate: String(input.startDate),
     endDate: String(input.endDate),
-    goal: String(input.goal),
+    goal: String(input.goal ?? ""),
     status
   });
 
