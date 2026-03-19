@@ -6,16 +6,16 @@
   --font-heading: "Barlow Condensed", ui-sans-serif, system-ui, sans-serif;
   --font-body: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
 
-  --color-bg-primary: #060507;
-  --color-bg-secondary: #111015;
-  --color-bg-tertiary: #1a1822;
-  --color-border: #2d2939;
-  --color-text-primary: #fff3fb;
-  --color-text-secondary: #e4c9da;
-  --color-text-muted: #b18ea6;
-  --color-accent: #ff2ea6;
-  --color-accent-hover: #ff5fc0;
-  --color-danger: #ff4f9f;
+  --color-bg-primary: #050505;
+  --color-bg-secondary: #101010;
+  --color-bg-tertiary: #1a1a1a;
+  --color-border: #2a2a2a;
+  --color-text-primary: #ffeaf6;
+  --color-text-secondary: #ffc8e5;
+  --color-text-muted: #c48aa9;
+  --color-accent: #ff1493;
+  --color-accent-hover: #ff3cab;
+  --color-danger: #ff3b8d;
   --color-success: #4fdaaa;
   --color-warning: #ffb347;
 }
