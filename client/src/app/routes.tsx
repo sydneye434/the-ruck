@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { AppLayout } from "../layout/AppLayout";
 import { PlaceholderPage } from "../pages/PlaceholderPage";
 import { TeamPage } from "../pages/team/TeamPage";
+import { BacklogPage } from "../pages/backlog/BacklogPage";
 
 export function AppRoutes() {
   return (
@@ -9,7 +10,7 @@ export function AppRoutes() {
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route element={<AppLayout />}>
         <Route path="/dashboard" element={<PlaceholderPage title="Dashboard" />} />
-        <Route path="/backlog" element={<PlaceholderPage title="Backlog" />} />
+        <Route path="/backlog" element={<BacklogPage />} />
         <Route path="/sprint/active" element={<PlaceholderPage title="Active Sprint" />} />
         <Route path="/sprints" element={<PlaceholderPage title="Sprint History" />} />
         <Route path="/retros" element={<PlaceholderPage title="Retros" />} />
