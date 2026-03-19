@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AppLayout } from "../layout/AppLayout";
 import { PlaceholderPage } from "../pages/PlaceholderPage";
+import { TeamPage } from "../pages/team/TeamPage";
 
 export function AppRoutes() {
   return (
@@ -13,7 +14,7 @@ export function AppRoutes() {
         <Route path="/sprints" element={<PlaceholderPage title="Sprint History" />} />
         <Route path="/retros" element={<PlaceholderPage title="Retros" />} />
         <Route path="/retro/:id" element={<PlaceholderPage title="Retro Detail" />} />
-        <Route path="/team" element={<PlaceholderPage title="Team" />} />
+        <Route path="/team" element={<TeamPage />} />
         <Route path="/settings" element={<PlaceholderPage title="Settings" />} />
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

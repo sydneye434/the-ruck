@@ -10,6 +10,7 @@ import type {
 } from "@the-ruck/shared";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001/api";
+type TeamMemberPatch = Partial<TeamMember> & { active?: boolean };
 
 type QueryParams = Record<string, string | number | boolean | undefined | null>;
 
@@ -58,7 +59,7 @@ export const api = {
     getById: (id: string) => request<TeamMember>(`/team-members/${id}`),
     create: (payload: Partial<TeamMember>) =>
       request<TeamMember>("/team-members", { method: "POST", body: JSON.stringify(payload) }),
-    update: (id: string, payload: Partial<TeamMember>) =>
+    update: (id: string, payload: TeamMemberPatch) =>
       request<TeamMember>(`/team-members/${id}`, { method: "PATCH", body: JSON.stringify(payload) }),
     delete: (id: string) => del(`/team-members/${id}`)
   },

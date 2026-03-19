@@ -1,12 +1,7 @@
 export type ISODateString = string;
 
-export type TeamRole =
-  | "Scrum Master"
-  | "Product Owner"
-  | "Developer"
-  | "Designer"
-  | "QA"
-  | "Other";
+// Free-text role to support real-world team titles (e.g. "Senior Engineer").
+export type TeamRole = string;
 
 export type StoryPoints = 1 | 2 | 3 | 5 | 8 | 13;
 

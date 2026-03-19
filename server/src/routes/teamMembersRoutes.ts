@@ -28,7 +28,8 @@ teamMembersRoutes.post("/", async (req, res) => {
       initials: String(input.avatar.initials)
     },
     defaultAvailabilityDays: input.defaultAvailabilityDays,
-    isActive: Boolean(input.isActive)
+    // Default to active on create unless explicitly provided.
+    isActive: input.isActive === undefined ? true : Boolean(input.isActive)
   });
 
   return sendSuccess(res, created, { location: `/api/team-members/${created.id}` });
@@ -44,6 +45,7 @@ teamMembersRoutes.get("/:id", async (req, res) => {
 
 teamMembersRoutes.patch("/:id", async (req, res) => {
   const patch = req.body as any;
+  const activeAlias = patch?.active;
   const updated = await teamMembersRepository.update(req.params.id, {
     ...(patch?.name !== undefined ? { name: String(patch.name) } : {}),
     ...(patch?.role !== undefined ? { role: patch.role } : {}),
@@ -53,7 +55,8 @@ teamMembersRoutes.patch("/:id", async (req, res) => {
     ...(patch?.defaultAvailabilityDays !== undefined
       ? { defaultAvailabilityDays: Number(patch.defaultAvailabilityDays) }
       : {}),
-    ...(patch?.isActive !== undefined ? { isActive: Boolean(patch.isActive) } : {})
+    ...(patch?.isActive !== undefined ? { isActive: Boolean(patch.isActive) } : {}),
+    ...(activeAlias !== undefined ? { isActive: Boolean(activeAlias) } : {})
   });
 
   if (!updated) {

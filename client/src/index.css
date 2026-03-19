@@ -18,6 +18,15 @@
   --color-danger: #ff3b8d;
   --color-success: #4fdaaa;
   --color-warning: #ffb347;
+
+  --color-avatar-1: #ffb703;
+  --color-avatar-2: #fb8500;
+  --color-avatar-3: #8ecae6;
+  --color-avatar-4: #219ebc;
+  --color-avatar-5: #8338ec;
+  --color-avatar-6: #3a86ff;
+  --color-avatar-7: #06d6a0;
+  --color-avatar-8: #ef476f;
 }
 
 :root[data-theme="light"] {
@@ -33,6 +42,15 @@
   --color-danger: #d91a77;
   --color-success: #1d9b73;
   --color-warning: #b87607;
+
+  --color-avatar-1: #e89b00;
+  --color-avatar-2: #d87200;
+  --color-avatar-3: #67accf;
+  --color-avatar-4: #117b94;
+  --color-avatar-5: #6e2bd3;
+  --color-avatar-6: #2b6fe0;
+  --color-avatar-7: #00a77c;
+  --color-avatar-8: #d53363;
 }
 
 html,
