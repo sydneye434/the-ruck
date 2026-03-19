@@ -21,21 +21,24 @@ function ensureNoCircularParent(teams: Team[], teamId: string, nextParentId: str
   }
 
   const byId = new Map(teams.map((team) => [team.id, team]));
-  let cursor: string | null = nextParentId;
-  const seen = new Set<string>();
+  const visited = new Set<string>();
 
-  while (cursor) {
-    if (seen.has(cursor)) break;
-    seen.add(cursor);
-    if (cursor === teamId) {
+  const walkAncestors = (cursorId: string | null): void => {
+    if (!cursorId) return; // reached root (null parent) safely
+    if (cursorId === teamId) {
       throw new HttpError({
         statusCode: 400,
         code: "INVALID_REQUEST",
         message: "Circular reference detected in team hierarchy"
       });
     }
-    cursor = byId.get(cursor)?.parentTeamId ?? null;
-  }
+    if (visited.has(cursorId)) return;
+    visited.add(cursorId);
+    const parentId = byId.get(cursorId)?.parentTeamId ?? null;
+    walkAncestors(parentId);
+  };
+
+  walkAncestors(nextParentId);
 }
 
 teamsRoutes.get("/", asyncHandler(async (_req: Request, res: Response) => {
