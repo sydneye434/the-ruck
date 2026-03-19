@@ -61,6 +61,16 @@ export const api = {
       request<TeamMember>("/team-members", { method: "POST", body: JSON.stringify(payload) }),
     update: (id: string, payload: TeamMemberPatch) =>
       request<TeamMember>(`/team-members/${id}`, { method: "PATCH", body: JSON.stringify(payload) }),
+    deactivate: (id: string) =>
+      request<TeamMember>(`/team-members/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ active: false })
+      }),
+    reactivate: (id: string) =>
+      request<TeamMember>(`/team-members/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ active: true })
+      }),
     delete: (id: string) => del(`/team-members/${id}`)
   },
   sprints: {

@@ -134,8 +134,13 @@ export function TeamPage() {
 
   async function handleToggleActive(member: TeamMember) {
     try {
-      await api.teamMembers.update(member.id, { active: !member.isActive });
-      toast.success(member.isActive ? "Member deactivated." : "Member reactivated.");
+      if (member.isActive) {
+        await api.teamMembers.deactivate(member.id);
+        toast.success("Member deactivated.");
+      } else {
+        await api.teamMembers.reactivate(member.id);
+        toast.success("Member reactivated.");
+      }
       await loadMembers();
     } catch (e) {
       toast.error(e instanceof ApiClientError ? e.message : "Failed to update member status.");

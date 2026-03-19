@@ -19,14 +19,14 @@
   --color-success: #4fdaaa;
   --color-warning: #ffb347;
 
-  --color-avatar-1: #ffb703;
-  --color-avatar-2: #fb8500;
-  --color-avatar-3: #8ecae6;
-  --color-avatar-4: #219ebc;
-  --color-avatar-5: #8338ec;
-  --color-avatar-6: #3a86ff;
-  --color-avatar-7: #06d6a0;
-  --color-avatar-8: #ef476f;
+  --color-avatar-1: #ffb3dd;
+  --color-avatar-2: #ff94d1;
+  --color-avatar-3: #ff76c5;
+  --color-avatar-4: #ff5fbc;
+  --color-avatar-5: #ff49b2;
+  --color-avatar-6: #ff2ea6;
+  --color-avatar-7: #ff1493;
+  --color-avatar-8: #e4007f;
 }
 
 :root[data-theme="light"] {
@@ -43,14 +43,14 @@
   --color-success: #1d9b73;
   --color-warning: #b87607;
 
-  --color-avatar-1: #e89b00;
-  --color-avatar-2: #d87200;
-  --color-avatar-3: #67accf;
-  --color-avatar-4: #117b94;
-  --color-avatar-5: #6e2bd3;
-  --color-avatar-6: #2b6fe0;
-  --color-avatar-7: #00a77c;
-  --color-avatar-8: #d53363;
+  --color-avatar-1: #ffd3ea;
+  --color-avatar-2: #ffbce0;
+  --color-avatar-3: #ffa3d4;
+  --color-avatar-4: #ff8ac9;
+  --color-avatar-5: #ff6ebe;
+  --color-avatar-6: #ff50b2;
+  --color-avatar-7: #f833a0;
+  --color-avatar-8: #d81e87;
 }
 
 html,

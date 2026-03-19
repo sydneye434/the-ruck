@@ -1,15 +1,28 @@
 [
   {
-    "name": "Test",
-    "role": "Developer",
+    "name": "Test2",
+    "role": "Engineer 2",
     "avatar": {
-      "color": "#111111",
+      "color": "var(--color-avatar-3)",
       "initials": "T"
     },
     "defaultAvailabilityDays": 8,
     "isActive": true,
-    "createdAt": "2026-03-19T19:33:41.996Z",
-    "updatedAt": "2026-03-19T19:33:41.996Z",
-    "id": "3db86a27-681e-4cdf-a206-98dbd0954736"
+    "createdAt": "2026-03-19T20:10:02.048Z",
+    "updatedAt": "2026-03-19T20:10:02.048Z",
+    "id": "e0a5f7a5-7845-4924-ac51-fbc5e8a41757"
+  },
+  {
+    "name": "sydney",
+    "role": "devops",
+    "avatar": {
+      "color": "var(--color-avatar-8)",
+      "initials": "S"
+    },
+    "defaultAvailabilityDays": 8,
+    "isActive": true,
+    "createdAt": "2026-03-19T20:12:10.703Z",
+    "updatedAt": "2026-03-19T20:12:10.703Z",
+    "id": "52ae5964-7a7b-4184-8a33-3625c81f57a0"
   }
 ]
