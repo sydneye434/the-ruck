@@ -86,6 +86,20 @@ Common local URLs:
 - Web: `http://localhost:5173`
 - Docs: `http://localhost:3001/api/docs`
 
+## Running + accessing API docs
+If you only want to run the API and view docs:
+
+1. Install dependencies at repo root:
+   - `npm install`
+2. Start just the backend:
+   - `npm -w server run dev`
+3. Open the interactive docs in your browser:
+   - [http://localhost:3001/api/docs](http://localhost:3001/api/docs)
+4. Optional: fetch raw OpenAPI JSON:
+   - [http://localhost:3001/api/docs/openapi.json](http://localhost:3001/api/docs/openapi.json)
+
+If you run the full stack (`npm run dev`), docs are still available at the same URL.
+
 ## Roadmap (v2 ideas)
 - Auth (team-scoped) + user identity
 - WebSockets / realtime updates
