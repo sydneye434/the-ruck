@@ -1,0 +1,15 @@
+[
+  {
+    "name": "Test",
+    "role": "Developer",
+    "avatar": {
+      "color": "#111111",
+      "initials": "T"
+    },
+    "defaultAvailabilityDays": 8,
+    "isActive": true,
+    "createdAt": "2026-03-19T19:33:41.996Z",
+    "updatedAt": "2026-03-19T19:33:41.996Z",
+    "id": "3db86a27-681e-4cdf-a206-98dbd0954736"
+  }
+]
