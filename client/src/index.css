@@ -2,3 +2,58 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --font-heading: "Barlow Condensed", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
+
+  --color-bg-primary: #0b0b0f;
+  --color-bg-secondary: #12121a;
+  --color-bg-tertiary: #1a1b24;
+  --color-border: #2a2d3a;
+  --color-text-primary: #f5f7ff;
+  --color-text-secondary: #bec4d8;
+  --color-text-muted: #8d96b4;
+  --color-accent: #ff5f2e;
+  --color-accent-hover: #ff7a52;
+  --color-danger: #ff4d6d;
+  --color-success: #3bcf8e;
+  --color-warning: #f6c74f;
+}
+
+:root[data-theme="light"] {
+  --color-bg-primary: #f5f5fa;
+  --color-bg-secondary: #ffffff;
+  --color-bg-tertiary: #eceff8;
+  --color-border: #d3d9ea;
+  --color-text-primary: #171b27;
+  --color-text-secondary: #39435f;
+  --color-text-muted: #697290;
+  --color-accent: #cc3f17;
+  --color-accent-hover: #a63413;
+  --color-danger: #d73a5c;
+  --color-success: #239464;
+  --color-warning: #bc8306;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background: var(--color-bg-primary);
+  color: var(--color-text-secondary);
+}
+
+h1,
+h2,
+h3,
+h4,
+.font-heading {
+  font-family: var(--font-heading);
+  letter-spacing: 0.015em;
+}
+
