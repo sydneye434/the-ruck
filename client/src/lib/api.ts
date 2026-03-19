@@ -6,7 +6,11 @@ import type {
   RetroCard,
   Sprint,
   Story,
-  TeamMember
+  Team,
+  TeamMember,
+  TeamMemberLink,
+  TeamTreeNode,
+  TeamWithDepth
 } from "@the-ruck/shared";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001/api";
@@ -72,6 +76,25 @@ export const api = {
         body: JSON.stringify({ active: true })
       }),
     delete: (id: string) => del(`/team-members/${id}`)
+  },
+  teams: {
+    getAll: () => request<TeamWithDepth[]>("/teams"),
+    getTree: () => request<TeamTreeNode[]>("/teams/tree"),
+    getMemberships: () => request<TeamMemberLink[]>("/teams/memberships"),
+    getMembersForTeam: (teamId: string) => request<TeamMemberLink[]>(`/teams/${teamId}/members`),
+    create: (payload: Partial<Team>) =>
+      request<Team>("/teams", { method: "POST", body: JSON.stringify(payload) }),
+    update: (id: string, payload: Partial<Team>) =>
+      request<Team>(`/teams/${id}`, { method: "PATCH", body: JSON.stringify(payload) }),
+    delete: (id: string, mode: "single" | "cascade" = "single") =>
+      del(`/teams/${id}?mode=${mode}`),
+    addMember: (teamId: string, memberId: string) =>
+      request<TeamMemberLink>(`/teams/${teamId}/members`, {
+        method: "POST",
+        body: JSON.stringify({ memberId })
+      }),
+    removeMember: (teamId: string, memberId: string) =>
+      del(`/teams/${teamId}/members/${memberId}`)
   },
   sprints: {
     getAll: () => request<Sprint[]>("/sprints"),

@@ -1,0 +1,56 @@
+[
+  {
+    "name": "Engineering",
+    "description": "Top-level engineering function",
+    "parentTeamId": null,
+    "color": "var(--color-team-1)",
+    "createdAt": "2026-03-19T20:56:05.538Z",
+    "updatedAt": "2026-03-19T20:56:05.538Z",
+    "id": "0feb913e-64d4-4c15-aeb9-4c951f55c42a"
+  },
+  {
+    "name": "Platform",
+    "description": "Shared services and foundations",
+    "parentTeamId": "0feb913e-64d4-4c15-aeb9-4c951f55c42a",
+    "color": "var(--color-team-2)",
+    "createdAt": "2026-03-19T20:56:05.539Z",
+    "updatedAt": "2026-03-19T20:56:05.539Z",
+    "id": "77706b87-a095-465f-80aa-b709fbfaab24"
+  },
+  {
+    "name": "Product",
+    "description": "Feature delivery teams",
+    "parentTeamId": "0feb913e-64d4-4c15-aeb9-4c951f55c42a",
+    "color": "var(--color-team-3)",
+    "createdAt": "2026-03-19T20:56:05.540Z",
+    "updatedAt": "2026-03-19T20:56:05.540Z",
+    "id": "ac10b0bb-9932-4ab0-b407-2a403e14586b"
+  },
+  {
+    "name": "Infrastructure",
+    "description": "Cloud and reliability",
+    "parentTeamId": "77706b87-a095-465f-80aa-b709fbfaab24",
+    "color": "var(--color-team-4)",
+    "createdAt": "2026-03-19T20:56:05.540Z",
+    "updatedAt": "2026-03-19T20:56:05.540Z",
+    "id": "ae68e925-c3ee-44fb-8ea9-cf5cedf2f22a"
+  },
+  {
+    "name": "Mobile",
+    "description": "iOS and Android experience",
+    "parentTeamId": "ac10b0bb-9932-4ab0-b407-2a403e14586b",
+    "color": "var(--color-team-5)",
+    "createdAt": "2026-03-19T20:56:05.540Z",
+    "updatedAt": "2026-03-19T20:56:05.540Z",
+    "id": "f881f4b8-e029-46fa-9842-5aaacb648149"
+  },
+  {
+    "name": "Cloud Ops",
+    "description": "Runtime operations and cloud governance",
+    "parentTeamId": "ae68e925-c3ee-44fb-8ea9-cf5cedf2f22a",
+    "color": "var(--color-team-6)",
+    "createdAt": "2026-03-19T20:56:05.540Z",
+    "updatedAt": "2026-03-19T20:56:05.540Z",
+    "id": "8a814245-782f-4492-83cf-7d3cada1decd"
+  }
+]

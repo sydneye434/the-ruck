@@ -3,7 +3,11 @@ const badgeStyles = {
   accent: "border-[var(--color-accent)] bg-[var(--color-bg-tertiary)] text-[var(--color-accent)]",
   success: "border-[var(--color-success)] bg-[var(--color-bg-tertiary)] text-[var(--color-success)]",
   warning: "border-[var(--color-warning)] bg-[var(--color-bg-tertiary)] text-[var(--color-warning)]",
-  danger: "border-[var(--color-danger)] bg-[var(--color-bg-tertiary)] text-[var(--color-danger)]"
+  danger: "border-[var(--color-danger)] bg-[var(--color-bg-tertiary)] text-[var(--color-danger)]",
+  product:
+    "border-[var(--color-role-product-owner)] bg-[var(--color-bg-tertiary)] text-[var(--color-role-product-owner)]",
+  coordinator:
+    "border-[var(--color-role-coordinator)] bg-[var(--color-bg-tertiary)] text-[var(--color-role-coordinator)]"
 } as const;
 
 export function Badge({

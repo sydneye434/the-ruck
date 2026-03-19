@@ -1,28 +1,81 @@
 [
   {
-    "name": "Test2",
-    "role": "Engineer 2",
+    "name": "Avery Kim",
+    "roleType": "scrum_master",
     "avatar": {
-      "color": "var(--color-avatar-3)",
-      "initials": "T"
+      "color": "var(--color-avatar-1)",
+      "initials": "AK"
     },
     "defaultAvailabilityDays": 8,
+    "capacityMultiplier": 100,
     "isActive": true,
-    "createdAt": "2026-03-19T20:10:02.048Z",
-    "updatedAt": "2026-03-19T20:16:41.564Z",
-    "id": "e0a5f7a5-7845-4924-ac51-fbc5e8a41757"
+    "createdAt": "2026-03-19T20:56:05.541Z",
+    "updatedAt": "2026-03-19T20:56:05.541Z",
+    "id": "947752aa-f48d-4658-9159-d571ea826e57"
   },
   {
-    "name": "sydney",
-    "role": "devops",
+    "name": "Jordan Patel",
+    "roleType": "team_member",
     "avatar": {
-      "color": "var(--color-avatar-8)",
-      "initials": "S"
+      "color": "var(--color-avatar-3)",
+      "initials": "JP"
     },
     "defaultAvailabilityDays": 8,
+    "capacityMultiplier": 50,
     "isActive": true,
-    "createdAt": "2026-03-19T20:12:10.703Z",
-    "updatedAt": "2026-03-19T20:12:10.703Z",
-    "id": "52ae5964-7a7b-4184-8a33-3625c81f57a0"
+    "createdAt": "2026-03-19T20:56:05.541Z",
+    "updatedAt": "2026-03-19T20:56:05.541Z",
+    "id": "fe0e2c32-a0f8-4978-b311-9f8d466be3a6"
+  },
+  {
+    "name": "Riley Chen",
+    "roleType": "coordinator",
+    "coordinatorTitle": "SoSM",
+    "coordinatorTeamIds": [
+      "77706b87-a095-465f-80aa-b709fbfaab24",
+      "ac10b0bb-9932-4ab0-b407-2a403e14586b"
+    ],
+    "avatar": {
+      "color": "var(--color-avatar-4)",
+      "initials": "RC"
+    },
+    "defaultAvailabilityDays": 8,
+    "capacityMultiplier": 100,
+    "isActive": true,
+    "createdAt": "2026-03-19T20:56:05.541Z",
+    "updatedAt": "2026-03-19T20:56:05.541Z",
+    "id": "b6f62e30-e42d-44e4-867e-84fd6f9d0466"
+  },
+  {
+    "name": "Morgan Lee",
+    "roleType": "product_owner",
+    "avatar": {
+      "color": "var(--color-avatar-2)",
+      "initials": "ML"
+    },
+    "defaultAvailabilityDays": 8,
+    "capacityMultiplier": 100,
+    "isActive": true,
+    "createdAt": "2026-03-19T20:56:05.541Z",
+    "updatedAt": "2026-03-19T20:56:05.541Z",
+    "id": "91bc6369-50ff-4df7-af65-bf02ab564144"
+  },
+  {
+    "name": "Parker Diaz",
+    "roleType": "coordinator",
+    "coordinatorTitle": "SoSoSM",
+    "coordinatorTeamIds": [
+      "0feb913e-64d4-4c15-aeb9-4c951f55c42a"
+    ],
+    "avatar": {
+      "color": "var(--color-avatar-5)",
+      "initials": "PD"
+    },
+    "defaultAvailabilityDays": 8,
+    "capacityMultiplier": 100,
+    "isActive": true,
+    "createdAt": "2026-03-19T20:56:05.541Z",
+    "updatedAt": "2026-03-19T20:56:05.541Z",
+    "id": "5034b107-e998-4fa4-bd61-c74f8ebaf5ce"
   }
 ]

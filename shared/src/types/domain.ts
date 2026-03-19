@@ -1,7 +1,10 @@
 export type ISODateString = string;
 
-// Free-text role to support real-world team titles (e.g. "Senior Engineer").
-export type TeamRole = string;
+export type TeamRoleType =
+  | "team_member"
+  | "scrum_master"
+  | "product_owner"
+  | "coordinator";
 
 export type StoryPoints = 1 | 2 | 3 | 5 | 8 | 13;
 
@@ -26,10 +29,39 @@ export type Avatar = {
 
 export type TeamMember = Identifiable & {
   name: string;
-  role: TeamRole;
+  roleType: TeamRoleType;
+  coordinatorTitle?: string;
   avatar: Avatar;
   defaultAvailabilityDays: number; // typical available working days per sprint
+  capacityMultiplier: number; // 1..100 percent
   isActive: boolean; // active/inactive without deletion
+  // Optional for cross-team coordinator connectors in org chart.
+  coordinatorTeamIds?: string[];
+  createdAt?: ISODateString;
+  updatedAt?: ISODateString;
+};
+
+export type Team = Identifiable & {
+  name: string;
+  description?: string;
+  parentTeamId: string | null;
+  color: string;
+  createdAt?: ISODateString;
+  updatedAt?: ISODateString;
+};
+
+export type TeamWithDepth = Team & {
+  depth: number;
+};
+
+export type TeamTreeNode = TeamWithDepth & {
+  children: TeamTreeNode[];
+};
+
+export type TeamMemberLink = Identifiable & {
+  teamId: string;
+  memberId: string;
+  joinedAt: ISODateString;
   createdAt?: ISODateString;
   updatedAt?: ISODateString;
 };

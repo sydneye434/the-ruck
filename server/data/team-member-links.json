@@ -1,0 +1,58 @@
+[
+  {
+    "teamId": "0feb913e-64d4-4c15-aeb9-4c951f55c42a",
+    "memberId": "5034b107-e998-4fa4-bd61-c74f8ebaf5ce",
+    "joinedAt": "2026-03-19T20:56:05.542Z",
+    "createdAt": "2026-03-19T20:56:05.542Z",
+    "updatedAt": "2026-03-19T20:56:05.542Z",
+    "id": "dd05a449-1b5a-4042-9877-c4929013f2be"
+  },
+  {
+    "teamId": "ac10b0bb-9932-4ab0-b407-2a403e14586b",
+    "memberId": "91bc6369-50ff-4df7-af65-bf02ab564144",
+    "joinedAt": "2026-03-19T20:56:05.542Z",
+    "createdAt": "2026-03-19T20:56:05.542Z",
+    "updatedAt": "2026-03-19T20:56:05.542Z",
+    "id": "d64f01a7-1832-4f29-8335-1fb48262a7b1"
+  },
+  {
+    "teamId": "8a814245-782f-4492-83cf-7d3cada1decd",
+    "memberId": "fe0e2c32-a0f8-4978-b311-9f8d466be3a6",
+    "joinedAt": "2026-03-19T20:56:05.542Z",
+    "createdAt": "2026-03-19T20:56:05.542Z",
+    "updatedAt": "2026-03-19T20:56:05.542Z",
+    "id": "76646940-237f-40e6-8ad1-b8df77406028"
+  },
+  {
+    "teamId": "ae68e925-c3ee-44fb-8ea9-cf5cedf2f22a",
+    "memberId": "fe0e2c32-a0f8-4978-b311-9f8d466be3a6",
+    "joinedAt": "2026-03-19T20:56:05.542Z",
+    "createdAt": "2026-03-19T20:56:05.542Z",
+    "updatedAt": "2026-03-19T20:56:05.542Z",
+    "id": "2b00a7ac-a04f-43ad-bcce-d8a864e6e87f"
+  },
+  {
+    "teamId": "77706b87-a095-465f-80aa-b709fbfaab24",
+    "memberId": "947752aa-f48d-4658-9159-d571ea826e57",
+    "joinedAt": "2026-03-19T20:56:05.542Z",
+    "createdAt": "2026-03-19T20:56:05.542Z",
+    "updatedAt": "2026-03-19T20:56:05.542Z",
+    "id": "6391803a-dced-4637-8461-a6827eabb980"
+  },
+  {
+    "teamId": "f881f4b8-e029-46fa-9842-5aaacb648149",
+    "memberId": "fe0e2c32-a0f8-4978-b311-9f8d466be3a6",
+    "joinedAt": "2026-03-19T20:56:05.542Z",
+    "createdAt": "2026-03-19T20:56:05.542Z",
+    "updatedAt": "2026-03-19T20:56:05.542Z",
+    "id": "1382d8f9-2456-4d6b-83cc-b54a0997994d"
+  },
+  {
+    "teamId": "0feb913e-64d4-4c15-aeb9-4c951f55c42a",
+    "memberId": "b6f62e30-e42d-44e4-867e-84fd6f9d0466",
+    "joinedAt": "2026-03-19T20:56:05.542Z",
+    "createdAt": "2026-03-19T20:56:05.542Z",
+    "updatedAt": "2026-03-19T20:56:05.542Z",
+    "id": "ea20bf00-ef91-4d6e-9d30-fce35f1d9ebf"
+  }
+]

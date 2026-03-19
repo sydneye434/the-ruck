@@ -1,13 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
-import type { TeamMember } from "@the-ruck/shared";
+import type { TeamMember, TeamWithDepth } from "@the-ruck/shared";
 import { Spinner } from "../../components/feedback/Spinner";
 import { AVATAR_COLOR_VARIABLES, pickAvatarColor } from "./avatarPalette";
 
 type TeamMemberFormInput = {
   name: string;
-  role: string;
+  roleType: TeamMember["roleType"];
+  coordinatorTitle: string;
   defaultAvailabilityDays: number;
+  capacityMultiplier: number;
+  customCapacityMode: boolean;
   avatarColor: string;
+  coordinatorTeamIds: string[];
 };
 
 type FieldErrors = Partial<Record<keyof TeamMemberFormInput, string>>;
@@ -16,16 +20,26 @@ function deriveInitialState(member: TeamMember | null): TeamMemberFormInput {
   if (!member) {
     return {
       name: "",
-      role: "",
+      roleType: "team_member",
+      coordinatorTitle: "",
       defaultAvailabilityDays: 8,
+      capacityMultiplier: 100,
+      customCapacityMode: false,
       avatarColor: pickAvatarColor(String(Date.now()))
+      ,
+      coordinatorTeamIds: []
     };
   }
   return {
     name: member.name,
-    role: member.role,
+    roleType: member.roleType,
+    coordinatorTitle: member.coordinatorTitle ?? "",
     defaultAvailabilityDays: member.defaultAvailabilityDays,
-    avatarColor: member.avatar.color
+    capacityMultiplier: member.capacityMultiplier ?? 100,
+    customCapacityMode:
+      ![25, 50, 75, 100].includes(member.capacityMultiplier ?? 100),
+    avatarColor: member.avatar.color,
+    coordinatorTeamIds: member.coordinatorTeamIds ?? []
   };
 }
 
@@ -38,18 +52,30 @@ function validate(input: TeamMemberFormInput): FieldErrors {
   } else if (input.defaultAvailabilityDays < 1 || input.defaultAvailabilityDays > 20) {
     errors.defaultAvailabilityDays = "Availability must be between 1 and 20 days.";
   }
+  if (input.roleType === "coordinator" && !input.coordinatorTitle.trim()) {
+    errors.coordinatorTitle = "Coordinator title is required.";
+  }
+  if (
+    !Number.isFinite(input.capacityMultiplier) ||
+    input.capacityMultiplier < 1 ||
+    input.capacityMultiplier > 100
+  ) {
+    errors.capacityMultiplier = "Capacity must be between 1 and 100.";
+  }
   return errors;
 }
 
 export function TeamMemberDrawer({
   open,
   member,
+  teams = [],
   submitting,
   onClose,
   onSubmit
 }: {
   open: boolean;
   member: TeamMember | null;
+  teams?: TeamWithDepth[];
   submitting: boolean;
   onClose: () => void;
   onSubmit: (input: TeamMemberFormInput) => Promise<void>;
@@ -73,7 +99,8 @@ export function TeamMemberDrawer({
     await onSubmit({
       ...form,
       name: form.name.trim(),
-      role: form.role.trim() || "Team Member"
+      coordinatorTitle:
+        form.roleType === "coordinator" ? form.coordinatorTitle.trim() : ""
     });
   }
 
@@ -130,13 +157,115 @@ export function TeamMemberDrawer({
             <label className="block text-sm font-semibold text-[var(--color-text-primary)]" htmlFor="member-role">
               Role
             </label>
-            <input
+            <select
               id="member-role"
-              value={form.role}
-              onChange={(e) => setForm((prev) => ({ ...prev, role: e.target.value }))}
-              placeholder="Senior Engineer"
+              value={form.roleType}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, roleType: e.target.value as TeamMember["roleType"] }))
+              }
               className="mt-1 w-full border border-[var(--color-border)] bg-[var(--color-bg-primary)] px-3 py-2 text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent)]"
-            />
+            >
+              <option value="team_member">Team Member</option>
+              <option value="scrum_master">Scrum Master</option>
+              <option value="product_owner">Product Owner</option>
+              <option value="coordinator">Coordinator</option>
+            </select>
+          </div>
+
+          {form.roleType === "coordinator" ? (
+            <div>
+              <label className="block text-sm font-semibold text-[var(--color-text-primary)]" htmlFor="member-coordinator-title">
+                Coordinator Title
+              </label>
+              <input
+                id="member-coordinator-title"
+                value={form.coordinatorTitle}
+                maxLength={60}
+                onChange={(e) => setForm((prev) => ({ ...prev, coordinatorTitle: e.target.value }))}
+                placeholder="e.g. SoSM, SoSoSM, RTE, Chief Product Owner"
+                className="mt-1 w-full border border-[var(--color-border)] bg-[var(--color-bg-primary)] px-3 py-2 text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent)]"
+              />
+              {errors.coordinatorTitle ? (
+                <p className="mt-1 text-sm text-[var(--color-danger)]">{errors.coordinatorTitle}</p>
+              ) : null}
+
+              <p className="mt-2 text-xs text-[var(--color-text-muted)]">Coordinated teams</p>
+              <div className="mt-1 max-h-28 space-y-1 overflow-y-auto border border-[var(--color-border)] bg-[var(--color-bg-primary)] p-2">
+                {teams.length === 0 ? (
+                  <p className="text-xs text-[var(--color-text-muted)]">No teams available yet.</p>
+                ) : (
+                  teams.map((team) => {
+                    const checked = form.coordinatorTeamIds.includes(team.id);
+                    return (
+                      <label key={team.id} className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={(e) =>
+                            setForm((prev) => ({
+                              ...prev,
+                              coordinatorTeamIds: e.target.checked
+                                ? [...prev.coordinatorTeamIds, team.id]
+                                : prev.coordinatorTeamIds.filter((id) => id !== team.id)
+                            }))
+                          }
+                        />
+                        <span style={{ marginLeft: team.depth * 8 }}>
+                          {team.depth > 0 ? "└ " : ""}
+                          {team.name}
+                        </span>
+                      </label>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          ) : null}
+
+          <div>
+            <label className="block text-sm font-semibold text-[var(--color-text-primary)]" htmlFor="member-capacity">
+              Capacity %
+            </label>
+            <select
+              id="member-capacity"
+              value={form.customCapacityMode ? "custom" : String(form.capacityMultiplier)}
+              onChange={(e) => {
+                if (e.target.value === "custom") {
+                  setForm((prev) => ({ ...prev, customCapacityMode: true }));
+                } else {
+                  setForm((prev) => ({
+                    ...prev,
+                    customCapacityMode: false,
+                    capacityMultiplier: Number(e.target.value)
+                  }));
+                }
+              }}
+              className="mt-1 w-full border border-[var(--color-border)] bg-[var(--color-bg-primary)] px-3 py-2 text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent)]"
+            >
+              <option value="100">100%</option>
+              <option value="75">75%</option>
+              <option value="50">50%</option>
+              <option value="25">25%</option>
+              <option value="custom">Custom</option>
+            </select>
+            <p className="mt-1 text-xs text-[var(--color-text-muted)]">
+              For part-time or shared engineers. 100% = fully dedicated.
+            </p>
+            {form.customCapacityMode ? (
+              <input
+                type="number"
+                min={1}
+                max={100}
+                value={form.capacityMultiplier}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, capacityMultiplier: Number(e.target.value) }))
+                }
+                className="mt-2 w-full border border-[var(--color-border)] bg-[var(--color-bg-primary)] px-3 py-2 text-[var(--color-text-primary)] outline-none focus:border-[var(--color-accent)]"
+              />
+            ) : null}
+            {errors.capacityMultiplier ? (
+              <p className="mt-1 text-sm text-[var(--color-danger)]">{errors.capacityMultiplier}</p>
+            ) : null}
           </div>
 
           <div>

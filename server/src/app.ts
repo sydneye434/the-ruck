@@ -8,6 +8,7 @@ import { settingsRoutes } from "./routes/settingsRoutes";
 import { requestLogger } from "./middleware/requestLogger";
 import { errorHandler } from "./middleware/errorHandler";
 import { apiDocsRoutes } from "./routes/apiDocsRoutes";
+import { teamsRoutes } from "./routes/teamsRoutes";
 
 export function createApp() {
   const app = express();
@@ -28,6 +29,7 @@ export function createApp() {
   app.use("/api/stories", storiesRoutes);
   app.use("/api/retros", retrosRoutes);
   app.use("/api/settings", settingsRoutes);
+  app.use("/api/teams", teamsRoutes);
 
   // Placeholder 404 (real routes come next).
   app.use((_req, res) => {

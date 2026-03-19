@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "dev": "concurrently -n client,server -c cyan,magenta \"npm -w client run dev\" \"npm -w server run dev\"",
+    "seed": "npm -w server run seed",
     "build": "npm -w shared run build && npm -w server run build && npm -w client run build",
     "typecheck": "npm -w shared run typecheck && npm -w server run typecheck && npm -w client run typecheck"
   },
