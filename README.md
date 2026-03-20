@@ -4,6 +4,8 @@ Like the rugby ruck it's named after — the contested moment where a team fight
 
 **The Ruck** is a portfolio-quality, scrum-native web app: **React (Vite)** + **Express** + **JSON file persistence** (repository pattern, swappable for Postgres later). No auth in v1 — built for a single team running locally.
 
+**Training:** See **[docs/TRAINING_AGILE_AT_SCALE.md](docs/TRAINING_AGILE_AT_SCALE.md)** for how to use the app to run **Agile at scale** (teams, cadence, capacity, ceremonies, governance habits).
+
 ---
 
 ## Quick start
