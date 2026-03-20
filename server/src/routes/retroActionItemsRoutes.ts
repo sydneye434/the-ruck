@@ -19,7 +19,7 @@ retroActionItemsRoutes.post("/", asyncHandler(async (req, res) => {
   const retroId = (req.params as any).id as string;
   const input = req.body as any;
 
-  if (!input?.description || !input?.ownerId) {
+  if (!input?.description) {
     throw new HttpError({
       statusCode: 400,
       code: "INVALID_REQUEST",
@@ -28,9 +28,11 @@ retroActionItemsRoutes.post("/", asyncHandler(async (req, res) => {
   }
   const retro = await retrosRepository.getById(retroId);
   if (!retro) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Retro not found" });
-  const owner = await teamMembersRepository.getById(String(input.ownerId));
-  if (!owner || !owner.isActive) {
-    throw new HttpError({ statusCode: 400, code: "INVALID_REQUEST", message: "ownerId must be an active team member" });
+  if (input.ownerId !== null && input.ownerId !== undefined && String(input.ownerId).length > 0) {
+    const owner = await teamMembersRepository.getById(String(input.ownerId));
+    if (!owner || !owner.isActive) {
+      throw new HttpError({ statusCode: 400, code: "INVALID_REQUEST", message: "ownerId must be an active team member" });
+    }
   }
   const status = input.status ?? "open";
   if (!VALID_STATUSES.has(status)) {
@@ -41,7 +43,7 @@ retroActionItemsRoutes.post("/", asyncHandler(async (req, res) => {
     retroId,
     sprintId: retro.sprintId,
     description: String(input.description),
-    ownerId: String(input.ownerId),
+    ownerId: input.ownerId === null || input.ownerId === undefined || String(input.ownerId).length === 0 ? null : String(input.ownerId),
     dueDate: input.dueDate ? String(input.dueDate) : null,
     status,
     carriedOverFromId: input.carriedOverFromId ? String(input.carriedOverFromId) : null
@@ -69,9 +71,11 @@ retroActionItemsRoutes.patch("/:actionItemId", asyncHandler(async (req, res) => 
   }
 
   if (patch?.ownerId !== undefined) {
-    const owner = await teamMembersRepository.getById(String(patch.ownerId));
-    if (!owner || !owner.isActive) {
-      throw new HttpError({ statusCode: 400, code: "INVALID_REQUEST", message: "ownerId must be an active team member" });
+    if (patch.ownerId !== null && String(patch.ownerId).length > 0) {
+      const owner = await teamMembersRepository.getById(String(patch.ownerId));
+      if (!owner || !owner.isActive) {
+        throw new HttpError({ statusCode: 400, code: "INVALID_REQUEST", message: "ownerId must be an active team member" });
+      }
     }
   }
   if (patch?.status !== undefined && !VALID_STATUSES.has(String(patch.status) as RetroActionItem["status"])) {
@@ -80,7 +84,14 @@ retroActionItemsRoutes.patch("/:actionItemId", asyncHandler(async (req, res) => 
 
   const updated = await retroActionItemsRepository.update(req.params.actionItemId, {
     ...(patch?.description !== undefined ? { description: String(patch.description) } : {}),
-    ...(patch?.ownerId !== undefined ? { ownerId: String(patch.ownerId) } : {}),
+    ...(patch?.ownerId !== undefined
+      ? {
+          ownerId:
+            patch.ownerId === null || String(patch.ownerId).length === 0
+              ? null
+              : String(patch.ownerId)
+        }
+      : {}),
     ...(patch?.dueDate !== undefined ? { dueDate: patch.dueDate ? String(patch.dueDate) : null } : {}),
     ...(patch?.status !== undefined ? { status: String(patch.status) as RetroActionItem["status"] } : {}),
     ...(patch?.carriedOverFromId !== undefined

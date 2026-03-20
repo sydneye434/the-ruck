@@ -159,7 +159,7 @@ export const api = {
     delete: (id: string) => del(`/stories/${id}`)
   },
   retros: {
-    getAll: () => request<Retro[]>("/retros"),
+    getAll: () => request<Array<Retro & { openActionItemCount?: number }>>("/retros"),
     getById: (id: string) =>
       request<{
         retro: Retro;

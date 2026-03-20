@@ -26,7 +26,18 @@ retrosRoutes.use("/:id/action-items", retroActionItemsRoutes);
 retrosRoutes.get("/", asyncHandler(async (req, res) => {
   const sprintId = req.query.sprintId ? String(req.query.sprintId) : null;
   const all = await retrosRepository.getAll();
-  const data = sprintId ? all.filter((r) => r.sprintId === sprintId) : all;
+  const filtered = sprintId ? all.filter((r) => r.sprintId === sprintId) : all;
+  const actionItems = await retroActionItemsRepository.getAll();
+  const openCountByRetro = new Map<string, number>();
+  actionItems.forEach((item) => {
+    if (item.status === "open" || item.status === "in_progress") {
+      openCountByRetro.set(item.retroId, (openCountByRetro.get(item.retroId) ?? 0) + 1);
+    }
+  });
+  const data = filtered.map((retro) => ({
+    ...retro,
+    openActionItemCount: openCountByRetro.get(retro.id) ?? 0
+  }));
   return sendSuccess(res, data);
 }));
 
@@ -83,7 +94,7 @@ retrosRoutes.patch("/:id", asyncHandler(async (req, res) => {
   };
 
   if (patch?.phase !== undefined) {
-    if (!["reflect", "discuss", "action_items"].includes(String(patch.phase))) {
+    if (!["reflect", "discuss", "action_items", "closed"].includes(String(patch.phase))) {
       throw new HttpError({ statusCode: 400, code: "INVALID_REQUEST", message: "Invalid retro phase" });
     }
     updatePatch.phase = patch.phase;

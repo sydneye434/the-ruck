@@ -28,6 +28,7 @@ function dateRange(start: string, end: string) {
 
 const PHASE_ORDER: Retro["phase"][] = ["reflect", "discuss", "action_items"];
 function phaseLabel(phase: Retro["phase"]) {
+  if (phase === "closed") return "Closed";
   if (phase === "action_items") return "Action Items";
   if (phase === "discuss") return "Discuss";
   return "Reflect";
@@ -42,7 +43,7 @@ function sprintStatusColor(status: Sprint["status"]) {
 export function RetrosPage() {
   const navigate = useNavigate();
   const toast = useToast();
-  const [retros, setRetros] = useState<Retro[]>([]);
+  const [retros, setRetros] = useState<Array<Retro & { openActionItemCount?: number }>>([]);
   const [sprints, setSprints] = useState<Sprint[]>([]);
   const [detailsByRetroId, setDetailsByRetroId] = useState<Record<string, RetroDetail>>({});
   const [loading, setLoading] = useState(true);
@@ -61,6 +62,7 @@ export function RetrosPage() {
   const pastRetros = useMemo(
     () =>
       retros
+        .filter((r) => r.phase !== "closed")
         .filter((r) => !activeRetro || r.id !== activeRetro.id)
         .sort((a, b) => {
           const as = sprintById.get(a.sprintId);
@@ -68,6 +70,17 @@ export function RetrosPage() {
           return new Date(bs?.startDate ?? 0).getTime() - new Date(as?.startDate ?? 0).getTime();
         }),
     [retros, activeRetro, sprintById]
+  );
+  const closedRetros = useMemo(
+    () =>
+      retros
+        .filter((r) => r.phase === "closed")
+        .sort((a, b) => {
+          const as = sprintById.get(a.sprintId);
+          const bs = sprintById.get(b.sprintId);
+          return new Date(bs?.startDate ?? 0).getTime() - new Date(as?.startDate ?? 0).getTime();
+        }),
+    [retros, sprintById]
   );
 
   async function loadData() {
@@ -120,12 +133,13 @@ export function RetrosPage() {
     }
   }
 
-  function renderRetroRow(retro: Retro) {
+  function renderRetroRow(retro: Retro & { openActionItemCount?: number }) {
     const sprint = sprintById.get(retro.sprintId);
     const details = detailsByRetroId[retro.id];
     const cardCount = details?.cards.length ?? 0;
     const openActionItemsCount =
-      details?.actionItems.filter((i) => i.status === "open" || i.status === "in_progress").length ?? 0;
+      retro.openActionItemCount ?? details?.actionItems.filter((i) => i.status === "open" || i.status === "in_progress").length ?? 0;
+    const actionItemCount = details?.actionItems.length ?? 0;
     const template = RETRO_TEMPLATES[retro.template];
     const phaseIndex = PHASE_ORDER.indexOf(retro.phase);
     return (
@@ -159,6 +173,7 @@ export function RetrosPage() {
               </span>
             </div>
             <Badge label={`${cardCount} cards`} color="default" />
+            {retro.phase === "closed" ? <Badge label={`${actionItemCount} action items`} color="default" /> : null}
             <span
               className="text-xs"
               style={{ color: openActionItemsCount > 0 ? "var(--color-warning)" : "var(--color-text-muted)" }}
@@ -166,6 +181,7 @@ export function RetrosPage() {
               {openActionItemsCount} open actions
             </span>
             {retro.isAnonymous ? <Badge label="Anonymous" color="warning" /> : null}
+            {retro.phase === "closed" ? <Badge label="Closed" color="default" /> : null}
             <button
               type="button"
               onClick={() => navigate(`/retro/${retro.id}`)}
@@ -234,7 +250,7 @@ export function RetrosPage() {
             <h2 className="text-sm font-semibold uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
               Active Sprint
             </h2>
-            {activeRetro ? renderRetroRow(activeRetro) : (
+            {activeRetro && activeRetro.phase !== "closed" ? renderRetroRow(activeRetro) : (
               <div className="border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-3 text-sm text-[var(--color-text-secondary)]">
                 No retro started for the active sprint yet.{" "}
                 <button
@@ -255,6 +271,20 @@ export function RetrosPage() {
             {pastRetros.length > 0 ? pastRetros.map(renderRetroRow) : (
               <div className="border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-3 text-sm text-[var(--color-text-muted)]">
                 No past retros yet.
+              </div>
+            )}
+          </section>
+          <section className="space-y-2">
+            <h2 className="text-sm font-semibold uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
+              Closed Retros
+            </h2>
+            {closedRetros.length > 0 ? (
+              <div className="space-y-2 opacity-80">
+                {closedRetros.map(renderRetroRow)}
+              </div>
+            ) : (
+              <div className="border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-3 text-sm text-[var(--color-text-muted)]">
+                No closed retros yet.
               </div>
             )}
           </section>

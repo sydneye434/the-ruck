@@ -12,7 +12,7 @@ export type StoryBoardColumn = "backlog" | "in_progress" | "in_review" | "done";
 
 export type SprintStatus = "planning" | "active" | "completed";
 
-export type RetroPhase = "reflect" | "discuss" | "action_items";
+export type RetroPhase = "reflect" | "discuss" | "action_items" | "closed";
 
 export type RetroTemplate =
   | "start_stop_continue"
@@ -118,7 +118,7 @@ export type RetroActionItem = Identifiable & {
   retroId: string;
   sprintId: string;
   description: string;
-  ownerId: string;
+  ownerId: string | null;
   dueDate?: ISODateString | null;
   status: "open" | "in_progress" | "complete";
   carriedOverFromId?: string | null;
