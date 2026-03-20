@@ -6,6 +6,7 @@ import { OrgChartPage } from "../pages/team/OrgChartPage";
 import { BacklogPage } from "../pages/backlog/BacklogPage";
 import { ActiveSprintPage } from "../pages/active-sprint/ActiveSprintPage";
 import { SprintsPage } from "../pages/sprints/SprintsPage";
+import { RetrosPage } from "../pages/retros/RetrosPage";
 
 export function AppRoutes() {
   return (
@@ -16,7 +17,7 @@ export function AppRoutes() {
         <Route path="/backlog" element={<BacklogPage />} />
         <Route path="/sprint/active" element={<ActiveSprintPage />} />
         <Route path="/sprints" element={<SprintsPage />} />
-        <Route path="/retros" element={<PlaceholderPage title="Retros" />} />
+        <Route path="/retros" element={<RetrosPage />} />
         <Route path="/retro/:id" element={<PlaceholderPage title="Retro Detail" />} />
         <Route path="/team" element={<TeamPage />} />
         <Route path="/team/org-chart" element={<OrgChartPage />} />
