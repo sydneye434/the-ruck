@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 type Theme = "dark" | "light";

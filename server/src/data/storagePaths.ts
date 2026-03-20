@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import path from "node:path";
 
 export function getDataFilePath(fileName: string) {

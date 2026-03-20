@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import type { NextFunction, Request, Response } from "express";
 
 export const asyncHandler =

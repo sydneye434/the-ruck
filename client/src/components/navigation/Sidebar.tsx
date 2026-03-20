@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { NavLink } from "react-router-dom";
 import type { ComponentType, SVGProps } from "react";
 import { CollapseIcon, DashboardIcon, BacklogIcon, HistoryIcon, MoonIcon, RetrosIcon, RuckMarkIcon, SettingsIcon, SprintIcon, SunIcon, TeamIcon } from "./Icons";

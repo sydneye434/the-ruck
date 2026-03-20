@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 export const AVATAR_COLOR_VARIABLES = [
   "var(--color-avatar-1)",
   "var(--color-avatar-2)",

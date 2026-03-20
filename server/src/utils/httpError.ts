@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 export class HttpError extends Error {
   public statusCode: number;
   public code: string;

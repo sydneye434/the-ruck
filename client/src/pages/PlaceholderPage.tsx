@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { PageHeader } from "../components/common/PageHeader";
 import { Card } from "../components/common/Card";
 

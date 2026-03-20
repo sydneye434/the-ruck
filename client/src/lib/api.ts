@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import type {
   ApiResponse,
   AppSettings,

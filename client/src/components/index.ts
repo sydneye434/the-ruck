@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 export * from "./common/PageHeader";
 export * from "./common/Card";
 export * from "./common/Badge";

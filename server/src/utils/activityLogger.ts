@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import type { ActivityLog } from "@the-ruck/shared";
 import { activityLogRepository } from "../repositories";
 

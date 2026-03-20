@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {

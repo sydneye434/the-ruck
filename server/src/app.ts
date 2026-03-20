@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import express from "express";
 import cors from "cors";
 import { teamMembersRoutes } from "./routes/teamMembersRoutes";

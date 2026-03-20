@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 /**
  * Swappable data layer pattern:
  * - Import repositories from `server/src/repositories/*` (or from this index).

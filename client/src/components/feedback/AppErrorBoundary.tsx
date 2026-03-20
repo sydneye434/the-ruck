@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { Component, type ErrorInfo, type ReactNode } from "react";
 
 type Props = { children: ReactNode };

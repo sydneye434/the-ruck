@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 export function formatRelativeTime(input: string | Date) {
   const date = typeof input === "string" ? new Date(input) : input;
   const now = new Date();

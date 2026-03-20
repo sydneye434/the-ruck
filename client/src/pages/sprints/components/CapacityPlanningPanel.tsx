@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import type { Sprint, TeamMemberLink, TeamWithDepth } from "@the-ruck/shared";
 import { api, ApiClientError } from "../../../lib/api";

@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
 
 type ToastType = "success" | "error" | "info";

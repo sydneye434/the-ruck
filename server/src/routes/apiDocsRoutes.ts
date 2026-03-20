@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { Router } from "express";
 import swaggerUi from "swagger-ui-express";
 import { openApiSpec } from "../docs/openapi";

@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { hierarchy, tree, type HierarchyPointLink, type HierarchyPointNode } from "d3-hierarchy";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";

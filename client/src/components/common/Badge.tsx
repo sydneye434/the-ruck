@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 const badgeStyles = {
   default: "border-[var(--color-border)] bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)]",
   accent: "border-[var(--color-accent)] bg-[var(--color-bg-tertiary)] text-[var(--color-accent)]",

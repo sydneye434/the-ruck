@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { useEffect, useMemo, useState } from "react";
 import type { TeamMember, TeamWithDepth } from "@the-ruck/shared";
 import { Spinner } from "../../components/feedback/Spinner";

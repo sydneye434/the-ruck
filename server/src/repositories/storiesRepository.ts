@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import type { Story } from "@the-ruck/shared";
 import { createJsonRepository } from "../data/persistence/jsonFileRepository";
 import { getDataFilePath } from "../data/storagePaths";

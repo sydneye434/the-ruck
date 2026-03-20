@@ -151,3 +151,7 @@ For **installation and URLs**, see the root **`README.md`**.
 ---
 
 *This document describes the intended use of The Ruck v1 features; roadmap items (auth, multi-tenant, real-time, database) may extend these patterns.*
+
+---
+
+*Developed by Sydney Edwards.*

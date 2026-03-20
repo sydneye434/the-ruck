@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { AppSettings } from "@the-ruck/shared";
 import { api } from "../lib/api";

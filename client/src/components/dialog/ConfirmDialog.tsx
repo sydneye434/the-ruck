@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { useEffect, useRef } from "react";
 
 export function ConfirmDialog({

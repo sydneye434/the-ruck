@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import type { SVGProps } from "react";
 
 type IconProps = SVGProps<SVGSVGElement>;

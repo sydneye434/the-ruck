@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 declare module "swagger-ui-express" {
   import type { RequestHandler } from "express";
 

@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import type { Team, TeamTreeNode, TeamWithDepth } from "@the-ruck/shared";
 
 function computeDepth(

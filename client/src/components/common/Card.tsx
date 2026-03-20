@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import type { PropsWithChildren } from "react";
 
 type Padding = "sm" | "md" | "lg";

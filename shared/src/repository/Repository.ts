@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import type { Identifiable } from "../types/domain";
 
 export type Repository<T extends Identifiable> = {

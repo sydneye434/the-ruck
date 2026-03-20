@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { useEffect, useMemo, useState } from "react";
 import type { Sprint } from "@the-ruck/shared";
 import { api, ApiClientError } from "../../lib/api";

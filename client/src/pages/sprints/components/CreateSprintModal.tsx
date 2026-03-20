@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { useEffect, useMemo, useState } from "react";
 import { Spinner } from "../../../components/feedback/Spinner";
 import { useSettings } from "../../../settings/SettingsContext";

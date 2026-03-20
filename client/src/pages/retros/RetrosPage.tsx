@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Retro, RetroActionItem, RetroCard, Sprint } from "@the-ruck/shared";

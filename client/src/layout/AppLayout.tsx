@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { Outlet } from "react-router-dom";
 import { Sidebar } from "../components/navigation/Sidebar";
 import { useSidebarState } from "./useSidebarState";

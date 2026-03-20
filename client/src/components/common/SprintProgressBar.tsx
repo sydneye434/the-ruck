@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 export function SprintProgressBar({
   donePoints,
   totalPoints,

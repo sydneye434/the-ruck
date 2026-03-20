@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { Card } from "../../../components/common/Card";
 
 export function RetrosListSkeleton() {

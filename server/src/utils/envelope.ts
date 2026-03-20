@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import type { Response } from "express";
 import type { ApiResponse, ApiError } from "@the-ruck/shared";
 

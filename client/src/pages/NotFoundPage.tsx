@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { Link } from "react-router-dom";
 import { EmptyState } from "../components/common/EmptyState";
 

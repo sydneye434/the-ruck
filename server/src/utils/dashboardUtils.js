@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 function calculateDaysRemaining(endDate) {
   const now = new Date();
   const end = new Date(endDate);

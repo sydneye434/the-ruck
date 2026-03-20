@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { useEffect, useRef, useState } from "react";
 import type { TeamMember } from "@the-ruck/shared";
 import { Avatar } from "../../components/common/Avatar";

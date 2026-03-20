@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { Router } from "express";
 import type { Story, StoryBoardColumn, StoryPoints } from "@the-ruck/shared";
 import { sprintsRepository, storiesRepository } from "../repositories";

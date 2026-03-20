@@ -1,10 +1,12 @@
 # The Ruck
 
+*Developed by Sydney Edwards.*
+
 Like the rugby ruck it's named after — the contested moment where a team fights for control — The Ruck keeps your sprints, capacity, and retrospectives organized when things get chaotic.
 
 **The Ruck** is a portfolio-quality, scrum-native web app: **React (Vite)** + **Express** + **JSON file persistence** (repository pattern, swappable for Postgres later). No auth in v1 — built for a single team running locally.
 
-**Training:** See **[docs/TRAINING_AGILE_AT_SCALE.md](docs/TRAINING_AGILE_AT_SCALE.md)** for how to use the app to run **Agile at scale** (teams, cadence, capacity, ceremonies, governance habits).
+**Training:** See **[docs/TRAINING_AGILE_AT_SCALE.md](docs/TRAINING_AGILE_AT_SCALE.md)** for how to use the app to run **Agile at scale** (teams, cadence, capacity, ceremonies, governance habits). **Credits:** [CREDITS.md](CREDITS.md).
 
 ---
 
@@ -173,4 +175,8 @@ Details: **`server/API.md`** and **`http://localhost:3001/api/docs`** (when runn
 1. Fork the repo and create a feature branch.  
 2. Run `npm install` and `npm run typecheck` before opening a PR.  
 3. Run `npm test` when touching shared logic (velocity engine).  
-4. Keep UI/API changes documented in the PR; update **`README.md`**, **`server/API.md`**, and the OpenAPI spec when endpoints change.  
+4. Keep UI/API changes documented in the PR; update **`README.md`**, **`server/API.md`**, and the OpenAPI spec when endpoints change.
+
+---
+
+*Developed by Sydney Edwards.*

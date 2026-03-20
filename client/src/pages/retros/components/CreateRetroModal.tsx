@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { useEffect, useMemo, useState } from "react";
 import type { Retro, Sprint } from "@the-ruck/shared";
 import { Badge } from "../../../components/common/Badge";

@@ -2,6 +2,7 @@
   "name": "@the-ruck/client",
   "version": "0.1.0",
   "private": true,
+  "author": "Sydney Edwards",
   "type": "module",
   "scripts": {
     "dev": "vite",

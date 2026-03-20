@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { Router } from "express";
 import { teamMembersRepository } from "../repositories";
 import { HttpError } from "../utils/httpError";

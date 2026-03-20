@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import type { ErrorRequestHandler, Request, Response, NextFunction } from "express";
 import type { ApiError } from "@the-ruck/shared";
 import { HttpError } from "../utils/httpError";

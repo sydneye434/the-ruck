@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 const TEMPLATES = {
   start_stop_continue: {
     id: "start_stop_continue",

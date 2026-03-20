@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 // Lightweight OpenAPI spec for the v1 JSON REST API.
 // Note: this is intentionally hand-written to avoid runtime dependency on decorators/generators.
 

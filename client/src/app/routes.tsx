@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { AppLayout } from "../layout/AppLayout";

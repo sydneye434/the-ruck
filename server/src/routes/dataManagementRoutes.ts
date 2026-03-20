@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { Router } from "express";
 import {
   activityLogRepository,

@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 export type ISODateString = string;
 
 export type TeamRoleType =

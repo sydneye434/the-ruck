@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 export type RetroTemplateId = "start_stop_continue" | "4ls" | "mad_sad_glad";
 
 export const RETRO_TEMPLATES: Record<

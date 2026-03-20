@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
 import type { Story, TeamMember } from "@the-ruck/shared";

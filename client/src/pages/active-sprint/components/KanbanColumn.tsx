@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import type { Story, StoryBoardColumn, TeamMember } from "@the-ruck/shared";

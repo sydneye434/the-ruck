@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { useEffect, useState } from "react";
 
 const STORAGE_KEY = "the-ruck-sidebar-collapsed";

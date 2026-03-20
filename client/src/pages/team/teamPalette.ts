@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 export const TEAM_COLOR_VARIABLES = [
   "var(--color-team-1)",
   "var(--color-team-2)",

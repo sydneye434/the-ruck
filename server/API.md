@@ -64,3 +64,6 @@ All responses use this envelope:
 - `GET /api/settings`
 - `PUT /api/settings`
 
+---
+
+*Developed by Sydney Edwards.*

@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import type { ReactNode } from "react";
 
 export function EmptyState({

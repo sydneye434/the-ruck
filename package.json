@@ -1,6 +1,7 @@
 {
   "name": "the-ruck",
   "private": true,
+  "author": "Sydney Edwards",
   "workspaces": [
     "client",
     "server",

@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 export function DashboardSkeleton() {
   return (
     <div className="grid grid-cols-1 gap-3 xl:grid-cols-[35%_40%_25%]">

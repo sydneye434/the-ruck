@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 type AvatarSize = "sm" | "md" | "lg";
 
 const sizeClass: Record<AvatarSize, string> = {

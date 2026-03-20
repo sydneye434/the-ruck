@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import type { Story, TeamMember } from "@the-ruck/shared";
 import { Avatar } from "../../../components/common/Avatar";
 import { Badge } from "../../../components/common/Badge";

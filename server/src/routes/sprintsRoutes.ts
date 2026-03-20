@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { Router } from "express";
 import path from "node:path";
 import { calculateEffectiveDays, withComputedDepth, type Sprint } from "@the-ruck/shared";

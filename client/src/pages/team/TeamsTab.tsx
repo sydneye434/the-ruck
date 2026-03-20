@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { useMemo, useState } from "react";
 import type { Team, TeamMember, TeamMemberLink, TeamTreeNode, TeamWithDepth } from "@the-ruck/shared";
 import { Card } from "../../components/common/Card";

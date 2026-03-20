@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { AppRoutes } from "./app/routes";
 import { ThemeProvider } from "./theme/ThemeProvider";
 import { ToastProvider } from "./components/feedback/ToastProvider";

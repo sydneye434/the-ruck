@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Team, TeamMember, TeamMemberLink, TeamWithDepth } from "@the-ruck/shared";

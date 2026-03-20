@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 const FIBONACCI = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144];
 
 function round1(value: number) {
