@@ -1,22 +1,22 @@
 [
   {
-    "sprintId": "718a481d-876a-40de-9aa0-09a3b14f1899",
+    "sprintId": "14d93f7b-d7b1-46eb-ba2a-f2d446506172",
     "title": "Sprint 3 Retrospective",
     "template": "start_stop_continue",
-    "phase": "action_items",
+    "phase": "closed",
     "isAnonymous": false,
-    "createdAt": "2026-03-20T19:53:22.606Z",
-    "updatedAt": "2026-03-20T19:53:22.606Z",
-    "id": "ef2bb6a7-1e07-402f-9f58-633f5541c09c"
+    "createdAt": "2026-03-20T20:07:24.386Z",
+    "updatedAt": "2026-03-20T20:17:37.077Z",
+    "id": "bcd1a619-cb8f-4e66-a229-881dbf6988c4"
   },
   {
-    "sprintId": "b67a29d8-688e-4038-a91a-9ce96b1ff52b",
+    "sprintId": "92b66795-6eae-4c8e-838f-dc521dee9a69",
     "title": "Sprint 4 Retrospective",
     "template": "mad_sad_glad",
-    "phase": "reflect",
+    "phase": "action_items",
     "isAnonymous": false,
-    "createdAt": "2026-03-20T19:53:22.606Z",
-    "updatedAt": "2026-03-20T19:53:22.606Z",
-    "id": "5e665310-cef2-4e19-9f3b-4dc49d485018"
+    "createdAt": "2026-03-20T20:07:24.386Z",
+    "updatedAt": "2026-03-20T20:18:36.219Z",
+    "id": "afb11efc-ca1b-4ea6-b8ba-28c089f8a6dc"
   }
 ]

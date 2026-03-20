@@ -16,7 +16,9 @@ const VALID_TEMPLATES = new Set<RetroTemplate>([
   "4ls",
   "mad_sad_glad"
 ]);
-const retroTemplates = require(path.join(process.cwd(), "shared", "retroTemplates.js")) as {
+const sharedPackageJsonPath = require.resolve("@the-ruck/shared/package.json");
+const sharedWorkspaceRoot = path.dirname(sharedPackageJsonPath);
+const retroTemplates = require(path.join(sharedWorkspaceRoot, "retroTemplates.js")) as {
   TEMPLATES: Record<string, { columns: Array<{ key: string; label: string; color: string }> }>;
 };
 

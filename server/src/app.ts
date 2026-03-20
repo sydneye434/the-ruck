@@ -19,6 +19,20 @@ export function createApp() {
   app.use(express.json({ limit: "1mb" }));
   app.use(requestLogger);
 
+  // Browsers often open the API port directly; without this, GET / returns JSON 404 and looks like a blank page.
+  app.get("/", (_req, res) => {
+    res.type("html").send(`<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"/><title>The Ruck — API</title></head>
+<body style="font-family:system-ui,sans-serif;max-width:42rem;margin:2rem auto;padding:0 1rem;line-height:1.5">
+  <h1>The Ruck API</h1>
+  <p>This port serves the <strong>REST API</strong> only. The web app runs separately.</p>
+  <p>Open the UI in dev at <a href="http://localhost:5173">http://localhost:5173</a> (Vite prints the exact URL if the port changes).</p>
+  <p>API docs: <a href="/api/docs">/api/docs</a> · Health: <a href="/api/health">/api/health</a></p>
+</body>
+</html>`);
+  });
+
   // Health endpoint for validating the server during scaffolding.
   app.get("/api/health", (_req, res) => {
     res.json({ data: { status: "ok" }, error: null, meta: { at: new Date().toISOString() } });

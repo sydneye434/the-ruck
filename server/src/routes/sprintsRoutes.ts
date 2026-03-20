@@ -1,6 +1,6 @@
 import { Router } from "express";
 import path from "node:path";
-import { withComputedDepth, type Sprint } from "@the-ruck/shared";
+import { calculateEffectiveDays, withComputedDepth, type Sprint } from "@the-ruck/shared";
 import { sprintsRepository, storiesRepository, teamMemberLinksRepository, teamMembersRepository, teamsRepository } from "../repositories";
 import { HttpError } from "../utils/httpError";
 import { sendEmptySuccess, sendSuccess } from "../utils/envelope";
@@ -8,10 +8,10 @@ import { logActivity } from "../utils/activityLogger";
 
 export const sprintsRoutes = Router();
 
-const velocityEngine = require(path.join(process.cwd(), "shared", "velocityEngine.js")) as {
-  calculateEffectiveDays: (defaultAvailabilityDays: number, capacityMultiplier: number) => number;
-};
-const workingDays = require(path.join(process.cwd(), "shared", "workingDays.js")) as {
+const sharedPackageJsonPath = require.resolve("@the-ruck/shared/package.json");
+const sharedWorkspaceRoot = path.dirname(sharedPackageJsonPath);
+
+const workingDays = require(path.join(sharedWorkspaceRoot, "workingDays.js")) as {
   countWorkingDaysInRange: (startDate: string, endDate: string) => number;
 };
 
@@ -91,7 +91,7 @@ sprintsRoutes.get("/:id/capacity-context", async (req, res) => {
     .filter((m) => m.isActive)
     .map((m) => ({
       ...m,
-      effectiveDays: velocityEngine.calculateEffectiveDays(
+      effectiveDays: calculateEffectiveDays(
         m.defaultAvailabilityDays,
         m.capacityMultiplier ?? 100
       )

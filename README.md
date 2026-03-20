@@ -166,6 +166,10 @@ Common local URLs:
 - Web: `http://localhost:5173`
 - Docs: `http://localhost:3001/api/docs`
 
+**Important:** Open the **web** URL for the UI (`5173` by default). The API port (`3001`) only serves JSON and docs — if you open `http://localhost:3001/` in a browser you are on the API, not the React app. If Vite says the port is in use, it will pick another (e.g. `5174`); use the URL printed in the terminal.
+
+**Blank white page in the browser?** The client imports `@the-ruck/shared` via a Vite alias to `shared/src` (the workspace package’s `main` points at `shared/dist`, which may not exist until you run `npm -w shared run build`). If you ever remove the alias from `client/vite.config.ts`, run `npm -w shared run build` before `npm run dev` or the UI bundle can fail to load with no obvious error.
+
 ## Running + accessing API docs
 If you only want to run the API and view docs:
 

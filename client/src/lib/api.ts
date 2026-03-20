@@ -44,7 +44,17 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     ...init
   });
 
-  const envelope = (await response.json()) as ApiResponse<T>;
+  const text = await response.text();
+  let envelope: ApiResponse<T>;
+  try {
+    envelope = JSON.parse(text) as ApiResponse<T>;
+  } catch {
+    throw new ApiClientError(
+      `Invalid API response (${response.status}). Is VITE_API_BASE_URL set to http://localhost:3001/api ?`,
+      "INVALID_RESPONSE",
+      response.status
+    );
+  }
 
   if (envelope.error) {
     throw new ApiClientError(envelope.error.message, envelope.error.code ?? "API_ERROR", response.status);

@@ -1,12 +1,11 @@
-const test = require("node:test");
-const assert = require("node:assert/strict");
-
-const {
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import {
   snapToFibonacci,
   calculateTrend,
   calculateTeamAvailability,
   calculateRecommendedCapacity
-} = require("./velocityEngine");
+} from "./velocityEngine";
 
 test("snapToFibonacci cases", () => {
   assert.equal(snapToFibonacci(36), 34);
@@ -83,4 +82,3 @@ test("calculateRecommendedCapacity cases", () => {
   assert.equal(calculateRecommendedCapacity(42, 0.85), 35.7);
   assert.equal(calculateRecommendedCapacity(null, 0.85), null);
 });
-

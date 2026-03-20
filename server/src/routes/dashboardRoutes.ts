@@ -1,5 +1,6 @@
 import { Router } from "express";
 import path from "node:path";
+import { calculateEffectiveDays } from "@the-ruck/shared";
 import {
   activityLogRepository,
   retroCardsRepository,
@@ -13,10 +14,7 @@ import { sendSuccess } from "../utils/envelope";
 
 export const dashboardRoutes = Router();
 
-const velocityEngine = require(path.join(process.cwd(), "shared", "velocityEngine.js")) as {
-  calculateEffectiveDays: (defaultAvailabilityDays: number, capacityMultiplier: number) => number;
-};
-const dashboardUtils = require(path.join(process.cwd(), "server", "src", "utils", "dashboardUtils.js")) as {
+const dashboardUtils = require(path.resolve(__dirname, "../utils/dashboardUtils.js")) as {
   calculateDaysRemaining: (endDate: string) => number;
   calculateProgressPercent: (completed: number, total: number) => number;
   buildVelocityTrend: (completedSprints: any[], limit?: number) => any[];
@@ -89,7 +87,7 @@ dashboardRoutes.get("/", async (_req, res) => {
       id: member.id,
       name: member.name,
       capacityMultiplier: member.capacityMultiplier ?? 100,
-      effectiveDays: velocityEngine.calculateEffectiveDays(
+      effectiveDays: calculateEffectiveDays(
         member.defaultAvailabilityDays,
         member.capacityMultiplier ?? 100
       )

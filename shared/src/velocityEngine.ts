@@ -1,38 +1,48 @@
 const FIBONACCI = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144];
 
-function round1(value) {
+function round1(value: number) {
   return Math.round(value * 10) / 10;
 }
 
-function getVelocityWindow(completedSprints, n) {
+export type VelocitySprintRow = {
+  id: string;
+  name: string;
+  completedAt: string;
+  velocityDataPoint: number;
+};
+
+export function getVelocityWindow(
+  completedSprints: Array<{ completedAt?: string; velocityDataPoint?: number } & Record<string, unknown>> | null | undefined,
+  n: number
+): VelocitySprintRow[] {
   const normalized = [...(completedSprints ?? [])]
     .filter((s) => s && s.completedAt && typeof s.velocityDataPoint === "number")
-    .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
+    .sort((a, b) => new Date(String(b.completedAt)).getTime() - new Date(String(a.completedAt)).getTime())
     .map((s) => ({
-      id: s.id,
-      name: s.name,
-      completedAt: s.completedAt,
-      velocityDataPoint: s.velocityDataPoint
+      id: String((s as { id: string }).id),
+      name: String((s as { name: string }).name),
+      completedAt: String(s.completedAt),
+      velocityDataPoint: Number(s.velocityDataPoint)
     }));
 
   if (!Number.isFinite(n) || n <= 0) return [];
   return normalized.slice(0, n);
 }
 
-function calculateAverageVelocity(sprints) {
+export function calculateAverageVelocity(sprints: Array<{ velocityDataPoint?: number }> | null | undefined): number | null {
   if (!Array.isArray(sprints) || sprints.length === 0) return null;
   const sum = sprints.reduce((acc, s) => acc + Number(s.velocityDataPoint || 0), 0);
   return round1(sum / sprints.length);
 }
 
-function calculateTrend(sprints) {
+export function calculateTrend(
+  sprints: Array<{ velocityDataPoint?: number }> | null | undefined
+): "up" | "down" | "flat" | "insufficient_data" {
   if (!Array.isArray(sprints) || sprints.length < 2) return "insufficient_data";
 
-  // Use the last item as "most recent" to align with expected test cases.
   const mostRecent = Number(sprints[sprints.length - 1].velocityDataPoint || 0);
   const fullAvg =
-    sprints.reduce((acc, sprint) => acc + Number(sprint.velocityDataPoint || 0), 0) /
-    sprints.length;
+    sprints.reduce((acc, sprint) => acc + Number(sprint.velocityDataPoint || 0), 0) / sprints.length;
   if (fullAvg === 0) return "flat";
 
   const ratioDelta = (mostRecent - fullAvg) / fullAvg;
@@ -41,7 +51,7 @@ function calculateTrend(sprints) {
   return "flat";
 }
 
-function getConfidenceLevel(totalCompletedSprintCount) {
+export function getConfidenceLevel(totalCompletedSprintCount: number | null | undefined): "high" | "medium" | "low" | "none" {
   const n = Number(totalCompletedSprintCount || 0);
   if (n >= 5) return "high";
   if (n >= 3) return "medium";
@@ -49,13 +59,30 @@ function getConfidenceLevel(totalCompletedSprintCount) {
   return "none";
 }
 
-function calculateEffectiveDays(defaultAvailabilityDays, capacityMultiplier) {
+export function calculateEffectiveDays(defaultAvailabilityDays: number, capacityMultiplier: number) {
   const d = Number(defaultAvailabilityDays || 0);
   const c = Number(capacityMultiplier || 0);
   return round1(d * (c / 100));
 }
 
-function calculateTeamAvailability(members, daysOffMap) {
+export type TeamAvailabilityResult = {
+  memberBreakdown: Array<{
+    memberId: string;
+    effectiveDays: number;
+    daysOff: number;
+    availableDays: number;
+    availabilityPercent: number;
+  }>;
+  totalEffectiveDays: number;
+  totalDaysOff: number;
+  totalAvailableDays: number;
+  teamAvailabilityRatio: number;
+};
+
+export function calculateTeamAvailability(
+  members: Array<{ id: string; defaultAvailabilityDays: number; capacityMultiplier: number }> | null | undefined,
+  daysOffMap: Record<string, number> | null | undefined
+): TeamAvailabilityResult {
   const sourceMembers = Array.isArray(members) ? members : [];
   const map = daysOffMap ?? {};
 
@@ -80,8 +107,7 @@ function calculateTeamAvailability(members, daysOffMap) {
   const totalEffectiveDays = round1(memberBreakdown.reduce((acc, m) => acc + m.effectiveDays, 0));
   const totalDaysOff = round1(memberBreakdown.reduce((acc, m) => acc + m.daysOff, 0));
   const totalAvailableDays = round1(memberBreakdown.reduce((acc, m) => acc + m.availableDays, 0));
-  const teamAvailabilityRatio =
-    totalEffectiveDays > 0 ? totalAvailableDays / totalEffectiveDays : 0;
+  const teamAvailabilityRatio = totalEffectiveDays > 0 ? totalAvailableDays / totalEffectiveDays : 0;
 
   return {
     memberBreakdown,
@@ -92,13 +118,16 @@ function calculateTeamAvailability(members, daysOffMap) {
   };
 }
 
-function calculateRecommendedCapacity(averageVelocity, teamAvailabilityRatio) {
+export function calculateRecommendedCapacity(
+  averageVelocity: number | null | undefined,
+  teamAvailabilityRatio: number | null | undefined
+): number | null {
   if (averageVelocity === null || averageVelocity === undefined) return null;
   if (teamAvailabilityRatio === null || teamAvailabilityRatio === undefined) return null;
   return round1(Number(averageVelocity) * Number(teamAvailabilityRatio));
 }
 
-function snapToFibonacci(value) {
+export function snapToFibonacci(value: number | null | undefined): number | null {
   if (value === null || value === undefined) return null;
   const v = Number(value);
   if (!Number.isFinite(v)) return null;
@@ -114,14 +143,21 @@ function snapToFibonacci(value) {
       best = f;
       bestDist = dist;
     } else if (dist === bestDist && f > best) {
-      // Tie rounds up.
       best = f;
     }
   }
   return best;
 }
 
-function buildCapacitySnapshot(params) {
+export function buildCapacitySnapshot(params: {
+  velocityWindow: 1 | 2 | 3 | 5;
+  averageVelocity: number | null;
+  teamAvailabilityRatio: number;
+  memberBreakdown: TeamAvailabilityResult["memberBreakdown"];
+  recommendedCapacity: number | null;
+  finalCapacityTarget: number | null;
+  fibonacciSnapped: boolean;
+}) {
   return {
     velocityWindow: params.velocityWindow,
     averageVelocity: params.averageVelocity,
@@ -133,16 +169,3 @@ function buildCapacitySnapshot(params) {
     calculatedAt: new Date()
   };
 }
-
-module.exports = {
-  getVelocityWindow,
-  calculateAverageVelocity,
-  calculateTrend,
-  getConfidenceLevel,
-  calculateEffectiveDays,
-  calculateTeamAvailability,
-  calculateRecommendedCapacity,
-  snapToFibonacci,
-  buildCapacitySnapshot
-};
-

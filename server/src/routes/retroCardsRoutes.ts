@@ -9,7 +9,10 @@ import { logActivity } from "../utils/activityLogger";
 
 export const retroCardsRoutes = Router({ mergeParams: true });
 
-const retroTemplates = require(path.join(process.cwd(), "shared", "retroTemplates.js")) as {
+const sharedPackageJsonPath = require.resolve("@the-ruck/shared/package.json");
+const sharedWorkspaceRoot = path.dirname(sharedPackageJsonPath);
+
+const retroTemplates = require(path.join(sharedWorkspaceRoot, "retroTemplates.js")) as {
   TEMPLATES: Record<string, { columns: Array<{ key: string }> }>;
 };
 

@@ -39,17 +39,18 @@ export function AppRoutes() {
     <>
       <RouteTitleSync />
       <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route element={<AppLayout />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/backlog" element={<BacklogPage />} />
-          <Route path="/sprint/active" element={<ActiveSprintPage />} />
-          <Route path="/sprints" element={<SprintsPage />} />
-          <Route path="/retros" element={<RetrosPage />} />
-          <Route path="/retro/:id" element={<RetroDetailBoardPage />} />
-          <Route path="/team" element={<TeamPage />} />
-          <Route path="/team/org-chart" element={<OrgChartPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
+        {/* Single layout tree so <Outlet /> always matches (avoids blank main with pathless + absolute children). */}
+        <Route path="/" element={<AppLayout />}>
+          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="backlog" element={<BacklogPage />} />
+          <Route path="sprint/active" element={<ActiveSprintPage />} />
+          <Route path="sprints" element={<SprintsPage />} />
+          <Route path="retros" element={<RetrosPage />} />
+          <Route path="retro/:id" element={<RetroDetailBoardPage />} />
+          <Route path="team" element={<TeamPage />} />
+          <Route path="team/org-chart" element={<OrgChartPage />} />
+          <Route path="settings" element={<SettingsPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

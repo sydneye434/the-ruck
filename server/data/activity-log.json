@@ -2,78 +2,102 @@
   {
     "type": "story_created",
     "description": "Story 'Seed Story' added to Sprint 4",
-    "actorId": "d4ddb08a-0f36-4bfd-9db1-a3e9293d1535",
+    "actorId": "573a5f66-8343-40dd-a95a-ce79cca26128",
     "metadata": {
-      "sprintId": "b67a29d8-688e-4038-a91a-9ce96b1ff52b"
+      "sprintId": "92b66795-6eae-4c8e-838f-dc521dee9a69"
     },
-    "createdAt": "2026-03-17T19:54:22.605Z",
-    "id": "e3e59960-b399-4e5e-952d-7aedd3a87e91"
+    "createdAt": "2026-03-17T20:08:24.385Z",
+    "id": "9d6e6118-444e-4241-a15d-351b991ff124"
   },
   {
     "type": "retro_card_added",
     "description": "Card added to start in Sprint 3 retrospective",
-    "actorId": "60c25a71-32fc-4e71-8b2a-e9e598fd21d7",
+    "actorId": "9a4d7f18-85ac-4867-93c9-70c3b30e7e6a",
     "metadata": {
-      "retroId": "ef2bb6a7-1e07-402f-9f58-633f5541c09c",
-      "sprintId": "718a481d-876a-40de-9aa0-09a3b14f1899",
+      "retroId": "bcd1a619-cb8f-4e66-a229-881dbf6988c4",
+      "sprintId": "14d93f7b-d7b1-46eb-ba2a-f2d446506172",
       "columnKey": "start"
     },
-    "createdAt": "2026-03-17T19:55:22.605Z",
-    "id": "d7adda3c-1cac-4bca-92db-08b76d962bf5"
+    "createdAt": "2026-03-17T20:09:24.385Z",
+    "id": "96ec5e9b-cd5e-432f-8903-c50ff8a4e98d"
   },
   {
     "type": "sprint_completed",
     "description": "Sprint 'Sprint 2' completed with 21 points",
     "actorId": null,
     "metadata": {
-      "sprintId": "12fda772-c8db-4917-a229-647a364c0513",
+      "sprintId": "8d6f9778-5816-47e8-bc95-174e627ecb39",
       "velocityDataPoint": 21
     },
-    "createdAt": "2026-03-17T19:56:22.605Z",
-    "id": "3d9783f5-398f-4818-8e1a-feb8b68ff36c"
+    "createdAt": "2026-03-17T20:10:24.385Z",
+    "id": "8a57b673-c4f1-44c1-a6ca-efaaecc1d2ca"
   },
   {
     "type": "story_moved",
     "description": "Story 'Seed Story' moved to done",
-    "actorId": "d4ddb08a-0f36-4bfd-9db1-a3e9293d1535",
+    "actorId": "573a5f66-8343-40dd-a95a-ce79cca26128",
     "metadata": {
-      "sprintId": "b67a29d8-688e-4038-a91a-9ce96b1ff52b",
+      "sprintId": "92b66795-6eae-4c8e-838f-dc521dee9a69",
       "boardColumn": "done"
     },
-    "createdAt": "2026-03-17T19:57:22.605Z",
-    "id": "fcc43635-9874-4f37-962f-aa7e399d0dfb"
+    "createdAt": "2026-03-17T20:11:24.385Z",
+    "id": "a4185c70-549b-46b2-a5cd-5f0dcc08885d"
   },
   {
     "type": "action_item_completed",
     "description": "Action item 'Document flaky test ownership and triage flow.' marked complete",
-    "actorId": "c2f2fc30-e26f-449b-bc8d-bbc96ab70f29",
+    "actorId": "27227a01-48a6-41e8-bc5f-24c4b23cd3e5",
     "metadata": {
-      "retroId": "ef2bb6a7-1e07-402f-9f58-633f5541c09c",
-      "sprintId": "718a481d-876a-40de-9aa0-09a3b14f1899"
+      "retroId": "bcd1a619-cb8f-4e66-a229-881dbf6988c4",
+      "sprintId": "14d93f7b-d7b1-46eb-ba2a-f2d446506172"
     },
-    "createdAt": "2026-03-17T19:58:22.605Z",
-    "id": "200dfd43-c905-450e-976d-4472ae0f6d20"
+    "createdAt": "2026-03-17T20:12:24.385Z",
+    "id": "d011dd4f-845e-4df6-8577-8cf88a8ccffd"
   },
   {
     "type": "story_created",
     "description": "Story 'Capacity panel polish' added to Backlog",
-    "actorId": "7588c451-56e8-4a00-9fe3-3543dec857cc",
+    "actorId": "0e473f70-b2bb-491f-84ec-a5991dc35ee2",
     "metadata": {
-      "sprintId": "b67a29d8-688e-4038-a91a-9ce96b1ff52b"
+      "sprintId": "92b66795-6eae-4c8e-838f-dc521dee9a69"
     },
-    "createdAt": "2026-03-17T19:59:22.605Z",
-    "id": "959d9538-89fd-4973-a75a-6c5c37a0f1d3"
+    "createdAt": "2026-03-17T20:13:24.385Z",
+    "id": "e4c71a82-5778-44f8-8d7e-f2c72f0cf87c"
   },
   {
     "type": "retro_card_added",
     "description": "Card added to glad in Sprint 4 retrospective",
-    "actorId": "69102ede-96cc-4670-a532-ee789166d8a9",
+    "actorId": "899f75e3-8d19-42c9-99e0-c7ae94698288",
     "metadata": {
-      "retroId": "5e665310-cef2-4e19-9f3b-4dc49d485018",
-      "sprintId": "b67a29d8-688e-4038-a91a-9ce96b1ff52b",
+      "retroId": "afb11efc-ca1b-4ea6-b8ba-28c089f8a6dc",
+      "sprintId": "92b66795-6eae-4c8e-838f-dc521dee9a69",
       "columnKey": "glad"
     },
-    "createdAt": "2026-03-17T20:00:22.605Z",
-    "id": "66c9fdab-f2b0-45ba-bef1-6d734ccfed53"
+    "createdAt": "2026-03-17T20:14:24.385Z",
+    "id": "69c15065-fda5-4b55-844d-ba303d9eec16"
+  },
+  {
+    "type": "story_moved",
+    "description": "Story 'Seed Story' moved to in_progress",
+    "actorId": "573a5f66-8343-40dd-a95a-ce79cca26128",
+    "metadata": {
+      "storyId": "fd2c11c3-9974-4462-b845-0ea957474f55",
+      "sprintId": "92b66795-6eae-4c8e-838f-dc521dee9a69",
+      "boardColumn": "in_progress"
+    },
+    "createdAt": "2026-03-20T20:17:07.793Z",
+    "id": "5b3c71ef-8fc1-4616-8604-e428140dcc89"
+  },
+  {
+    "type": "story_moved",
+    "description": "Story 'Seed Story' moved to backlog",
+    "actorId": "573a5f66-8343-40dd-a95a-ce79cca26128",
+    "metadata": {
+      "storyId": "fd2c11c3-9974-4462-b845-0ea957474f55",
+      "sprintId": "92b66795-6eae-4c8e-838f-dc521dee9a69",
+      "boardColumn": "backlog"
+    },
+    "createdAt": "2026-03-20T20:17:10.569Z",
+    "id": "d41dbb69-30ce-4c84-839c-664a6bf05eca"
   }
 ]
