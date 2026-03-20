@@ -209,6 +209,7 @@ export function SprintsPage() {
         open={Boolean(capacitySprint)}
         sprint={capacitySprint}
         onClose={() => setCapacitySprint(null)}
+        onSaved={loadSprints}
       />
     </div>
   );

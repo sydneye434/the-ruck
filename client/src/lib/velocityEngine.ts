@@ -37,3 +37,41 @@ export const calculateTeamAvailability = engine.calculateTeamAvailability as (
   teamAvailabilityRatio: number;
 };
 
+export const calculateRecommendedCapacity = engine.calculateRecommendedCapacity as (
+  averageVelocity: number | null,
+  teamAvailabilityRatio: number | null
+) => number | null;
+
+export const snapToFibonacci = engine.snapToFibonacci as (value: number | null) => number | null;
+
+export const buildCapacitySnapshot = engine.buildCapacitySnapshot as (params: {
+  velocityWindow: 1 | 2 | 3 | 5;
+  averageVelocity: number | null;
+  teamAvailabilityRatio: number;
+  memberBreakdown: Array<{
+    memberId: string;
+    effectiveDays: number;
+    daysOff: number;
+    availableDays: number;
+    availabilityPercent: number;
+  }>;
+  recommendedCapacity: number | null;
+  finalCapacityTarget: number | null;
+  fibonacciSnapped: boolean;
+}) => {
+  velocityWindow: 1 | 2 | 3 | 5;
+  averageVelocity: number | null;
+  teamAvailabilityRatio: number;
+  memberBreakdown: Array<{
+    memberId: string;
+    effectiveDays: number;
+    daysOff: number;
+    availableDays: number;
+    availabilityPercent: number;
+  }>;
+  recommendedCapacity: number | null;
+  finalCapacityTarget: number | null;
+  fibonacciSnapped: boolean;
+  calculatedAt: Date;
+};
+

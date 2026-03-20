@@ -3,9 +3,12 @@ import type { Sprint, TeamMemberLink, TeamWithDepth } from "@the-ruck/shared";
 import { api, ApiClientError } from "../../../lib/api";
 import {
   calculateAverageVelocity,
+  calculateRecommendedCapacity,
   calculateTeamAvailability,
   calculateTrend,
+  buildCapacitySnapshot,
   getConfidenceLevel,
+  snapToFibonacci,
   getVelocityWindow
 } from "../../../lib/velocityEngine";
 import { Card } from "../../../components/common/Card";
@@ -13,6 +16,8 @@ import { EmptyState } from "../../../components/common/EmptyState";
 import { Badge } from "../../../components/common/Badge";
 import { Avatar } from "../../../components/common/Avatar";
 import { buildTeamTree } from "../../../lib/buildTeamTree";
+import { Spinner } from "../../../components/feedback/Spinner";
+import { useToast } from "../../../components/feedback/ToastProvider";
 
 type CapacityContextResponse = {
   sprint: {
@@ -53,11 +58,28 @@ type CapacityState = {
   confidenceLevel: "high" | "medium" | "low" | "none" | null;
   daysOffMap: Record<string, number>;
   teamAvailability: ReturnType<typeof calculateTeamAvailability> | null;
-  recommendedCapacity: null;
-  fibSnapped: null;
+  recommendedCapacity: number | null;
+  fibSnapped: number | null;
   useSnap: boolean;
-  manualOverride: null;
-  finalCapacityTarget: null;
+  manualOverride: number | null;
+  finalCapacityTarget: number | null;
+};
+
+type SavedCapacitySnapshot = {
+  velocityWindow?: 1 | 2 | 3 | 5;
+  averageVelocity?: number | null;
+  teamAvailabilityRatio?: number;
+  memberBreakdown?: Array<{
+    memberId: string;
+    effectiveDays: number;
+    daysOff: number;
+    availableDays: number;
+    availabilityPercent: number;
+  }>;
+  recommendedCapacity?: number | null;
+  finalCapacityTarget?: number | null;
+  fibonacciSnapped?: boolean;
+  calculatedAt?: string;
 };
 
 type TeamGroup = {
@@ -175,13 +197,17 @@ const MemberAvailabilityRow = memo(function MemberAvailabilityRow({
 export function CapacityPlanningPanel({
   sprint,
   open,
-  onClose
+  onClose,
+  onSaved
 }: {
   sprint: Sprint | null;
   open: boolean;
   onClose: () => void;
+  onSaved?: () => Promise<void> | void;
 }) {
+  const toast = useToast();
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [context, setContext] = useState<CapacityContextResponse | null>(null);
   const [capacityState, setCapacityState] = useState<CapacityState>(INITIAL_CAPACITY_STATE);
@@ -201,12 +227,48 @@ export function CapacityPlanningPanel({
     setError(null);
     try {
       const res = (await api.sprints.getCapacityContext(sprint.id)) as CapacityContextResponse;
+      const snapshot = (res.sprint.capacitySnapshot ?? null) as SavedCapacitySnapshot | null;
+      const initialWindow: 1 | 2 | 3 | 5 =
+        snapshot?.velocityWindow && [1, 2, 3, 5].includes(snapshot.velocityWindow)
+          ? snapshot.velocityWindow
+          : INITIAL_CAPACITY_STATE.velocityWindow;
+      const daysOffMap = (snapshot?.memberBreakdown ?? []).reduce<Record<string, number>>((acc, row) => {
+        acc[row.memberId] = Number.isFinite(row.daysOff) ? row.daysOff : 0;
+        return acc;
+      }, {});
+      const baselineAvailability = calculateTeamAvailability(res.activeMembers, daysOffMap);
+      const initialAverage = calculateAverageVelocity(getVelocityWindow(res.completedSprints, initialWindow));
+      const initialRecommended = calculateRecommendedCapacity(
+        initialAverage,
+        baselineAvailability.teamAvailabilityRatio
+      );
+      const inferredOverride =
+        snapshot?.finalCapacityTarget != null &&
+        initialRecommended != null &&
+        Math.round(snapshot.finalCapacityTarget) !== Math.round(initialRecommended)
+          ? Math.round(snapshot.finalCapacityTarget)
+          : null;
+
       setContext(res);
-      setCapacityState((prev) => ({
-        ...prev,
+      setCapacityState({
+        ...INITIAL_CAPACITY_STATE,
+        velocityWindow: initialWindow,
+        daysOffMap,
+        useSnap: snapshot?.fibonacciSnapped ?? true,
+        manualOverride: inferredOverride,
         confidenceLevel: getConfidenceLevel(res.completedSprints.length),
-        teamAvailability: calculateTeamAvailability(res.activeMembers, prev.daysOffMap)
-      }));
+        teamAvailability: baselineAvailability,
+        averageVelocity: initialAverage,
+        recommendedCapacity: initialRecommended,
+        fibSnapped: initialRecommended == null ? null : snapToFibonacci(initialRecommended),
+        finalCapacityTarget:
+          inferredOverride ??
+          (snapshot?.fibonacciSnapped ?? true
+            ? snapToFibonacci(initialRecommended)
+            : initialRecommended == null
+              ? null
+              : Math.round(initialRecommended))
+      });
     } catch (e) {
       setError(e instanceof ApiClientError ? e.message : "Failed to load capacity context.");
     } finally {
@@ -244,6 +306,28 @@ export function CapacityPlanningPanel({
       confidenceLevel: context ? getConfidenceLevel(context.completedSprints.length) : null
     }));
   }, [velocityDerived.windowedSprints, velocityDerived.averageVelocity, velocityDerived.trend, context]);
+
+  useEffect(() => {
+    setCapacityState((prev) => {
+      const ratio = prev.teamAvailability?.teamAvailabilityRatio ?? null;
+      const recommendedCapacity = calculateRecommendedCapacity(prev.averageVelocity, ratio);
+      const fibSnapped = recommendedCapacity == null ? null : snapToFibonacci(recommendedCapacity);
+      const finalCapacityTarget =
+        prev.manualOverride != null
+          ? prev.manualOverride
+          : prev.useSnap
+            ? fibSnapped
+            : recommendedCapacity == null
+              ? null
+              : Math.round(recommendedCapacity);
+      return {
+        ...prev,
+        recommendedCapacity,
+        fibSnapped,
+        finalCapacityTarget
+      };
+    });
+  }, [capacityState.averageVelocity, capacityState.teamAvailability?.teamAvailabilityRatio, capacityState.useSnap, capacityState.manualOverride]);
 
   const teamTree = useMemo(
     () => (context ? buildTeamTree(context.teams) : []),
@@ -315,12 +399,59 @@ export function CapacityPlanningPanel({
     });
   }, [context]);
 
+  const setManualOverride = useCallback((value: string) => {
+    setCapacityState((prev) => {
+      if (!value.trim()) return { ...prev, manualOverride: null };
+      const parsed = Math.max(1, Math.round(Number(value)));
+      if (!Number.isFinite(parsed)) return { ...prev, manualOverride: null };
+      return { ...prev, manualOverride: parsed };
+    });
+  }, []);
+
+  async function saveCapacityPlan() {
+    if (!sprint || !context || !capacityState.teamAvailability || capacityState.finalCapacityTarget == null) return;
+    setSaving(true);
+    try {
+      const capacitySnapshot = buildCapacitySnapshot({
+        velocityWindow: capacityState.velocityWindow,
+        averageVelocity: capacityState.averageVelocity,
+        teamAvailabilityRatio: capacityState.teamAvailability.teamAvailabilityRatio,
+        memberBreakdown: capacityState.teamAvailability.memberBreakdown,
+        recommendedCapacity: capacityState.recommendedCapacity,
+        finalCapacityTarget: capacityState.finalCapacityTarget,
+        fibonacciSnapped: capacityState.useSnap
+      });
+
+      await api.sprints.update(sprint.id, {
+        capacityTarget: capacityState.finalCapacityTarget,
+        capacitySnapshot
+      });
+      toast.success("Capacity plan saved");
+      if (onSaved) await onSaved();
+      onClose();
+    } catch (e) {
+      toast.error(e instanceof ApiClientError ? e.message : "Failed to save capacity plan.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   if (!open || !sprint) return null;
 
   const maxVelocity = Math.max(...(capacityState.windowedSprints.map((s) => s.velocityDataPoint) || [1]), 1);
   const selectedWindow = capacityState.velocityWindow;
   const actualWindow = capacityState.windowedSprints.length;
   const windowNote = actualWindow < selectedWindow;
+  const availabilityPct = Math.round((capacityState.teamAvailability?.teamAvailabilityRatio ?? 0) * 100);
+  const recommended = capacityState.recommendedCapacity;
+  const override =
+    capacityState.manualOverride != null && recommended != null
+      ? Math.round(((capacityState.manualOverride - recommended) / recommended) * 100)
+      : null;
+  const savedSnapshot = (context?.sprint.capacitySnapshot ?? null) as SavedCapacitySnapshot | null;
+  const savedCalculatedAt = savedSnapshot?.calculatedAt
+    ? new Date(savedSnapshot.calculatedAt).toLocaleString()
+    : null;
 
   return (
     <div className="fixed inset-0 z-[80]">
@@ -637,15 +768,142 @@ export function CapacityPlanningPanel({
           </section>
 
           <section className="p-5">
-            <h3 className="font-heading text-2xl text-[var(--color-text-primary)]">Recommendation</h3>
-            <div className="mt-4 border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-6 text-sm text-[var(--color-text-muted)]">
-              Coming soon
-              <div className="mt-2 text-xs text-[var(--color-text-muted)]">
-                teamAvailability ratio:{" "}
-                {capacityState.teamAvailability
-                  ? `${Math.round(capacityState.teamAvailability.teamAvailabilityRatio * 100)}%`
-                  : "-"}
+            <h3 className="font-heading text-2xl text-[var(--color-text-primary)]">Sprint Recommendation</h3>
+
+            {savedCalculatedAt ? (
+              <div className="mt-3 border border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-3 py-2 text-xs text-[var(--color-text-muted)]">
+                Showing saved plan from {savedCalculatedAt}. Adjust values above to recalculate.
               </div>
+            ) : null}
+
+            <div className="mt-4 space-y-4">
+              {recommended == null ? (
+                <div className="border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-4 text-sm text-[var(--color-text-secondary)]">
+                  No velocity data available. Set a manual capacity target below.
+                </div>
+              ) : (
+                <div className="border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-4 font-mono">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-[var(--color-text-muted)]">Average Velocity</span>
+                    <span className="text-[var(--color-text-primary)]">{capacityState.averageVelocity?.toFixed(1)} pts</span>
+                  </div>
+                  <div className="mt-1 flex items-center justify-between text-sm">
+                    <span className="text-[var(--color-text-muted)]">× Team Availability</span>
+                    <span className="text-[var(--color-text-primary)]">× {availabilityPct}%</span>
+                  </div>
+                  <div className="mt-2 border-t border-[var(--color-border)]" />
+                  <div className="mt-2 flex items-end justify-between">
+                    <span className="text-[var(--color-text-muted)]">Recommended Capacity</span>
+                    <span className="font-heading text-5xl text-[var(--color-text-primary)]">{recommended.toFixed(1)} pts</span>
+                  </div>
+                </div>
+              )}
+
+              {(capacityState.teamAvailability?.teamAvailabilityRatio ?? 0) === 0 ? (
+                <div className="border border-[var(--color-danger)] bg-[var(--color-bg-secondary)] p-2 text-sm text-[var(--color-danger)]">
+                  Team has no availability this sprint.
+                </div>
+              ) : null}
+
+              <div className="border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-3">
+                <label className="flex items-center justify-between gap-2 text-sm text-[var(--color-text-primary)]">
+                  <span>Snap to nearest Fibonacci</span>
+                  <input
+                    type="checkbox"
+                    checked={capacityState.useSnap}
+                    onChange={(e) => setCapacityState((prev) => ({ ...prev, useSnap: e.target.checked }))}
+                  />
+                </label>
+                {recommended != null ? (
+                  <div className="mt-2 space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-[var(--color-text-muted)]">Raw</span>
+                      <span className="text-[var(--color-text-secondary)]">{recommended.toFixed(1)} pts</span>
+                    </div>
+                    <div className="flex items-end justify-between">
+                      <span className="text-[var(--color-text-muted)]">Snapped</span>
+                      <span className="font-heading text-3xl text-[var(--color-accent)]">
+                        {capacityState.fibSnapped ?? "-"} pts
+                      </span>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+
+              <div className="border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-3">
+                <p className="text-sm text-[var(--color-text-primary)]">Override capacity target</p>
+                <p className="mt-1 text-xs text-[var(--color-text-muted)]">Leave blank to use the recommended value</p>
+                <div className="mt-2 flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={1}
+                    step={1}
+                    value={capacityState.manualOverride ?? ""}
+                    onChange={(e) => setManualOverride(e.target.value)}
+                    className="w-24 border border-[var(--color-border)] bg-[var(--color-bg-primary)] px-2 py-1 text-sm text-[var(--color-text-primary)]"
+                  />
+                  {capacityState.manualOverride != null ? (
+                    <button
+                      type="button"
+                      onClick={() => setCapacityState((prev) => ({ ...prev, manualOverride: null }))}
+                      className="text-xs text-[var(--color-text-muted)] underline"
+                    >
+                      Clear override
+                    </button>
+                  ) : null}
+                </div>
+
+                {override != null && override > 20 ? (
+                  <p className="mt-2 text-xs text-[var(--color-warning)]">
+                    ⚠ This is {override}% above your recommended capacity
+                  </p>
+                ) : null}
+                {override != null && override < -40 ? (
+                  <p className="mt-2 text-xs text-[var(--color-warning)]">
+                    ⚠ This is {Math.abs(override)}% below your recommended capacity
+                  </p>
+                ) : null}
+              </div>
+
+              <div className="border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-4 text-center">
+                <p className="text-sm text-[var(--color-text-muted)]">Final Capacity Target</p>
+                <p className="font-heading text-6xl text-[var(--color-accent)]">
+                  {capacityState.finalCapacityTarget ?? "-"} pts
+                </p>
+                {capacityState.manualOverride != null ? (
+                  <div className="mt-2 inline-flex"><Badge label="Manual override" color="warning" /></div>
+                ) : (
+                  <p className="mt-2 text-xs text-[var(--color-text-muted)]">
+                    Recommended: {recommended != null ? `${recommended.toFixed(1)} pts` : "-"}
+                  </p>
+                )}
+              </div>
+
+              {context ? (
+                <div className="border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-3 text-sm">
+                  <div className="flex justify-between"><span className="text-[var(--color-text-muted)]">Sprint</span><span className="text-[var(--color-text-primary)]">{context.sprint.name}</span></div>
+                  <div className="mt-1 flex justify-between"><span className="text-[var(--color-text-muted)]">Goal</span><span className="text-[var(--color-text-primary)]">{context.sprint.goal || "No goal set"}</span></div>
+                  <div className="mt-1 flex justify-between"><span className="text-[var(--color-text-muted)]">Dates</span><span className="text-[var(--color-text-primary)]">{formatDateRange(context.sprint.startDate, context.sprint.endDate)}</span></div>
+                  <div className="mt-1 flex justify-between"><span className="text-[var(--color-text-muted)]">Working days</span><span className="text-[var(--color-text-primary)]">{context.workingDaysInSprint}</span></div>
+                  <div className="mt-1 flex justify-between"><span className="text-[var(--color-text-muted)]">Members</span><span className="text-[var(--color-text-primary)]">{context.activeMembers.length}</span></div>
+                </div>
+              ) : null}
+
+              <button
+                type="button"
+                onClick={saveCapacityPlan}
+                disabled={saving || !capacityState.teamAvailability || capacityState.finalCapacityTarget == null}
+                className="flex w-full items-center justify-center gap-2 border border-[var(--color-accent)] bg-[var(--color-accent)] px-4 py-3 text-sm font-semibold text-[var(--color-text-primary)] disabled:opacity-60"
+              >
+                {saving ? (
+                  <>
+                    <Spinner size="sm" />
+                    Saving...
+                  </>
+                ) : (
+                  "Save Capacity Plan"
+                )}
+              </button>
             </div>
           </section>
         </div>

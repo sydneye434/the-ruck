@@ -72,6 +72,8 @@ export type Sprint = Identifiable & {
   endDate: ISODateString;
   goal: string;
   status: SprintStatus;
+  capacityTarget?: number | null;
+  capacitySnapshot?: unknown;
   completedAt?: ISODateString;
   // Stored when the sprint is completed (sum of "done" story points for that sprint).
   velocityDataPoint?: number;

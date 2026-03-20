@@ -129,6 +129,7 @@ function buildCapacitySnapshot(params) {
     memberBreakdown: params.memberBreakdown,
     recommendedCapacity: params.recommendedCapacity,
     finalCapacityTarget: params.finalCapacityTarget,
+    fibonacciSnapped: Boolean(params.fibonacciSnapped),
     calculatedAt: new Date()
   };
 }

@@ -52,7 +52,9 @@ sprintsRoutes.patch("/:id", async (req, res) => {
     ...(patch?.startDate !== undefined ? { startDate: String(patch.startDate) } : {}),
     ...(patch?.endDate !== undefined ? { endDate: String(patch.endDate) } : {}),
     ...(patch?.goal !== undefined ? { goal: String(patch.goal) } : {}),
-    ...(patch?.status !== undefined ? { status: patch.status } : {})
+    ...(patch?.status !== undefined ? { status: patch.status } : {}),
+    ...(patch?.capacityTarget !== undefined ? { capacityTarget: Number(patch.capacityTarget) } : {}),
+    ...(patch?.capacitySnapshot !== undefined ? { capacitySnapshot: patch.capacitySnapshot } : {})
   });
 
   if (!updated) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Sprint not found" });
