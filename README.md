@@ -188,3 +188,35 @@ If you run the full stack (`npm run dev`), docs are still available at the same 
 - Better retro clustering + vote aggregation logic
 - Capacity UX polish (confidence + transparency improvements)
 
+## Features
+- Dashboard landing page with active sprint progress, velocity trend chart, team summary, retro summary, and recent activity feed.
+- Backlog management with story list filters and an inline-editing Story Detail Drawer.
+- Active Sprint Kanban board with drag-and-drop and optimistic updates.
+- Sprint history and sprint creation flow with planning/active/completed states.
+- Capacity Planning panel with velocity reference, team availability modeling, recommendations, and saved targets.
+- Team Management with members, activation/deactivation, team hierarchy, memberships, and org chart.
+- Retrospectives with list/create flow, Reflect/Discuss/Action phases, upvotes/grouping, and carried-over action items.
+- Settings page with sprint/retro/display defaults, data export, and guarded full reset.
+- Complete REST API with envelope responses, API docs, JSON persistence repositories, and seed tooling.
+
+## Architecture
+- **Repository pattern**: route handlers depend on repository interfaces, not storage details. To migrate to Postgres/Prisma, swap repository implementations in `server/src/repositories/*` and keep route/service contracts unchanged.
+- **Shared utilities pattern**: `shared/` holds common domain types and calculation utilities used by both client and server to avoid duplicate business logic.
+- **SettingsContext pattern**: client-wide `SettingsContext` fetches app settings once, exposes `useSetting`/`updateSetting`, and provides shared `formatDate()` so UI behavior follows settings consistently.
+
+## Screenshots
+- [Screenshot: Dashboard]
+- [Screenshot: Backlog]
+- [Screenshot: Sprint Board]
+- [Screenshot: Capacity Planner]
+- [Screenshot: Retrospective Board]
+- [Screenshot: Team Management]
+- [Screenshot: Settings]
+
+## Contributing
+1. Fork the repo and create a feature branch.
+2. Run `npm install`, then `npm run typecheck` before opening a PR.
+3. Keep changes scoped; include UI/API notes in PR description.
+4. Add or update tests when business logic changes.
+5. Ensure docs stay in sync (`README.md`, `server/API.md`, OpenAPI spec).
+

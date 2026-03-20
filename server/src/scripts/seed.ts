@@ -13,7 +13,7 @@ import {
   teamsRepository
 } from "../repositories";
 
-async function clearDataDir() {
+export async function clearDataDir() {
   const cwd = process.cwd();
   const dataDir = cwd.endsWith(`${path.sep}server`)
     ? path.join(cwd, "data")
@@ -23,7 +23,7 @@ async function clearDataDir() {
   await Promise.all(entries.map((name) => fs.rm(path.join(dataDir, name), { force: true })));
 }
 
-async function main() {
+export async function runSeed() {
   await clearDataDir();
 
   const engineering = await teamsRepository.create({
@@ -355,9 +355,12 @@ async function main() {
   console.log("Seed complete: teams, members, hierarchy, sprint + retros sample data created.");
 }
 
-main().catch((err) => {
-  // eslint-disable-next-line no-console
-  console.error(err);
-  process.exit(1);
-});
+const isDirectRun = Boolean(process.argv[1] && path.basename(process.argv[1]).startsWith("seed."));
+if (isDirectRun) {
+  runSeed().catch((err) => {
+    // eslint-disable-next-line no-console
+    console.error(err);
+    process.exit(1);
+  });
+}
 

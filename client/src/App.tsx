@@ -1,13 +1,16 @@
 import { AppRoutes } from "./app/routes";
 import { ThemeProvider } from "./theme/ThemeProvider";
 import { ToastProvider } from "./components/feedback/ToastProvider";
+import { SettingsProvider } from "./settings/SettingsContext";
 
 export default function App() {
   return (
     <ThemeProvider>
-      <ToastProvider>
-        <AppRoutes />
-      </ToastProvider>
+      <SettingsProvider>
+        <ToastProvider>
+          <AppRoutes />
+        </ToastProvider>
+      </SettingsProvider>
     </ThemeProvider>
   );
 }

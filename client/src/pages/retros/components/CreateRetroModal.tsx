@@ -3,15 +3,7 @@ import type { Retro, Sprint } from "@the-ruck/shared";
 import { Badge } from "../../../components/common/Badge";
 import { Spinner } from "../../../components/feedback/Spinner";
 import { RETRO_TEMPLATES, type RetroTemplateId } from "../../../lib/retroTemplates";
-
-function dateRange(start: string, end: string) {
-  const s = new Date(start);
-  const e = new Date(end);
-  return `${s.toLocaleDateString(undefined, { month: "short", day: "numeric" })} - ${e.toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric"
-  })}`;
-}
+import { useSettings } from "../../../settings/SettingsContext";
 
 function statusColor(status: Sprint["status"]) {
   if (status === "active") return "accent" as const;
@@ -39,6 +31,7 @@ export function CreateRetroModal({
     isAnonymous: boolean;
   }) => Promise<void>;
 }) {
+  const { settings, formatDate } = useSettings();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [sprintId, setSprintId] = useState("");
   const [template, setTemplate] = useState<RetroTemplateId>("start_stop_continue");
@@ -52,13 +45,13 @@ export function CreateRetroModal({
   useEffect(() => {
     if (!open) return;
     setStep(1);
-    setTemplate("start_stop_continue");
-    setIsAnonymous(false);
+    setTemplate((settings?.defaultRetroTemplate ?? "start_stop_continue") as RetroTemplateId);
+    setIsAnonymous(settings?.defaultAnonymous ?? false);
     const activeWithoutRetro = sprints.find((s) => s.status === "active" && !usedSprintIds.has(s.id));
     const first = activeWithoutRetro ?? availableSprints[0] ?? null;
     setSprintId(first?.id ?? "");
     setTitle(first ? `${first.name} Retrospective` : "");
-  }, [open, sprints, availableSprints, usedSprintIds]);
+  }, [open, sprints, availableSprints, usedSprintIds, settings?.defaultRetroTemplate, settings?.defaultAnonymous]);
 
   useEffect(() => {
     if (!selectedSprint) return;
@@ -97,7 +90,7 @@ export function CreateRetroModal({
               >
                 {availableSprints.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.name} - {dateRange(s.startDate, s.endDate)} - {s.status}
+                    {s.name} - {formatDate(s.startDate)} - {formatDate(s.endDate)} - {s.status}
                   </option>
                 ))}
               </select>

@@ -18,6 +18,7 @@ import { Avatar } from "../../components/common/Avatar";
 import { SprintProgressBar } from "../../components/common/SprintProgressBar";
 import { DashboardSkeleton } from "./components/DashboardSkeleton";
 import { formatRelativeTime } from "../../lib/formatRelativeTime";
+import { useSettings } from "../../settings/SettingsContext";
 
 type DashboardData = Awaited<ReturnType<typeof api.dashboard.get>>;
 
@@ -30,6 +31,7 @@ const ACTIVITY_ICON: Record<DashboardData["recentActivity"][number]["type"], str
 };
 
 export function DashboardPage() {
+  const { formatDate } = useSettings();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<DashboardData | null>(null);
@@ -337,7 +339,7 @@ export function DashboardPage() {
                     <p className="truncate text-[var(--color-text-primary)]">{item.description}</p>
                     <div className="ml-2 flex items-center gap-2">
                       <Avatar name={item.ownerName ?? "Unassigned"} color="var(--color-avatar-3)" size="sm" />
-                      <span className="text-[var(--color-danger)]">Due {new Date(item.dueDate ?? "").toLocaleDateString()}</span>
+                      <span className="text-[var(--color-danger)]">Due {formatDate(item.dueDate ?? "")}</span>
                     </div>
                   </div>
                 ))}

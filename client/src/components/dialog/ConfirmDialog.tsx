@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react";
+
 export function ConfirmDialog({
   open,
   title,
@@ -15,6 +17,18 @@ export function ConfirmDialog({
   onConfirm: () => void;
   onCancel: () => void;
 }) {
+  const cancelRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    cancelRef.current?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onCancel();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open, onCancel]);
+
   if (!open) return null;
 
   return (
@@ -27,6 +41,7 @@ export function ConfirmDialog({
         <p className="mt-2 text-[var(--color-text-secondary)]">{description}</p>
         <div className="mt-5 flex items-center justify-end gap-2">
           <button
+            ref={cancelRef}
             type="button"
             onClick={onCancel}
             className="border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-3 py-1.5 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"

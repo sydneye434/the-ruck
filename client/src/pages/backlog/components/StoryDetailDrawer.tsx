@@ -3,6 +3,7 @@ import type { Sprint, Story, StoryBoardColumn, StoryPoints, TeamMember } from "@
 import { Badge } from "../../../components/common/Badge";
 import { Avatar } from "../../../components/common/Avatar";
 import { Spinner } from "../../../components/feedback/Spinner";
+import { useSettings } from "../../../settings/SettingsContext";
 
 type SaveState = "idle" | "saving" | "saved" | "error";
 
@@ -60,6 +61,14 @@ function parseMarkdownBasic(input: string) {
 }
 
 const STORY_POINTS: StoryPoints[] = [1, 2, 3, 5, 8, 13];
+const TSHIRT_LABELS: Record<StoryPoints, string> = {
+  1: "XS",
+  2: "S",
+  3: "M",
+  5: "L",
+  8: "XL",
+  13: "XXL"
+};
 const BOARD_COLUMNS: StoryBoardColumn[] = ["backlog", "in_progress", "in_review", "done"];
 
 function humanColumn(column: StoryBoardColumn) {
@@ -92,6 +101,7 @@ export function StoryDetailDrawer({
   onUpdate: (patch: Partial<Story>) => Promise<void>;
   onDelete: () => void;
 }) {
+  const { settings, formatDate } = useSettings();
   const [draft, setDraft] = useState<StoryDraft>(() => draftFromStory(story));
   const [titleEditing, setTitleEditing] = useState(false);
   const [descriptionPreview, setDescriptionPreview] = useState(false);
@@ -286,7 +296,7 @@ export function StoryDetailDrawer({
                       : "border-[var(--color-border)] bg-[var(--color-bg-primary)] text-[var(--color-text-secondary)]"
                   ].join(" ")}
                 >
-                  {value}
+                  {settings?.storyPointScale === "tshirt" ? `${TSHIRT_LABELS[value]} (${value})` : value}
                 </button>
               ))}
             </div>
@@ -460,8 +470,8 @@ export function StoryDetailDrawer({
           ) : (
             <div className="flex items-center justify-between gap-2">
               <div className="text-xs text-[var(--color-text-muted)]">
-                <div>Created: {story?.createdAt ? new Date(story.createdAt).toLocaleString() : "n/a"}</div>
-                <div>Updated: {story?.updatedAt ? new Date(story.updatedAt).toLocaleString() : "n/a"}</div>
+                <div>Created: {story?.createdAt ? formatDate(story.createdAt) : "n/a"}</div>
+                <div>Updated: {story?.updatedAt ? formatDate(story.updatedAt) : "n/a"}</div>
               </div>
               <button
                 type="button"

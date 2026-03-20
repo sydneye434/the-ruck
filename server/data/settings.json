@@ -1,9 +1,13 @@
 [
   {
-    "sprintLengthDefaultDays": 10,
-    "velocityWindowN": 3,
-    "createdAt": "2026-03-20T19:40:10.644Z",
-    "updatedAt": "2026-03-20T19:40:10.644Z",
-    "id": "29819d87-1fd2-467b-a23a-e945068548af"
+    "sprintLengthDays": 10,
+    "velocityWindow": 3,
+    "storyPointScale": "fibonacci",
+    "defaultRetroTemplate": "start_stop_continue",
+    "defaultAnonymous": false,
+    "dateFormat": "MM/DD/YYYY",
+    "createdAt": "2026-03-20T19:53:22.605Z",
+    "updatedAt": "2026-03-20T19:53:22.605Z",
+    "id": "37a788da-4159-4c6d-b722-99f34032b777"
   }
 ]

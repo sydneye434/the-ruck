@@ -18,6 +18,7 @@ import { Avatar } from "../../../components/common/Avatar";
 import { buildTeamTree } from "../../../lib/buildTeamTree";
 import { Spinner } from "../../../components/feedback/Spinner";
 import { useToast } from "../../../components/feedback/ToastProvider";
+import { useSettings } from "../../../settings/SettingsContext";
 
 type CapacityContextResponse = {
   sprint: {
@@ -205,6 +206,7 @@ export function CapacityPlanningPanel({
   onClose: () => void;
   onSaved?: () => Promise<void> | void;
 }) {
+  const { settings, formatDate } = useSettings();
   const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -231,7 +233,7 @@ export function CapacityPlanningPanel({
       const initialWindow: 1 | 2 | 3 | 5 =
         snapshot?.velocityWindow && [1, 2, 3, 5].includes(snapshot.velocityWindow)
           ? snapshot.velocityWindow
-          : INITIAL_CAPACITY_STATE.velocityWindow;
+          : ((settings?.velocityWindow ?? INITIAL_CAPACITY_STATE.velocityWindow) as 1 | 2 | 3 | 5);
       const daysOffMap = (snapshot?.memberBreakdown ?? []).reduce<Record<string, number>>((acc, row) => {
         acc[row.memberId] = Number.isFinite(row.daysOff) ? row.daysOff : 0;
         return acc;
@@ -279,9 +281,9 @@ export function CapacityPlanningPanel({
   useEffect(() => {
     if (!open || !sprint) return;
     setContext(null);
-    setCapacityState(INITIAL_CAPACITY_STATE);
+    setCapacityState({ ...INITIAL_CAPACITY_STATE, velocityWindow: (settings?.velocityWindow ?? 3) as 1 | 2 | 3 | 5 });
     loadContext();
-  }, [open, sprint?.id]);
+  }, [open, sprint?.id, settings?.velocityWindow]);
 
   const velocityDerived = useMemo(() => {
     if (!context) {
@@ -449,9 +451,7 @@ export function CapacityPlanningPanel({
       ? Math.round(((capacityState.manualOverride - recommended) / recommended) * 100)
       : null;
   const savedSnapshot = (context?.sprint.capacitySnapshot ?? null) as SavedCapacitySnapshot | null;
-  const savedCalculatedAt = savedSnapshot?.calculatedAt
-    ? new Date(savedSnapshot.calculatedAt).toLocaleString()
-    : null;
+  const savedCalculatedAt = savedSnapshot?.calculatedAt ? formatDate(savedSnapshot.calculatedAt) : null;
 
   return (
     <div className="fixed inset-0 z-[80]">

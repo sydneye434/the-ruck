@@ -10,6 +10,7 @@ import { errorHandler } from "./middleware/errorHandler";
 import { apiDocsRoutes } from "./routes/apiDocsRoutes";
 import { teamsRoutes } from "./routes/teamsRoutes";
 import { dashboardRoutes } from "./routes/dashboardRoutes";
+import { dataManagementRoutes } from "./routes/dataManagementRoutes";
 
 export function createApp() {
   const app = express();
@@ -32,6 +33,7 @@ export function createApp() {
   app.use("/api/settings", settingsRoutes);
   app.use("/api/teams", teamsRoutes);
   app.use("/api/dashboard", dashboardRoutes);
+  app.use("/api", dataManagementRoutes);
 
   // Placeholder 404 (real routes come next).
   app.use((_req, res) => {

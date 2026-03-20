@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Spinner } from "../../../components/feedback/Spinner";
+import { useSettings } from "../../../settings/SettingsContext";
 
 type SprintInput = {
   name: string;
@@ -39,6 +40,7 @@ export function CreateSprintModal({
   onClose: () => void;
   onSubmit: (input: SprintInput) => Promise<void>;
 }) {
+  const { settings } = useSettings();
   const [input, setInput] = useState<SprintInput>({
     name: suggestedName,
     goal: "",
@@ -118,7 +120,16 @@ export function CreateSprintModal({
               <input
                 type="date"
                 value={input.startDate}
-                onChange={(e) => setInput((prev) => ({ ...prev, startDate: e.target.value }))}
+                onChange={(e) =>
+                  setInput((prev) => {
+                    const startDate = e.target.value;
+                    if (!startDate || !settings) return { ...prev, startDate };
+                    const days = Math.max(1, settings.sprintLengthDays);
+                    const end = new Date(startDate);
+                    end.setDate(end.getDate() + days - 1);
+                    return { ...prev, startDate, endDate: end.toISOString().slice(0, 10) };
+                  })
+                }
                 className="mt-1 w-full border border-[var(--color-border)] bg-[var(--color-bg-primary)] px-3 py-2 text-[var(--color-text-primary)]"
               />
               {errors.startDate ? <p className="mt-1 text-sm text-[var(--color-danger)]">{errors.startDate}</p> : null}

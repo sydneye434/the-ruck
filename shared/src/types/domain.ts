@@ -127,10 +127,12 @@ export type RetroActionItem = Identifiable & {
 };
 
 export type AppSettings = Identifiable & {
-  // Default sprint length in working days (not calendar days).
-  sprintLengthDefaultDays: number;
-  // Velocity history window for capacity calculator.
-  velocityWindowN: 1 | 2 | 3 | 5;
+  sprintLengthDays: number;
+  velocityWindow: 1 | 2 | 3 | 5;
+  storyPointScale: "fibonacci" | "tshirt";
+  defaultRetroTemplate: "start_stop_continue" | "4ls" | "mad_sad_glad";
+  defaultAnonymous: boolean;
+  dateFormat: "MM/DD/YYYY" | "DD/MM/YYYY" | "YYYY-MM-DD";
   createdAt?: ISODateString;
   updatedAt?: ISODateString;
 };

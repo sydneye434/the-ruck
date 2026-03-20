@@ -124,8 +124,12 @@ export const openApiSpec = {
         type: "object",
         properties: {
           id: { type: "string" },
-          sprintLengthDefaultDays: { type: "number" },
-          velocityWindowN: { type: "number", enum: [1, 2, 3, 5] },
+          sprintLengthDays: { type: "number" },
+          velocityWindow: { type: "number", enum: [1, 2, 3, 5] },
+          storyPointScale: { type: "string", enum: ["fibonacci", "tshirt"] },
+          defaultRetroTemplate: { type: "string", enum: ["start_stop_continue", "4ls", "mad_sad_glad"] },
+          defaultAnonymous: { type: "boolean" },
+          dateFormat: { type: "string", enum: ["MM/DD/YYYY", "DD/MM/YYYY", "YYYY-MM-DD"] },
           createdAt: { type: "string" },
           updatedAt: { type: "string" }
         }

@@ -215,8 +215,17 @@ export const api = {
   },
   settings: {
     get: () => request<AppSettings>("/settings"),
-    update: (payload: Partial<AppSettings>) =>
+    update: (payload: AppSettings) =>
       request<AppSettings>("/settings", { method: "PUT", body: JSON.stringify(payload) })
+  },
+  data: {
+    exportAll: () =>
+      request<{
+        exportedAt: string;
+        version: string;
+        data: Record<string, unknown>;
+      }>("/export"),
+    resetAll: () => request<{ message: string }>("/reset", { method: "DELETE" })
   },
   dashboard: {
     get: () =>
