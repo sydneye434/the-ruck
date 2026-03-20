@@ -8,6 +8,7 @@ import { Card } from "../../components/common/Card";
 import { useToast } from "../../components/feedback/ToastProvider";
 import { CreateSprintModal, type SprintInput } from "./components/CreateSprintModal";
 import { SprintsListSkeleton } from "./components/SprintsListSkeleton";
+import { CapacityPlanningPanel } from "./components/CapacityPlanningPanel";
 
 function dateRange(start: string, end: string) {
   const s = new Date(start);
@@ -37,6 +38,7 @@ export function SprintsPage() {
   const [error, setError] = useState<string | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [capacitySprint, setCapacitySprint] = useState<Sprint | null>(null);
 
   const activeSprint = useMemo(() => sprints.find((s) => s.status === "active") ?? null, [sprints]);
   const sortedSprints = useMemo(
@@ -168,15 +170,24 @@ export function SprintsPage() {
                       <Badge label="-" color="default" />
                     )}
                     {planning ? (
-                      <button
-                        type="button"
-                        disabled={Boolean(blockedByActive)}
-                        title={blockedByActive ? "Complete the current active sprint first" : "Set this sprint active"}
-                        onClick={() => setSprintActive(sprint)}
-                        className="border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-3 py-1.5 text-sm text-[var(--color-text-primary)] disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        Set Active
-                      </button>
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => setCapacitySprint(sprint)}
+                          className="border border-[var(--color-accent)] bg-[var(--color-bg-tertiary)] px-3 py-1.5 text-sm text-[var(--color-text-primary)]"
+                        >
+                          Plan Sprint
+                        </button>
+                        <button
+                          type="button"
+                          disabled={Boolean(blockedByActive)}
+                          title={blockedByActive ? "Complete the current active sprint first" : "Set this sprint active"}
+                          onClick={() => setSprintActive(sprint)}
+                          className="border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-3 py-1.5 text-sm text-[var(--color-text-primary)] disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          Set Active
+                        </button>
+                      </>
                     ) : null}
                   </div>
                 </div>
@@ -192,6 +203,12 @@ export function SprintsPage() {
         submitting={creating}
         onClose={() => !creating && setCreateOpen(false)}
         onSubmit={createSprint}
+      />
+
+      <CapacityPlanningPanel
+        open={Boolean(capacitySprint)}
+        sprint={capacitySprint}
+        onClose={() => setCapacitySprint(null)}
       />
     </div>
   );

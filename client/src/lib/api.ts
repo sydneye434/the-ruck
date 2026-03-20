@@ -103,6 +103,30 @@ export const api = {
       request<Sprint>("/sprints", { method: "POST", body: JSON.stringify(payload) }),
     update: (id: string, payload: Partial<Sprint>) =>
       request<Sprint>(`/sprints/${id}`, { method: "PATCH", body: JSON.stringify(payload) }),
+    getCapacityContext: (id: string) =>
+      request<{
+        sprint: {
+          id: string;
+          name: string;
+          goal: string;
+          startDate: string;
+          endDate: string;
+          capacityTarget: number | null;
+          capacitySnapshot: unknown;
+        };
+        completedSprints: Array<{
+          id: string;
+          name: string;
+          completedAt: string;
+          velocityDataPoint: number;
+        }>;
+        activeMembers: Array<{
+          id: string;
+          name: string;
+          effectiveDays: number;
+        }>;
+        workingDaysInSprint: number;
+      }>(`/sprints/${id}/capacity-context`),
     complete: (id: string) => request<Sprint>(`/sprints/${id}/complete`, { method: "POST" }),
     delete: (id: string) => del(`/sprints/${id}`)
   },
