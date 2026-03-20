@@ -20,3 +20,20 @@ export const getConfidenceLevel = engine.getConfidenceLevel as (
   totalCompletedSprintCount: number
 ) => "high" | "medium" | "low" | "none";
 
+export const calculateTeamAvailability = engine.calculateTeamAvailability as (
+  members: Array<{ id: string; defaultAvailabilityDays: number; capacityMultiplier: number }>,
+  daysOffMap: Record<string, number>
+) => {
+  memberBreakdown: Array<{
+    memberId: string;
+    effectiveDays: number;
+    daysOff: number;
+    availableDays: number;
+    availabilityPercent: number;
+  }>;
+  totalEffectiveDays: number;
+  totalDaysOff: number;
+  totalAvailableDays: number;
+  teamAvailabilityRatio: number;
+};
+

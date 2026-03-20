@@ -123,7 +123,26 @@ export const api = {
         activeMembers: Array<{
           id: string;
           name: string;
+          roleType: "team_member" | "scrum_master" | "product_owner" | "coordinator";
+          coordinatorTitle?: string;
+          avatar: { color: string; initials: string };
+          defaultAvailabilityDays: number;
+          capacityMultiplier: number;
           effectiveDays: number;
+        }>;
+        teams: Array<{
+          id: string;
+          name: string;
+          description?: string;
+          parentTeamId: string | null;
+          color: string;
+          depth?: number;
+        }>;
+        memberships: Array<{
+          id: string;
+          teamId: string;
+          memberId: string;
+          joinedAt: string;
         }>;
         workingDaysInSprint: number;
       }>(`/sprints/${id}/capacity-context`),

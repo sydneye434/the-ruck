@@ -1,7 +1,7 @@
 import { Router } from "express";
 import path from "node:path";
-import type { Sprint } from "@the-ruck/shared";
-import { sprintsRepository, storiesRepository, teamMembersRepository } from "../repositories";
+import { withComputedDepth, type Sprint } from "@the-ruck/shared";
+import { sprintsRepository, storiesRepository, teamMemberLinksRepository, teamMembersRepository, teamsRepository } from "../repositories";
 import { HttpError } from "../utils/httpError";
 import { sendEmptySuccess, sendSuccess } from "../utils/envelope";
 
@@ -80,6 +80,10 @@ sprintsRoutes.get("/:id/capacity-context", async (req, res) => {
     }));
 
   const members = await teamMembersRepository.getAll();
+  const [teams, memberships] = await Promise.all([
+    teamsRepository.getAll(),
+    teamMemberLinksRepository.getAll()
+  ]);
   const activeMembers = members
     .filter((m) => m.isActive)
     .map((m) => ({
@@ -107,6 +111,8 @@ sprintsRoutes.get("/:id/capacity-context", async (req, res) => {
     },
     completedSprints,
     activeMembers,
+    teams: withComputedDepth(teams),
+    memberships,
     workingDaysInSprint
   });
 });
