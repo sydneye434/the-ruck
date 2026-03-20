@@ -4,6 +4,7 @@ import { withComputedDepth, type Sprint } from "@the-ruck/shared";
 import { sprintsRepository, storiesRepository, teamMemberLinksRepository, teamMembersRepository, teamsRepository } from "../repositories";
 import { HttpError } from "../utils/httpError";
 import { sendEmptySuccess, sendSuccess } from "../utils/envelope";
+import { logActivity } from "../utils/activityLogger";
 
 export const sprintsRoutes = Router();
 
@@ -140,6 +141,13 @@ sprintsRoutes.post("/:id/complete", async (req, res) => {
   if (!updated) {
     throw new HttpError({ statusCode: 500, code: "INTERNAL_ERROR", message: "Failed to complete sprint" });
   }
+
+  logActivity({
+    type: "sprint_completed",
+    description: `Sprint '${updated.name}' completed with ${velocityDataPoint} points`,
+    actorId: null,
+    metadata: { sprintId: updated.id, velocityDataPoint }
+  });
 
   return sendSuccess(res, updated, { velocityDataPoint, doneStoryCount: doneStories.length });
 });

@@ -135,3 +135,16 @@ export type AppSettings = Identifiable & {
   updatedAt?: ISODateString;
 };
 
+export type ActivityLog = Identifiable & {
+  type:
+    | "story_moved"
+    | "story_created"
+    | "sprint_completed"
+    | "retro_card_added"
+    | "action_item_completed";
+  description: string;
+  actorId?: string | null;
+  metadata?: Record<string, unknown>;
+  createdAt?: ISODateString;
+};
+

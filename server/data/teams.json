@@ -4,53 +4,53 @@
     "description": "Top-level engineering function",
     "parentTeamId": null,
     "color": "var(--color-team-1)",
-    "createdAt": "2026-03-20T19:03:58.608Z",
-    "updatedAt": "2026-03-20T19:03:58.608Z",
-    "id": "80eb9385-4b27-47b6-9f14-bc3ce4a43998"
+    "createdAt": "2026-03-20T19:40:10.638Z",
+    "updatedAt": "2026-03-20T19:40:10.639Z",
+    "id": "e03b365f-cad3-4e15-9764-bca6bb036463"
   },
   {
     "name": "Platform",
     "description": "Shared services and foundations",
-    "parentTeamId": "80eb9385-4b27-47b6-9f14-bc3ce4a43998",
+    "parentTeamId": "e03b365f-cad3-4e15-9764-bca6bb036463",
     "color": "var(--color-team-2)",
-    "createdAt": "2026-03-20T19:03:58.609Z",
-    "updatedAt": "2026-03-20T19:03:58.609Z",
-    "id": "938e02a5-fc19-49bb-9f4b-f0190c3c51c3"
+    "createdAt": "2026-03-20T19:40:10.640Z",
+    "updatedAt": "2026-03-20T19:40:10.640Z",
+    "id": "c6c8ee05-a7b7-4c10-8625-16bf16823fbb"
   },
   {
     "name": "Product",
     "description": "Feature delivery teams",
-    "parentTeamId": "80eb9385-4b27-47b6-9f14-bc3ce4a43998",
+    "parentTeamId": "e03b365f-cad3-4e15-9764-bca6bb036463",
     "color": "var(--color-team-3)",
-    "createdAt": "2026-03-20T19:03:58.610Z",
-    "updatedAt": "2026-03-20T19:03:58.610Z",
-    "id": "1c4d5e0c-62ba-469f-bf53-5b3e32a55801"
+    "createdAt": "2026-03-20T19:40:10.640Z",
+    "updatedAt": "2026-03-20T19:40:10.640Z",
+    "id": "3e2f1320-ecf1-40a9-9123-71d96868bed1"
   },
   {
     "name": "Infrastructure",
     "description": "Cloud and reliability",
-    "parentTeamId": "938e02a5-fc19-49bb-9f4b-f0190c3c51c3",
+    "parentTeamId": "c6c8ee05-a7b7-4c10-8625-16bf16823fbb",
     "color": "var(--color-team-4)",
-    "createdAt": "2026-03-20T19:03:58.610Z",
-    "updatedAt": "2026-03-20T19:03:58.610Z",
-    "id": "c665b18a-a875-4d82-952e-cd6359044a30"
+    "createdAt": "2026-03-20T19:40:10.641Z",
+    "updatedAt": "2026-03-20T19:40:10.641Z",
+    "id": "c73a05d2-4fbe-4992-b5cd-22a3b3ccf7d3"
   },
   {
     "name": "Mobile",
     "description": "iOS and Android experience",
-    "parentTeamId": "1c4d5e0c-62ba-469f-bf53-5b3e32a55801",
+    "parentTeamId": "3e2f1320-ecf1-40a9-9123-71d96868bed1",
     "color": "var(--color-team-5)",
-    "createdAt": "2026-03-20T19:03:58.610Z",
-    "updatedAt": "2026-03-20T19:03:58.610Z",
-    "id": "6c43896e-4672-4924-b6b4-f54b48bb64c6"
+    "createdAt": "2026-03-20T19:40:10.641Z",
+    "updatedAt": "2026-03-20T19:40:10.641Z",
+    "id": "4f51b328-aba9-4e1c-a5cd-a80b5dda794a"
   },
   {
     "name": "Cloud Ops",
     "description": "Runtime operations and cloud governance",
-    "parentTeamId": "c665b18a-a875-4d82-952e-cd6359044a30",
+    "parentTeamId": "c73a05d2-4fbe-4992-b5cd-22a3b3ccf7d3",
     "color": "var(--color-team-6)",
-    "createdAt": "2026-03-20T19:03:58.610Z",
-    "updatedAt": "2026-03-20T19:03:58.610Z",
-    "id": "a82c6991-a0fd-4e59-a8ed-0b8f6bb56ca7"
+    "createdAt": "2026-03-20T19:40:10.641Z",
+    "updatedAt": "2026-03-20T19:40:10.641Z",
+    "id": "e16e9398-99ef-4dd9-93c7-e54b253c1d0c"
   }
 ]

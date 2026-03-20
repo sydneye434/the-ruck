@@ -14,4 +14,5 @@ export * from "./retroActionItemsRepository";
 export * from "./settingsRepository";
 export * from "./teamsRepository";
 export * from "./teamMemberLinksRepository";
+export * from "./activityLogRepository";
 

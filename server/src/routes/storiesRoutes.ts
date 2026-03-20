@@ -1,8 +1,9 @@
 import { Router } from "express";
 import type { Story, StoryBoardColumn, StoryPoints } from "@the-ruck/shared";
-import { storiesRepository } from "../repositories";
+import { sprintsRepository, storiesRepository } from "../repositories";
 import { HttpError } from "../utils/httpError";
 import { sendEmptySuccess, sendSuccess } from "../utils/envelope";
+import { logActivity } from "../utils/activityLogger";
 
 export const storiesRoutes = Router();
 
@@ -67,6 +68,14 @@ storiesRoutes.post("/", async (req, res) => {
     boardColumn,
   } as Omit<Story, "id">);
 
+  const sprint = await sprintsRepository.getById(created.sprintId);
+  logActivity({
+    type: "story_created",
+    description: `Story '${created.title}' added to ${sprint?.name ?? "Backlog"}`,
+    actorId: created.assigneeMemberId ?? null,
+    metadata: { storyId: created.id, sprintId: created.sprintId }
+  });
+
   return sendSuccess(res, created, { location: `/api/stories/${created.id}` });
 });
 
@@ -78,6 +87,8 @@ storiesRoutes.get("/:id", async (req, res) => {
 
 storiesRoutes.patch("/:id", async (req, res) => {
   const patch = req.body as any;
+  const existing = await storiesRepository.getById(req.params.id);
+  if (!existing) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Story not found" });
 
   const updatePatch: Partial<Omit<Story, "id">> = {
     ...(patch?.sprintId !== undefined ? { sprintId: String(patch.sprintId) } : {}),
@@ -106,6 +117,14 @@ storiesRoutes.patch("/:id", async (req, res) => {
 
   const updated = await storiesRepository.update(req.params.id, updatePatch);
   if (!updated) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Story not found" });
+  if (updatePatch.boardColumn && updatePatch.boardColumn !== existing.boardColumn) {
+    logActivity({
+      type: "story_moved",
+      description: `Story '${updated.title}' moved to ${updatePatch.boardColumn}`,
+      actorId: updated.assigneeMemberId ?? null,
+      metadata: { storyId: updated.id, sprintId: updated.sprintId, boardColumn: updatePatch.boardColumn }
+    });
+  }
   return sendSuccess(res, updated);
 });
 

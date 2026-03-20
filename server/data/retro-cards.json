@@ -1,115 +1,126 @@
 [
   {
-    "retroId": "99121ae1-276a-498c-afd6-094d9ba28ea0",
-    "columnKey": "continue",
-    "authorId": "61fadb2d-9b4e-4d6c-b3ac-4a10890561ef",
-    "content": "Continue using swarm sessions for review bottlenecks.",
-    "upvotes": [],
-    "groupId": null,
-    "createdAt": "2026-03-20T19:03:58.615Z",
-    "updatedAt": "2026-03-20T19:05:26.791Z",
-    "id": "90a03d88-f62c-422b-872b-c1a01546e2a2"
-  },
-  {
-    "retroId": "99121ae1-276a-498c-afd6-094d9ba28ea0",
+    "retroId": "2dbed858-1943-4ccc-8073-331252ba4cf7",
     "columnKey": "start",
-    "authorId": "61fadb2d-9b4e-4d6c-b3ac-4a10890561ef",
-    "content": "Start pairing on story slicing before sprint planning.",
-    "upvotes": [
-      "ea991e8c-2d34-4466-9dc0-4690954c9bf6",
-      "97eb0a35-5b75-493e-bab6-97119621147b"
-    ],
-    "groupId": null,
-    "createdAt": "2026-03-20T19:03:58.615Z",
-    "updatedAt": "2026-03-20T19:03:58.616Z",
-    "id": "90884306-e415-4863-a549-4c7e9a8d78ab"
-  },
-  {
-    "retroId": "99121ae1-276a-498c-afd6-094d9ba28ea0",
-    "columnKey": "start",
-    "authorId": "ea991e8c-2d34-4466-9dc0-4690954c9bf6",
+    "authorId": "f4efc81b-bbdf-45e9-be02-fcdb185853d2",
     "content": "Start adding release notes earlier in the sprint.",
     "upvotes": [],
     "groupId": null,
-    "createdAt": "2026-03-20T19:03:58.615Z",
-    "updatedAt": "2026-03-20T19:03:58.615Z",
-    "id": "de580042-8594-43d6-b1a9-957ebfe6f6ab"
+    "createdAt": "2026-03-20T19:40:10.645Z",
+    "updatedAt": "2026-03-20T19:40:10.645Z",
+    "id": "3335ad85-7917-45a2-a522-8873bf56b38b"
   },
   {
-    "retroId": "99121ae1-276a-498c-afd6-094d9ba28ea0",
-    "columnKey": "stop",
-    "authorId": "97eb0a35-5b75-493e-bab6-97119621147b",
-    "content": "Stop carrying stories without clear acceptance criteria.",
-    "upvotes": [],
-    "groupId": null,
-    "createdAt": "2026-03-20T19:03:58.615Z",
-    "updatedAt": "2026-03-20T19:03:58.615Z",
-    "id": "551a26c9-e1b4-40f1-a13b-1a774517a01b"
-  },
-  {
-    "retroId": "99121ae1-276a-498c-afd6-094d9ba28ea0",
+    "retroId": "2dbed858-1943-4ccc-8073-331252ba4cf7",
     "columnKey": "continue",
-    "authorId": "6886c30e-7828-4067-9333-27cc4213dc2d",
+    "authorId": "46a1cc23-978a-4593-b921-944cdbd29ed7",
     "content": "Continue daily risk call-outs in standup.",
     "upvotes": [],
     "groupId": null,
-    "createdAt": "2026-03-20T19:03:58.615Z",
-    "updatedAt": "2026-03-20T19:03:58.615Z",
-    "id": "3f23a2f9-9382-4eb4-be91-823149db3112"
+    "createdAt": "2026-03-20T19:40:10.645Z",
+    "updatedAt": "2026-03-20T19:40:10.645Z",
+    "id": "2c73786a-3b0b-4032-b812-278ded9bd680"
   },
   {
-    "retroId": "99121ae1-276a-498c-afd6-094d9ba28ea0",
+    "retroId": "2dbed858-1943-4ccc-8073-331252ba4cf7",
     "columnKey": "stop",
-    "authorId": "33ec6a98-745b-4403-a4d8-624c877cb237",
+    "authorId": "4024101b-4dc5-4a54-a337-3d29602a5780",
     "content": "Stop waiting until the last day to run integration tests.",
     "upvotes": [],
     "groupId": null,
-    "createdAt": "2026-03-20T19:03:58.615Z",
-    "updatedAt": "2026-03-20T19:03:58.615Z",
-    "id": "a12d0d3a-d904-4673-81bc-b7cf14d06199"
+    "createdAt": "2026-03-20T19:40:10.645Z",
+    "updatedAt": "2026-03-20T19:40:10.645Z",
+    "id": "52ff5969-8088-40f0-984b-18b0a335399d"
   },
   {
-    "retroId": "e6c8e7b7-331d-4672-b910-5091a9e2a296",
+    "retroId": "2dbed858-1943-4ccc-8073-331252ba4cf7",
+    "columnKey": "start",
+    "authorId": "53079f1d-22bb-48f3-bbb5-d90590e3f01f",
+    "content": "Start pairing on story slicing before sprint planning.",
+    "upvotes": [
+      "f4efc81b-bbdf-45e9-be02-fcdb185853d2",
+      "e9a5508e-74b4-4c74-a526-4a64a3094ec3"
+    ],
+    "groupId": null,
+    "createdAt": "2026-03-20T19:40:10.645Z",
+    "updatedAt": "2026-03-20T19:40:10.646Z",
+    "id": "8b3d1be2-6804-4285-98ca-b8801e6b5c36"
+  },
+  {
+    "retroId": "2dbed858-1943-4ccc-8073-331252ba4cf7",
+    "columnKey": "continue",
+    "authorId": "53079f1d-22bb-48f3-bbb5-d90590e3f01f",
+    "content": "Continue using swarm sessions for review bottlenecks.",
+    "upvotes": [],
+    "groupId": null,
+    "createdAt": "2026-03-20T19:40:10.645Z",
+    "updatedAt": "2026-03-20T19:40:10.645Z",
+    "id": "6c09976f-e69c-43a3-8724-88c76a36efc5"
+  },
+  {
+    "retroId": "2dbed858-1943-4ccc-8073-331252ba4cf7",
+    "columnKey": "stop",
+    "authorId": "e9a5508e-74b4-4c74-a526-4a64a3094ec3",
+    "content": "Stop carrying stories without clear acceptance criteria.",
+    "upvotes": [],
+    "groupId": null,
+    "createdAt": "2026-03-20T19:40:10.645Z",
+    "updatedAt": "2026-03-20T19:40:10.645Z",
+    "id": "1ce80f98-06db-4201-aeb2-3ab87c0e6cee"
+  },
+  {
+    "retroId": "9c63dd53-8ee3-406a-8233-48035cc7e1a1",
     "columnKey": "mad",
-    "authorId": "97eb0a35-5b75-493e-bab6-97119621147b",
+    "authorId": "e9a5508e-74b4-4c74-a526-4a64a3094ec3",
     "content": "Build broke after dependency drift.",
     "upvotes": [],
     "groupId": null,
-    "createdAt": "2026-03-20T19:03:58.616Z",
-    "updatedAt": "2026-03-20T19:03:58.616Z",
-    "id": "66c8ef08-d572-4c1b-b57d-d521b457d21c"
+    "createdAt": "2026-03-20T19:40:10.647Z",
+    "updatedAt": "2026-03-20T19:40:10.647Z",
+    "id": "6d1593da-43c1-4135-a63c-5e744e7f1c11"
   },
   {
-    "retroId": "e6c8e7b7-331d-4672-b910-5091a9e2a296",
+    "retroId": "9c63dd53-8ee3-406a-8233-48035cc7e1a1",
     "columnKey": "sad",
-    "authorId": "ea991e8c-2d34-4466-9dc0-4690954c9bf6",
+    "authorId": "f4efc81b-bbdf-45e9-be02-fcdb185853d2",
     "content": "Story kickoff had unclear owner handoff.",
     "upvotes": [],
     "groupId": null,
-    "createdAt": "2026-03-20T19:03:58.616Z",
-    "updatedAt": "2026-03-20T19:03:58.616Z",
-    "id": "71c98849-ba30-47ed-857f-465ffd2a801f"
+    "createdAt": "2026-03-20T19:40:10.647Z",
+    "updatedAt": "2026-03-20T19:40:10.647Z",
+    "id": "c6745651-db8d-411f-9114-8d61e9195db6"
   },
   {
-    "retroId": "e6c8e7b7-331d-4672-b910-5091a9e2a296",
+    "retroId": "9c63dd53-8ee3-406a-8233-48035cc7e1a1",
     "columnKey": "glad",
-    "authorId": "61fadb2d-9b4e-4d6c-b3ac-4a10890561ef",
+    "authorId": "53079f1d-22bb-48f3-bbb5-d90590e3f01f",
     "content": "Cross-team review pairing reduced review cycle time.",
     "upvotes": [],
     "groupId": null,
-    "createdAt": "2026-03-20T19:03:58.616Z",
-    "updatedAt": "2026-03-20T19:03:58.616Z",
-    "id": "2a3116f5-9811-4684-aeb7-2d4972171257"
+    "createdAt": "2026-03-20T19:40:10.647Z",
+    "updatedAt": "2026-03-20T19:40:10.647Z",
+    "id": "ee803ef9-0c04-4153-b15f-142c3fb1d87a"
   },
   {
-    "retroId": "e6c8e7b7-331d-4672-b910-5091a9e2a296",
+    "retroId": "9c63dd53-8ee3-406a-8233-48035cc7e1a1",
     "columnKey": "glad",
-    "authorId": "6886c30e-7828-4067-9333-27cc4213dc2d",
+    "authorId": "46a1cc23-978a-4593-b921-944cdbd29ed7",
     "content": "Shared checklist caught release risk early.",
     "upvotes": [],
     "groupId": null,
-    "createdAt": "2026-03-20T19:03:58.616Z",
-    "updatedAt": "2026-03-20T19:03:58.616Z",
-    "id": "225703d5-d45a-4d1c-b637-5f2e5e52d4e3"
+    "createdAt": "2026-03-20T19:40:10.647Z",
+    "updatedAt": "2026-03-20T19:40:10.647Z",
+    "id": "07970aa8-da42-45c6-bfe9-46185039420a"
+  },
+  {
+    "retroId": "2dbed858-1943-4ccc-8073-331252ba4cf7",
+    "columnKey": "start",
+    "content": "Dashboard smoke valid card",
+    "authorId": "53079f1d-22bb-48f3-bbb5-d90590e3f01f",
+    "upvotes": [],
+    "groupId": null,
+    "createdAt": "2026-03-20T19:40:31.981Z",
+    "updatedAt": "2026-03-20T19:40:31.981Z",
+    "id": "e6862b97-4be3-4d60-849b-33cc4455f9b6"
   }
 ]

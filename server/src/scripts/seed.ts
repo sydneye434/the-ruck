@@ -1,6 +1,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import {
+  activityLogRepository,
   retroActionItemsRepository,
   retroCardsRepository,
   retrosRepository,
@@ -139,6 +140,15 @@ async function main() {
     endDate: new Date(now + 11 * 86400000).toISOString(),
     goal: "Ship retrospective workflow foundations",
     status: "active"
+  });
+  const sprint2 = await sprintsRepository.create({
+    name: "Sprint 2",
+    startDate: new Date(now - 56 * 86400000).toISOString(),
+    endDate: new Date(now - 43 * 86400000).toISOString(),
+    goal: "Stabilize board workflows",
+    status: "completed",
+    completedAt: new Date(now - 43 * 86400000).toISOString(),
+    velocityDataPoint: 21
   });
 
   const retroCompleted = await retrosRepository.create({
@@ -288,6 +298,57 @@ async function main() {
     labels: ["seed"],
     acceptanceCriteria: ["Runs locally"],
     boardColumn: "backlog"
+  });
+
+  const activityBase = now - 3 * 86400000;
+  await activityLogRepository.create({
+    type: "story_created",
+    description: `Story 'Seed Story' added to ${activeSprint.name}`,
+    actorId: jordan.id,
+    metadata: { sprintId: activeSprint.id },
+    createdAt: new Date(activityBase + 1 * 60000).toISOString()
+  });
+  await activityLogRepository.create({
+    type: "retro_card_added",
+    description: `Card added to start in ${sprint3.name} retrospective`,
+    actorId: avery.id,
+    metadata: { retroId: retroCompleted.id, sprintId: sprint3.id, columnKey: "start" },
+    createdAt: new Date(activityBase + 2 * 60000).toISOString()
+  });
+  await activityLogRepository.create({
+    type: "sprint_completed",
+    description: `Sprint '${sprint2.name}' completed with ${sprint2.velocityDataPoint} points`,
+    actorId: null,
+    metadata: { sprintId: sprint2.id, velocityDataPoint: sprint2.velocityDataPoint },
+    createdAt: new Date(activityBase + 3 * 60000).toISOString()
+  });
+  await activityLogRepository.create({
+    type: "story_moved",
+    description: "Story 'Seed Story' moved to done",
+    actorId: jordan.id,
+    metadata: { sprintId: activeSprint.id, boardColumn: "done" },
+    createdAt: new Date(activityBase + 4 * 60000).toISOString()
+  });
+  await activityLogRepository.create({
+    type: "action_item_completed",
+    description: "Action item 'Document flaky test ownership and triage flow.' marked complete",
+    actorId: riley.id,
+    metadata: { retroId: retroCompleted.id, sprintId: sprint3.id },
+    createdAt: new Date(activityBase + 5 * 60000).toISOString()
+  });
+  await activityLogRepository.create({
+    type: "story_created",
+    description: "Story 'Capacity panel polish' added to Backlog",
+    actorId: morgan.id,
+    metadata: { sprintId: activeSprint.id },
+    createdAt: new Date(activityBase + 6 * 60000).toISOString()
+  });
+  await activityLogRepository.create({
+    type: "retro_card_added",
+    description: `Card added to glad in ${activeSprint.name} retrospective`,
+    actorId: parker.id,
+    metadata: { retroId: retroActive.id, sprintId: activeSprint.id, columnKey: "glad" },
+    createdAt: new Date(activityBase + 7 * 60000).toISOString()
   });
 
   // eslint-disable-next-line no-console

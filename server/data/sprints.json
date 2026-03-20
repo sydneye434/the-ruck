@@ -1,24 +1,38 @@
 [
   {
     "name": "Sprint 3",
-    "startDate": "2026-02-06T19:03:58.614Z",
-    "endDate": "2026-02-20T19:03:58.614Z",
+    "startDate": "2026-02-06T19:40:10.644Z",
+    "endDate": "2026-02-20T19:40:10.644Z",
     "goal": "Improve deployment confidence",
     "status": "completed",
-    "completedAt": "2026-02-20T19:03:58.614Z",
+    "completedAt": "2026-02-20T19:40:10.644Z",
     "velocityDataPoint": 34,
-    "createdAt": "2026-03-20T19:03:58.614Z",
-    "updatedAt": "2026-03-20T19:03:58.614Z",
-    "id": "4fd77e6d-4d15-422a-882c-a61cbdbc5e1a"
+    "createdAt": "2026-03-20T19:40:10.644Z",
+    "updatedAt": "2026-03-20T19:40:10.644Z",
+    "id": "54825baf-114e-46d3-8ffc-9b8d13986a68"
   },
   {
     "name": "Sprint 4",
-    "startDate": "2026-03-18T19:03:58.614Z",
-    "endDate": "2026-03-31T19:03:58.614Z",
+    "startDate": "2026-03-18T19:40:10.644Z",
+    "endDate": "2026-03-19T19:40:26.181Z",
     "goal": "Ship retrospective workflow foundations",
-    "status": "active",
-    "createdAt": "2026-03-20T19:03:58.614Z",
-    "updatedAt": "2026-03-20T19:03:58.614Z",
-    "id": "3cd52d21-1efc-4191-9345-27babb618b1f"
+    "status": "completed",
+    "createdAt": "2026-03-20T19:40:10.644Z",
+    "updatedAt": "2026-03-20T19:40:26.195Z",
+    "id": "3b991b3c-be7a-4977-a395-096ba6c33c04",
+    "completedAt": "2026-03-20T19:40:26.195Z",
+    "velocityDataPoint": 3
+  },
+  {
+    "name": "Sprint 2",
+    "startDate": "2026-01-23T19:40:10.644Z",
+    "endDate": "2026-02-05T19:40:10.644Z",
+    "goal": "Stabilize board workflows",
+    "status": "completed",
+    "completedAt": "2026-02-05T19:40:10.644Z",
+    "velocityDataPoint": 21,
+    "createdAt": "2026-03-20T19:40:10.645Z",
+    "updatedAt": "2026-03-20T19:40:10.645Z",
+    "id": "4953d387-dbaf-412b-8f97-25ae8f4659fb"
   }
 ]

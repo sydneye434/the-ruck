@@ -4,6 +4,7 @@ import { retroActionItemsRepository, retrosRepository, teamMembersRepository } f
 import { HttpError } from "../utils/httpError";
 import { sendEmptySuccess, sendSuccess } from "../utils/envelope";
 import { asyncHandler } from "../utils/asyncHandler";
+import { logActivity } from "../utils/activityLogger";
 
 export const retroActionItemsRoutes = Router({ mergeParams: true });
 const VALID_STATUSES = new Set<RetroActionItem["status"]>(["open", "in_progress", "complete"]);
@@ -101,6 +102,14 @@ retroActionItemsRoutes.patch("/:actionItemId", asyncHandler(async (req, res) => 
   });
 
   if (!updated) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Action item not found" });
+  if (patch?.status !== undefined && String(patch.status) === "complete" && existing.status !== "complete") {
+    logActivity({
+      type: "action_item_completed",
+      description: `Action item '${updated.description}' marked complete`,
+      actorId: updated.ownerId ?? null,
+      metadata: { actionItemId: updated.id, retroId, sprintId: updated.sprintId }
+    });
+  }
   return sendSuccess(res, updated);
 }));
 

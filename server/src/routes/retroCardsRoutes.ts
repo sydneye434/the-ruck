@@ -1,10 +1,11 @@
 import { Router } from "express";
 import path from "node:path";
 import type { RetroCard } from "@the-ruck/shared";
-import { retroCardsRepository, retrosRepository, teamMembersRepository } from "../repositories";
+import { retroCardsRepository, retrosRepository, sprintsRepository, teamMembersRepository } from "../repositories";
 import { HttpError } from "../utils/httpError";
 import { sendEmptySuccess, sendSuccess } from "../utils/envelope";
 import { asyncHandler } from "../utils/asyncHandler";
+import { logActivity } from "../utils/activityLogger";
 
 export const retroCardsRoutes = Router({ mergeParams: true });
 
@@ -49,6 +50,14 @@ retroCardsRoutes.post("/", asyncHandler(async (req, res) => {
     upvotes: Array.isArray(input.upvotes) ? input.upvotes.map(String) : [],
     groupId: input.groupId === null || input.groupId === undefined ? null : String(input.groupId)
   } as Omit<RetroCard, "id">);
+
+  const sprint = await sprintsRepository.getById(retro.sprintId);
+  logActivity({
+    type: "retro_card_added",
+    description: `Card added to ${created.columnKey} in ${sprint?.name ?? "Sprint"} retrospective`,
+    actorId: created.authorId,
+    metadata: { retroId, cardId: created.id, sprintId: retro.sprintId, columnKey: created.columnKey }
+  });
 
   return sendSuccess(res, created, { location: `/api/retros/${retroId}/cards/${created.id}` });
 }));

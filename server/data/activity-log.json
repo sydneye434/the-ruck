@@ -1,0 +1,138 @@
+[
+  {
+    "type": "story_created",
+    "description": "Story 'Seed Story' added to Sprint 4",
+    "actorId": "e9a5508e-74b4-4c74-a526-4a64a3094ec3",
+    "metadata": {
+      "sprintId": "3b991b3c-be7a-4977-a395-096ba6c33c04"
+    },
+    "createdAt": "2026-03-17T19:41:10.644Z",
+    "id": "be81690c-8ab3-483a-ae5e-ab344cc4e531"
+  },
+  {
+    "type": "retro_card_added",
+    "description": "Card added to start in Sprint 3 retrospective",
+    "actorId": "53079f1d-22bb-48f3-bbb5-d90590e3f01f",
+    "metadata": {
+      "retroId": "2dbed858-1943-4ccc-8073-331252ba4cf7",
+      "sprintId": "54825baf-114e-46d3-8ffc-9b8d13986a68",
+      "columnKey": "start"
+    },
+    "createdAt": "2026-03-17T19:42:10.644Z",
+    "id": "db25dc76-c228-466a-8407-9fd27306562e"
+  },
+  {
+    "type": "sprint_completed",
+    "description": "Sprint 'Sprint 2' completed with 21 points",
+    "actorId": null,
+    "metadata": {
+      "sprintId": "4953d387-dbaf-412b-8f97-25ae8f4659fb",
+      "velocityDataPoint": 21
+    },
+    "createdAt": "2026-03-17T19:43:10.644Z",
+    "id": "2cc37d43-4c44-42f5-a0b6-b3c042021f23"
+  },
+  {
+    "type": "story_moved",
+    "description": "Story 'Seed Story' moved to done",
+    "actorId": "e9a5508e-74b4-4c74-a526-4a64a3094ec3",
+    "metadata": {
+      "sprintId": "3b991b3c-be7a-4977-a395-096ba6c33c04",
+      "boardColumn": "done"
+    },
+    "createdAt": "2026-03-17T19:44:10.644Z",
+    "id": "d9929c1a-f23d-492a-920f-92c3dcb73a96"
+  },
+  {
+    "type": "action_item_completed",
+    "description": "Action item 'Document flaky test ownership and triage flow.' marked complete",
+    "actorId": "4024101b-4dc5-4a54-a337-3d29602a5780",
+    "metadata": {
+      "retroId": "2dbed858-1943-4ccc-8073-331252ba4cf7",
+      "sprintId": "54825baf-114e-46d3-8ffc-9b8d13986a68"
+    },
+    "createdAt": "2026-03-17T19:45:10.644Z",
+    "id": "c9b7bffc-9ac1-48ed-9707-74f5a4162f68"
+  },
+  {
+    "type": "story_created",
+    "description": "Story 'Capacity panel polish' added to Backlog",
+    "actorId": "f4efc81b-bbdf-45e9-be02-fcdb185853d2",
+    "metadata": {
+      "sprintId": "3b991b3c-be7a-4977-a395-096ba6c33c04"
+    },
+    "createdAt": "2026-03-17T19:46:10.644Z",
+    "id": "c443674b-3003-45e9-9273-cd620dc6d8c6"
+  },
+  {
+    "type": "retro_card_added",
+    "description": "Card added to glad in Sprint 4 retrospective",
+    "actorId": "46a1cc23-978a-4593-b921-944cdbd29ed7",
+    "metadata": {
+      "retroId": "9c63dd53-8ee3-406a-8233-48035cc7e1a1",
+      "sprintId": "3b991b3c-be7a-4977-a395-096ba6c33c04",
+      "columnKey": "glad"
+    },
+    "createdAt": "2026-03-17T19:47:10.644Z",
+    "id": "88f52d63-f82b-46f8-b8a7-bdadb1dc48d3"
+  },
+  {
+    "type": "story_created",
+    "description": "Story 'Dash route smoke' added to Sprint 4",
+    "actorId": null,
+    "metadata": {
+      "storyId": "70654ebe-91d9-4c8f-82f0-4831080a8b87",
+      "sprintId": "3b991b3c-be7a-4977-a395-096ba6c33c04"
+    },
+    "createdAt": "2026-03-20T19:40:26.192Z",
+    "id": "766ff9a0-27d0-4bfb-9eb9-60ff78ee06d9"
+  },
+  {
+    "type": "story_moved",
+    "description": "Story 'Dash route smoke' moved to done",
+    "actorId": null,
+    "metadata": {
+      "storyId": "70654ebe-91d9-4c8f-82f0-4831080a8b87",
+      "sprintId": "3b991b3c-be7a-4977-a395-096ba6c33c04",
+      "boardColumn": "done"
+    },
+    "createdAt": "2026-03-20T19:40:26.193Z",
+    "id": "62a375f2-9176-4dc2-9a23-7181111eb16f"
+  },
+  {
+    "type": "sprint_completed",
+    "description": "Sprint 'Sprint 4' completed with 3 points",
+    "actorId": null,
+    "metadata": {
+      "sprintId": "3b991b3c-be7a-4977-a395-096ba6c33c04",
+      "velocityDataPoint": 3
+    },
+    "createdAt": "2026-03-20T19:40:26.195Z",
+    "id": "a0bb881c-0086-411e-84ec-fbb2647bc19f"
+  },
+  {
+    "type": "action_item_completed",
+    "description": "Action item 'Create CI checklist template for release readiness.' marked complete",
+    "actorId": "53079f1d-22bb-48f3-bbb5-d90590e3f01f",
+    "metadata": {
+      "actionItemId": "dcadd51c-6e7d-4cea-8b9a-5db1e193ed25",
+      "retroId": "2dbed858-1943-4ccc-8073-331252ba4cf7",
+      "sprintId": "54825baf-114e-46d3-8ffc-9b8d13986a68"
+    },
+    "createdAt": "2026-03-20T19:40:26.200Z",
+    "id": "4ad3eef9-56d1-4d2a-8e4c-56f415bd9e24"
+  },
+  {
+    "type": "retro_card_added",
+    "description": "Card added to start in Sprint 3 retrospective",
+    "actorId": "53079f1d-22bb-48f3-bbb5-d90590e3f01f",
+    "metadata": {
+      "retroId": "2dbed858-1943-4ccc-8073-331252ba4cf7",
+      "cardId": "e6862b97-4be3-4d60-849b-33cc4455f9b6",
+      "sprintId": "54825baf-114e-46d3-8ffc-9b8d13986a68",
+      "columnKey": "start"
+    },
+    "createdAt": "2026-03-20T19:40:31.981Z",
+    "id": "3f130703-c2a2-44c7-824b-4949216c26b5"
+  }
+]
