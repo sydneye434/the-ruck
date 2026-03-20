@@ -160,7 +160,14 @@ export const api = {
   },
   retros: {
     getAll: () => request<Retro[]>("/retros"),
-    getById: (id: string) => request<Retro>(`/retros/${id}`),
+    getById: (id: string) =>
+      request<{
+        retro: Retro;
+        columns: Array<{ key: string; label: string; color: string }>;
+        cards: RetroCard[];
+        actionItems: RetroActionItem[];
+        carriedOverItems: RetroActionItem[];
+      }>(`/retros/${id}`),
     create: (payload: Partial<Retro>) =>
       request<Retro>("/retros", { method: "POST", body: JSON.stringify(payload) }),
     update: (id: string, payload: Partial<Retro>) =>
@@ -175,6 +182,16 @@ export const api = {
         request<RetroCard>(`/retros/${retroId}/cards/${cardId}`, {
           method: "PATCH",
           body: JSON.stringify(payload)
+        }),
+      upvote: (retroId: string, cardId: string, memberId: string) =>
+        request<RetroCard>(`/retros/${retroId}/cards/${cardId}/upvote`, {
+          method: "POST",
+          body: JSON.stringify({ memberId })
+        }),
+      group: (retroId: string, cardId: string, groupId: string | null) =>
+        request<RetroCard>(`/retros/${retroId}/cards/${cardId}/group`, {
+          method: "POST",
+          body: JSON.stringify({ groupId })
         }),
       delete: (retroId: string, cardId: string) => del(`/retros/${retroId}/cards/${cardId}`)
     },
