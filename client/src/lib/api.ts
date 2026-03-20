@@ -217,6 +217,78 @@ export const api = {
     get: () => request<AppSettings>("/settings"),
     update: (payload: Partial<AppSettings>) =>
       request<AppSettings>("/settings", { method: "PUT", body: JSON.stringify(payload) })
+  },
+  dashboard: {
+    get: () =>
+      request<{
+        activeSprint: {
+          id: string;
+          name: string;
+          goal: string;
+          startDate: string;
+          endDate: string;
+          daysRemaining: number;
+          isOverdue: boolean;
+          capacityTarget: number | null;
+          totalPoints: number;
+          completedPoints: number;
+          progressPercent: number;
+          capacityUsedPercent: number | null;
+          storiesByColumn: {
+            backlog: number;
+            in_progress: number;
+            in_review: number;
+            done: number;
+          };
+        } | null;
+        velocityTrend: Array<{
+          id: string;
+          name: string;
+          completedAt: string;
+          velocityDataPoint: number;
+          capacityTarget: number | null;
+        }>;
+        teamSummary: {
+          totalMembers: number;
+          activeMembers: number;
+          averageCapacityPercent: number;
+          membersAtReducedCapacity: Array<{
+            id: string;
+            name: string;
+            capacityMultiplier: number;
+            effectiveDays: number;
+          }>;
+        };
+        retroSummary: {
+          activeSprintRetro: {
+            id: string;
+            phase: string;
+            cardCount: number;
+            openActionItemCount: number;
+          } | null;
+          totalOpenActionItems: number;
+          overdueActionItems: Array<{
+            id: string;
+            description: string;
+            ownerId: string | null;
+            ownerName: string | null;
+            dueDate: string | null;
+            retroId: string;
+            sprintName: string;
+          }>;
+        };
+        recentActivity: Array<{
+          type:
+            | "story_moved"
+            | "story_created"
+            | "sprint_completed"
+            | "retro_card_added"
+            | "action_item_completed";
+          description: string;
+          timestamp: string;
+          actorName: string | null;
+        }>;
+      }>("/dashboard")
   }
 };
 

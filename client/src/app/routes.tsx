@@ -8,13 +8,14 @@ import { ActiveSprintPage } from "../pages/active-sprint/ActiveSprintPage";
 import { SprintsPage } from "../pages/sprints/SprintsPage";
 import { RetrosPage } from "../pages/retros/RetrosPage";
 import { RetroDetailBoardPage } from "../pages/retros/RetroDetailBoardPage";
+import { DashboardPage } from "../pages/dashboard/DashboardPage";
 
 export function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route element={<AppLayout />}>
-        <Route path="/dashboard" element={<PlaceholderPage title="Dashboard" />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/backlog" element={<BacklogPage />} />
         <Route path="/sprint/active" element={<ActiveSprintPage />} />
         <Route path="/sprints" element={<SprintsPage />} />
