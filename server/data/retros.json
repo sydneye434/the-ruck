@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "sprintId": "4fd77e6d-4d15-422a-882c-a61cbdbc5e1a",
+    "title": "Sprint 3 Retrospective",
+    "template": "start_stop_continue",
+    "phase": "action_items",
+    "isAnonymous": false,
+    "createdAt": "2026-03-20T19:03:58.614Z",
+    "updatedAt": "2026-03-20T19:03:58.614Z",
+    "id": "99121ae1-276a-498c-afd6-094d9ba28ea0"
+  },
+  {
+    "sprintId": "3cd52d21-1efc-4191-9345-27babb618b1f",
+    "title": "Sprint 4 Retrospective",
+    "template": "mad_sad_glad",
+    "phase": "reflect",
+    "isAnonymous": false,
+    "createdAt": "2026-03-20T19:03:58.614Z",
+    "updatedAt": "2026-03-20T19:03:58.614Z",
+    "id": "e6c8e7b7-331d-4672-b910-5091a9e2a296"
+  }
+]

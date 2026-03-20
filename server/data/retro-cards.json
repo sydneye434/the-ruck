@@ -1,1 +1,115 @@
-[]
+[
+  {
+    "retroId": "99121ae1-276a-498c-afd6-094d9ba28ea0",
+    "columnKey": "continue",
+    "authorId": "61fadb2d-9b4e-4d6c-b3ac-4a10890561ef",
+    "content": "Continue using swarm sessions for review bottlenecks.",
+    "upvotes": [],
+    "groupId": null,
+    "createdAt": "2026-03-20T19:03:58.615Z",
+    "updatedAt": "2026-03-20T19:05:26.791Z",
+    "id": "90a03d88-f62c-422b-872b-c1a01546e2a2"
+  },
+  {
+    "retroId": "99121ae1-276a-498c-afd6-094d9ba28ea0",
+    "columnKey": "start",
+    "authorId": "61fadb2d-9b4e-4d6c-b3ac-4a10890561ef",
+    "content": "Start pairing on story slicing before sprint planning.",
+    "upvotes": [
+      "ea991e8c-2d34-4466-9dc0-4690954c9bf6",
+      "97eb0a35-5b75-493e-bab6-97119621147b"
+    ],
+    "groupId": null,
+    "createdAt": "2026-03-20T19:03:58.615Z",
+    "updatedAt": "2026-03-20T19:03:58.616Z",
+    "id": "90884306-e415-4863-a549-4c7e9a8d78ab"
+  },
+  {
+    "retroId": "99121ae1-276a-498c-afd6-094d9ba28ea0",
+    "columnKey": "start",
+    "authorId": "ea991e8c-2d34-4466-9dc0-4690954c9bf6",
+    "content": "Start adding release notes earlier in the sprint.",
+    "upvotes": [],
+    "groupId": null,
+    "createdAt": "2026-03-20T19:03:58.615Z",
+    "updatedAt": "2026-03-20T19:03:58.615Z",
+    "id": "de580042-8594-43d6-b1a9-957ebfe6f6ab"
+  },
+  {
+    "retroId": "99121ae1-276a-498c-afd6-094d9ba28ea0",
+    "columnKey": "stop",
+    "authorId": "97eb0a35-5b75-493e-bab6-97119621147b",
+    "content": "Stop carrying stories without clear acceptance criteria.",
+    "upvotes": [],
+    "groupId": null,
+    "createdAt": "2026-03-20T19:03:58.615Z",
+    "updatedAt": "2026-03-20T19:03:58.615Z",
+    "id": "551a26c9-e1b4-40f1-a13b-1a774517a01b"
+  },
+  {
+    "retroId": "99121ae1-276a-498c-afd6-094d9ba28ea0",
+    "columnKey": "continue",
+    "authorId": "6886c30e-7828-4067-9333-27cc4213dc2d",
+    "content": "Continue daily risk call-outs in standup.",
+    "upvotes": [],
+    "groupId": null,
+    "createdAt": "2026-03-20T19:03:58.615Z",
+    "updatedAt": "2026-03-20T19:03:58.615Z",
+    "id": "3f23a2f9-9382-4eb4-be91-823149db3112"
+  },
+  {
+    "retroId": "99121ae1-276a-498c-afd6-094d9ba28ea0",
+    "columnKey": "stop",
+    "authorId": "33ec6a98-745b-4403-a4d8-624c877cb237",
+    "content": "Stop waiting until the last day to run integration tests.",
+    "upvotes": [],
+    "groupId": null,
+    "createdAt": "2026-03-20T19:03:58.615Z",
+    "updatedAt": "2026-03-20T19:03:58.615Z",
+    "id": "a12d0d3a-d904-4673-81bc-b7cf14d06199"
+  },
+  {
+    "retroId": "e6c8e7b7-331d-4672-b910-5091a9e2a296",
+    "columnKey": "mad",
+    "authorId": "97eb0a35-5b75-493e-bab6-97119621147b",
+    "content": "Build broke after dependency drift.",
+    "upvotes": [],
+    "groupId": null,
+    "createdAt": "2026-03-20T19:03:58.616Z",
+    "updatedAt": "2026-03-20T19:03:58.616Z",
+    "id": "66c8ef08-d572-4c1b-b57d-d521b457d21c"
+  },
+  {
+    "retroId": "e6c8e7b7-331d-4672-b910-5091a9e2a296",
+    "columnKey": "sad",
+    "authorId": "ea991e8c-2d34-4466-9dc0-4690954c9bf6",
+    "content": "Story kickoff had unclear owner handoff.",
+    "upvotes": [],
+    "groupId": null,
+    "createdAt": "2026-03-20T19:03:58.616Z",
+    "updatedAt": "2026-03-20T19:03:58.616Z",
+    "id": "71c98849-ba30-47ed-857f-465ffd2a801f"
+  },
+  {
+    "retroId": "e6c8e7b7-331d-4672-b910-5091a9e2a296",
+    "columnKey": "glad",
+    "authorId": "61fadb2d-9b4e-4d6c-b3ac-4a10890561ef",
+    "content": "Cross-team review pairing reduced review cycle time.",
+    "upvotes": [],
+    "groupId": null,
+    "createdAt": "2026-03-20T19:03:58.616Z",
+    "updatedAt": "2026-03-20T19:03:58.616Z",
+    "id": "2a3116f5-9811-4684-aeb7-2d4972171257"
+  },
+  {
+    "retroId": "e6c8e7b7-331d-4672-b910-5091a9e2a296",
+    "columnKey": "glad",
+    "authorId": "6886c30e-7828-4067-9333-27cc4213dc2d",
+    "content": "Shared checklist caught release risk early.",
+    "upvotes": [],
+    "groupId": null,
+    "createdAt": "2026-03-20T19:03:58.616Z",
+    "updatedAt": "2026-03-20T19:03:58.616Z",
+    "id": "225703d5-d45a-4d1c-b637-5f2e5e52d4e3"
+  }
+]

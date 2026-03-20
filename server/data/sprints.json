@@ -1,12 +1,24 @@
 [
   {
-    "name": "Sprint Seed",
-    "startDate": "2026-03-19T20:56:05.544Z",
-    "endDate": "2026-03-29T20:56:05.544Z",
-    "goal": "Seed sprint",
+    "name": "Sprint 3",
+    "startDate": "2026-02-06T19:03:58.614Z",
+    "endDate": "2026-02-20T19:03:58.614Z",
+    "goal": "Improve deployment confidence",
+    "status": "completed",
+    "completedAt": "2026-02-20T19:03:58.614Z",
+    "velocityDataPoint": 34,
+    "createdAt": "2026-03-20T19:03:58.614Z",
+    "updatedAt": "2026-03-20T19:03:58.614Z",
+    "id": "4fd77e6d-4d15-422a-882c-a61cbdbc5e1a"
+  },
+  {
+    "name": "Sprint 4",
+    "startDate": "2026-03-18T19:03:58.614Z",
+    "endDate": "2026-03-31T19:03:58.614Z",
+    "goal": "Ship retrospective workflow foundations",
     "status": "active",
-    "createdAt": "2026-03-19T20:56:05.544Z",
-    "updatedAt": "2026-03-19T20:56:05.544Z",
-    "id": "06898bcb-c94b-4a22-85f6-9e37d5b27982"
+    "createdAt": "2026-03-20T19:03:58.614Z",
+    "updatedAt": "2026-03-20T19:03:58.614Z",
+    "id": "3cd52d21-1efc-4191-9345-27babb618b1f"
   }
 ]

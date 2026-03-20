@@ -1,1 +1,38 @@
-[]
+[
+  {
+    "retroId": "99121ae1-276a-498c-afd6-094d9ba28ea0",
+    "sprintId": "4fd77e6d-4d15-422a-882c-a61cbdbc5e1a",
+    "description": "Create CI checklist template for release readiness.",
+    "ownerId": "61fadb2d-9b4e-4d6c-b3ac-4a10890561ef",
+    "dueDate": "2026-03-13T19:03:58.614Z",
+    "status": "open",
+    "carriedOverFromId": null,
+    "createdAt": "2026-03-20T19:03:58.616Z",
+    "updatedAt": "2026-03-20T19:03:58.616Z",
+    "id": "388b380c-fbd9-41cf-81d8-f53ddbefb6d8"
+  },
+  {
+    "retroId": "99121ae1-276a-498c-afd6-094d9ba28ea0",
+    "sprintId": "4fd77e6d-4d15-422a-882c-a61cbdbc5e1a",
+    "description": "Document flaky test ownership and triage flow.",
+    "ownerId": "33ec6a98-745b-4403-a4d8-624c877cb237",
+    "dueDate": "2026-03-10T19:03:58.614Z",
+    "status": "complete",
+    "carriedOverFromId": null,
+    "createdAt": "2026-03-20T19:03:58.616Z",
+    "updatedAt": "2026-03-20T19:03:58.616Z",
+    "id": "b67e0834-25b5-42f1-9acf-0fd9b6eb3d22"
+  },
+  {
+    "retroId": "e6c8e7b7-331d-4672-b910-5091a9e2a296",
+    "sprintId": "3cd52d21-1efc-4191-9345-27babb618b1f",
+    "description": "Carry over CI checklist adoption to all feature squads.",
+    "ownerId": "61fadb2d-9b4e-4d6c-b3ac-4a10890561ef",
+    "dueDate": "2026-03-25T19:03:58.614Z",
+    "status": "open",
+    "carriedOverFromId": "388b380c-fbd9-41cf-81d8-f53ddbefb6d8",
+    "createdAt": "2026-03-20T19:03:58.617Z",
+    "updatedAt": "2026-03-20T19:03:58.617Z",
+    "id": "5c3024ad-efc1-47b9-9efd-96ad20aec1e2"
+  }
+]

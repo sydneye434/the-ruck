@@ -9,42 +9,9 @@
     "defaultAvailabilityDays": 8,
     "capacityMultiplier": 100,
     "isActive": true,
-    "createdAt": "2026-03-19T20:56:05.541Z",
-    "updatedAt": "2026-03-19T20:56:05.541Z",
-    "id": "947752aa-f48d-4658-9159-d571ea826e57"
-  },
-  {
-    "name": "Jordan Patel",
-    "roleType": "team_member",
-    "avatar": {
-      "color": "var(--color-avatar-3)",
-      "initials": "JP"
-    },
-    "defaultAvailabilityDays": 8,
-    "capacityMultiplier": 50,
-    "isActive": true,
-    "createdAt": "2026-03-19T20:56:05.541Z",
-    "updatedAt": "2026-03-19T20:56:05.541Z",
-    "id": "fe0e2c32-a0f8-4978-b311-9f8d466be3a6"
-  },
-  {
-    "name": "Riley Chen",
-    "roleType": "coordinator",
-    "coordinatorTitle": "SoSM",
-    "coordinatorTeamIds": [
-      "77706b87-a095-465f-80aa-b709fbfaab24",
-      "ac10b0bb-9932-4ab0-b407-2a403e14586b"
-    ],
-    "avatar": {
-      "color": "var(--color-avatar-4)",
-      "initials": "RC"
-    },
-    "defaultAvailabilityDays": 8,
-    "capacityMultiplier": 100,
-    "isActive": true,
-    "createdAt": "2026-03-19T20:56:05.541Z",
-    "updatedAt": "2026-03-19T20:56:05.541Z",
-    "id": "b6f62e30-e42d-44e4-867e-84fd6f9d0466"
+    "createdAt": "2026-03-20T19:03:58.610Z",
+    "updatedAt": "2026-03-20T19:03:58.610Z",
+    "id": "61fadb2d-9b4e-4d6c-b3ac-4a10890561ef"
   },
   {
     "name": "Morgan Lee",
@@ -56,16 +23,49 @@
     "defaultAvailabilityDays": 8,
     "capacityMultiplier": 100,
     "isActive": true,
-    "createdAt": "2026-03-19T20:56:05.541Z",
-    "updatedAt": "2026-03-19T20:56:05.541Z",
-    "id": "91bc6369-50ff-4df7-af65-bf02ab564144"
+    "createdAt": "2026-03-20T19:03:58.610Z",
+    "updatedAt": "2026-03-20T19:03:58.610Z",
+    "id": "ea991e8c-2d34-4466-9dc0-4690954c9bf6"
+  },
+  {
+    "name": "Jordan Patel",
+    "roleType": "team_member",
+    "avatar": {
+      "color": "var(--color-avatar-3)",
+      "initials": "JP"
+    },
+    "defaultAvailabilityDays": 8,
+    "capacityMultiplier": 50,
+    "isActive": true,
+    "createdAt": "2026-03-20T19:03:58.610Z",
+    "updatedAt": "2026-03-20T19:03:58.610Z",
+    "id": "97eb0a35-5b75-493e-bab6-97119621147b"
+  },
+  {
+    "name": "Riley Chen",
+    "roleType": "coordinator",
+    "coordinatorTitle": "SoSM",
+    "coordinatorTeamIds": [
+      "938e02a5-fc19-49bb-9f4b-f0190c3c51c3",
+      "1c4d5e0c-62ba-469f-bf53-5b3e32a55801"
+    ],
+    "avatar": {
+      "color": "var(--color-avatar-4)",
+      "initials": "RC"
+    },
+    "defaultAvailabilityDays": 8,
+    "capacityMultiplier": 100,
+    "isActive": true,
+    "createdAt": "2026-03-20T19:03:58.611Z",
+    "updatedAt": "2026-03-20T19:03:58.611Z",
+    "id": "33ec6a98-745b-4403-a4d8-624c877cb237"
   },
   {
     "name": "Parker Diaz",
     "roleType": "coordinator",
     "coordinatorTitle": "SoSoSM",
     "coordinatorTeamIds": [
-      "0feb913e-64d4-4c15-aeb9-4c951f55c42a"
+      "80eb9385-4b27-47b6-9f14-bc3ce4a43998"
     ],
     "avatar": {
       "color": "var(--color-avatar-5)",
@@ -74,8 +74,8 @@
     "defaultAvailabilityDays": 8,
     "capacityMultiplier": 100,
     "isActive": true,
-    "createdAt": "2026-03-19T20:56:05.541Z",
-    "updatedAt": "2026-03-19T20:56:05.541Z",
-    "id": "5034b107-e998-4fa4-bd61-c74f8ebaf5ce"
+    "createdAt": "2026-03-20T19:03:58.611Z",
+    "updatedAt": "2026-03-20T19:03:58.611Z",
+    "id": "6886c30e-7828-4067-9333-27cc4213dc2d"
   }
 ]

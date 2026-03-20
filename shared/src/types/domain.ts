@@ -16,9 +16,8 @@ export type RetroPhase = "reflect" | "discuss" | "action_items";
 
 export type RetroTemplate =
   | "start_stop_continue"
-  | "four_ls"
-  | "mad_sad_glad"
-  | "custom";
+  | "4ls"
+  | "mad_sad_glad";
 
 export type Identifiable = { id: string };
 
@@ -96,32 +95,33 @@ export type Story = Identifiable & {
 
 export type Retro = Identifiable & {
   sprintId: string;
+  title: string;
   template: RetroTemplate;
-  isInProgress: boolean;
-  // When true, hide author names on cards.
-  areCardsAnonymous: boolean;
+  phase: RetroPhase;
+  isAnonymous: boolean;
   createdAt?: ISODateString;
   updatedAt?: ISODateString;
 };
 
 export type RetroCard = Identifiable & {
   retroId: string;
-  phase: RetroPhase;
+  columnKey: string;
+  authorId: string;
   content: string;
-  authorMemberId: string;
-  upvotes: number;
-  // Placeholder for future clustering logic; kept simple for now.
-  clusterKey?: string;
+  upvotes: string[];
+  groupId?: string | null;
   createdAt?: ISODateString;
   updatedAt?: ISODateString;
 };
 
 export type RetroActionItem = Identifiable & {
   retroId: string;
+  sprintId: string;
   description: string;
-  ownerMemberId: string;
-  dueDate: ISODateString;
-  isCompleted: boolean;
+  ownerId: string;
+  dueDate?: ISODateString | null;
+  status: "open" | "in_progress" | "complete";
+  carriedOverFromId?: string | null;
   createdAt?: ISODateString;
   updatedAt?: ISODateString;
 };

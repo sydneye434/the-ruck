@@ -123,16 +123,164 @@ async function main() {
 
   await settingsRepository.getOrCreateDefault();
 
-  // Minimal sprint/story data for local demo continuity.
-  const sprint = await sprintsRepository.create({
-    name: "Sprint Seed",
-    startDate: new Date().toISOString(),
-    endDate: new Date(Date.now() + 10 * 86400000).toISOString(),
-    goal: "Seed sprint",
+  const now = Date.now();
+  const sprint3 = await sprintsRepository.create({
+    name: "Sprint 3",
+    startDate: new Date(now - 42 * 86400000).toISOString(),
+    endDate: new Date(now - 28 * 86400000).toISOString(),
+    goal: "Improve deployment confidence",
+    status: "completed",
+    completedAt: new Date(now - 28 * 86400000).toISOString(),
+    velocityDataPoint: 34
+  });
+  const activeSprint = await sprintsRepository.create({
+    name: "Sprint 4",
+    startDate: new Date(now - 2 * 86400000).toISOString(),
+    endDate: new Date(now + 11 * 86400000).toISOString(),
+    goal: "Ship retrospective workflow foundations",
     status: "active"
   });
+
+  const retroCompleted = await retrosRepository.create({
+    sprintId: sprint3.id,
+    title: "Sprint 3 Retrospective",
+    template: "start_stop_continue",
+    phase: "action_items",
+    isAnonymous: false
+  });
+  const retroActive = await retrosRepository.create({
+    sprintId: activeSprint.id,
+    title: "Sprint 4 Retrospective",
+    template: "mad_sad_glad",
+    phase: "reflect",
+    isAnonymous: false
+  });
+
+  const completedCards = await Promise.all([
+    retroCardsRepository.create({
+      retroId: retroCompleted.id,
+      columnKey: "start",
+      authorId: avery.id,
+      content: "Start pairing on story slicing before sprint planning.",
+      upvotes: [],
+      groupId: null
+    }),
+    retroCardsRepository.create({
+      retroId: retroCompleted.id,
+      columnKey: "start",
+      authorId: morgan.id,
+      content: "Start adding release notes earlier in the sprint.",
+      upvotes: [],
+      groupId: null
+    }),
+    retroCardsRepository.create({
+      retroId: retroCompleted.id,
+      columnKey: "stop",
+      authorId: jordan.id,
+      content: "Stop carrying stories without clear acceptance criteria.",
+      upvotes: [],
+      groupId: null
+    }),
+    retroCardsRepository.create({
+      retroId: retroCompleted.id,
+      columnKey: "stop",
+      authorId: riley.id,
+      content: "Stop waiting until the last day to run integration tests.",
+      upvotes: [],
+      groupId: null
+    }),
+    retroCardsRepository.create({
+      retroId: retroCompleted.id,
+      columnKey: "continue",
+      authorId: parker.id,
+      content: "Continue daily risk call-outs in standup.",
+      upvotes: [],
+      groupId: null
+    }),
+    retroCardsRepository.create({
+      retroId: retroCompleted.id,
+      columnKey: "continue",
+      authorId: avery.id,
+      content: "Continue using swarm sessions for review bottlenecks.",
+      upvotes: [],
+      groupId: null
+    })
+  ]);
+  await retroCardsRepository.update(completedCards[0].id, {
+    upvotes: [morgan.id, jordan.id]
+  });
+
+  const completedOpenItem = await retroActionItemsRepository.create({
+    retroId: retroCompleted.id,
+    sprintId: sprint3.id,
+    description: "Create CI checklist template for release readiness.",
+    ownerId: avery.id,
+    dueDate: new Date(now - 7 * 86400000).toISOString(),
+    status: "open",
+    carriedOverFromId: null
+  });
+  await retroActionItemsRepository.create({
+    retroId: retroCompleted.id,
+    sprintId: sprint3.id,
+    description: "Document flaky test ownership and triage flow.",
+    ownerId: riley.id,
+    dueDate: new Date(now - 10 * 86400000).toISOString(),
+    status: "complete",
+    carriedOverFromId: null
+  });
+
+  await Promise.all([
+    retroCardsRepository.create({
+      retroId: retroActive.id,
+      columnKey: "mad",
+      authorId: jordan.id,
+      content: "Build broke after dependency drift.",
+      upvotes: [],
+      groupId: null,
+      createdAt: new Date(now - 36 * 3600000).toISOString(),
+      updatedAt: new Date(now - 36 * 3600000).toISOString()
+    } as any),
+    retroCardsRepository.create({
+      retroId: retroActive.id,
+      columnKey: "sad",
+      authorId: morgan.id,
+      content: "Story kickoff had unclear owner handoff.",
+      upvotes: [],
+      groupId: null,
+      createdAt: new Date(now - 18 * 3600000).toISOString(),
+      updatedAt: new Date(now - 18 * 3600000).toISOString()
+    } as any),
+    retroCardsRepository.create({
+      retroId: retroActive.id,
+      columnKey: "glad",
+      authorId: avery.id,
+      content: "Cross-team review pairing reduced review cycle time.",
+      upvotes: [],
+      groupId: null,
+      createdAt: new Date(now - 8 * 3600000).toISOString(),
+      updatedAt: new Date(now - 8 * 3600000).toISOString()
+    } as any),
+    retroCardsRepository.create({
+      retroId: retroActive.id,
+      columnKey: "glad",
+      authorId: parker.id,
+      content: "Shared checklist caught release risk early.",
+      upvotes: [],
+      groupId: null
+    })
+  ]);
+  await retroActionItemsRepository.create({
+    retroId: retroActive.id,
+    sprintId: activeSprint.id,
+    description: "Carry over CI checklist adoption to all feature squads.",
+    ownerId: avery.id,
+    dueDate: new Date(now + 5 * 86400000).toISOString(),
+    status: "open",
+    carriedOverFromId: completedOpenItem.id
+  });
+
   await storiesRepository.create({
-    sprintId: sprint.id,
+    sprintId: activeSprint.id,
     title: "Seed Story",
     description: "Generated by seed script",
     storyPoints: 3,
@@ -142,15 +290,8 @@ async function main() {
     boardColumn: "backlog"
   });
 
-  // Keep repository files warm.
-  await Promise.all([
-    retrosRepository.getAll(),
-    retroCardsRepository.getAll(),
-    retroActionItemsRepository.getAll()
-  ]);
-
   // eslint-disable-next-line no-console
-  console.log("Seed complete: teams, members, hierarchy, coordinators, and sample sprint data created.");
+  console.log("Seed complete: teams, members, hierarchy, sprint + retros sample data created.");
 }
 
 main().catch((err) => {
