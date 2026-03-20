@@ -1,10 +1,18 @@
 import { Router } from "express";
+import path from "node:path";
 import type { Sprint } from "@the-ruck/shared";
-import { sprintsRepository, storiesRepository } from "../repositories";
+import { sprintsRepository, storiesRepository, teamMembersRepository } from "../repositories";
 import { HttpError } from "../utils/httpError";
 import { sendEmptySuccess, sendSuccess } from "../utils/envelope";
 
 export const sprintsRoutes = Router();
+
+const velocityEngine = require(path.join(process.cwd(), "shared", "velocityEngine.js")) as {
+  calculateEffectiveDays: (defaultAvailabilityDays: number, capacityMultiplier: number) => number;
+};
+const workingDays = require(path.join(process.cwd(), "shared", "workingDays.js")) as {
+  countWorkingDaysInRange: (startDate: string, endDate: string) => number;
+};
 
 sprintsRoutes.get("/", async (_req, res) => {
   const data = await sprintsRepository.getAll();
@@ -55,6 +63,52 @@ sprintsRoutes.delete("/:id", async (req, res) => {
   const deleted = await sprintsRepository.delete(req.params.id);
   if (!deleted) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Sprint not found" });
   return sendEmptySuccess(res, { deletedId: req.params.id });
+});
+
+sprintsRoutes.get("/:id/capacity-context", async (req, res) => {
+  const sprint = await sprintsRepository.getById(req.params.id);
+  if (!sprint) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Sprint not found" });
+
+  const allSprints = await sprintsRepository.getAll();
+  const completedSprints = allSprints
+    .filter((s) => s.status === "completed")
+    .map((s) => ({
+      id: s.id,
+      name: s.name,
+      completedAt: s.completedAt,
+      velocityDataPoint: s.velocityDataPoint ?? 0
+    }));
+
+  const members = await teamMembersRepository.getAll();
+  const activeMembers = members
+    .filter((m) => m.isActive)
+    .map((m) => ({
+      ...m,
+      effectiveDays: velocityEngine.calculateEffectiveDays(
+        m.defaultAvailabilityDays,
+        m.capacityMultiplier ?? 100
+      )
+    }));
+
+  const workingDaysInSprint = workingDays.countWorkingDaysInRange(
+    sprint.startDate,
+    sprint.endDate
+  );
+
+  return sendSuccess(res, {
+    sprint: {
+      id: sprint.id,
+      name: sprint.name,
+      goal: sprint.goal,
+      startDate: sprint.startDate,
+      endDate: sprint.endDate,
+      capacityTarget: (sprint as any).capacityTarget ?? null,
+      capacitySnapshot: (sprint as any).capacitySnapshot ?? null
+    },
+    completedSprints,
+    activeMembers,
+    workingDaysInSprint
+  });
 });
 
 // Triggers velocity calculation and marks the sprint as completed.
