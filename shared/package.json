@@ -9,8 +9,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node --import tsx --test src/velocityEngine.test.ts src/retroTemplates.test.ts src/buildTeamTree.test.ts src/dashboardUtils.test.ts",
-    "test:coverage": "node --experimental-test-coverage --import tsx --test src/velocityEngine.test.ts src/retroTemplates.test.ts src/buildTeamTree.test.ts src/dashboardUtils.test.ts"
+    "test": "node --import tsx --test --test-concurrency=1 src/velocityEngine.test.ts src/retroTemplates.test.ts src/buildTeamTree.test.ts src/dashboardUtils.test.ts",
+    "test:coverage": "node --experimental-test-coverage --import tsx --test --test-concurrency=1 src/velocityEngine.test.ts src/retroTemplates.test.ts src/buildTeamTree.test.ts src/dashboardUtils.test.ts"
   },
   "devDependencies": {
     "tsx": "^4.19.2",

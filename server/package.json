@@ -9,8 +9,8 @@
     "seed": "tsx src/scripts/seed.ts",
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node --import ./tests/setup.mjs --import tsx --test tests/teamMembers.test.ts && node --import ./tests/setup.mjs --import tsx --test tests/sprints.test.ts && node --import ./tests/setup.mjs --import tsx --test tests/stories.test.ts && node --import ./tests/setup.mjs --import tsx --test tests/retros.test.ts && node --import ./tests/setup.mjs --import tsx --test tests/dashboard.test.ts && node --import ./tests/setup.mjs --import tsx --test tests/settings.test.ts",
-    "test:coverage": "node --experimental-test-coverage --import ./tests/setup.mjs --import tsx --test tests/teamMembers.test.ts && node --experimental-test-coverage --import ./tests/setup.mjs --import tsx --test tests/sprints.test.ts && node --experimental-test-coverage --import ./tests/setup.mjs --import tsx --test tests/stories.test.ts && node --experimental-test-coverage --import ./tests/setup.mjs --import tsx --test tests/retros.test.ts && node --experimental-test-coverage --import ./tests/setup.mjs --import tsx --test tests/dashboard.test.ts && node --experimental-test-coverage --import ./tests/setup.mjs --import tsx --test tests/settings.test.ts"
+    "test": "node --import ./tests/setup.mjs --import tsx --test --test-concurrency=1 tests/appExtras.test.ts tests/carriedOver.test.ts tests/dashboard.test.ts tests/retros.test.ts tests/settings.test.ts tests/sprints.test.ts tests/stories.test.ts tests/teamMembers.test.ts tests/teams.test.ts",
+    "test:coverage": "node --experimental-test-coverage --import ./tests/setup.mjs --import tsx --test --test-concurrency=1 tests/appExtras.test.ts tests/carriedOver.test.ts tests/dashboard.test.ts tests/retros.test.ts tests/settings.test.ts tests/sprints.test.ts tests/stories.test.ts tests/teamMembers.test.ts tests/teams.test.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",

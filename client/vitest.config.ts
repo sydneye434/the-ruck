@@ -16,7 +16,15 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "text-summary", "html"],
-      reportsDirectory: "./coverage"
+      reportsDirectory: "./coverage",
+      /** Focus coverage on testable library code (not entire app shell). */
+      include: ["src/lib/**/*.ts"],
+      thresholds: {
+        lines: 85,
+        statements: 85,
+        branches: 75,
+        functions: 85
+      }
     }
   },
   resolve: {

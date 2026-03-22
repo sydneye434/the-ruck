@@ -1,6 +1,17 @@
 // Developed by Sydney Edwards
 import { randomUUID } from "node:crypto";
 
+export function createTeam(overrides = {}) {
+  return {
+    id: overrides.id ?? randomUUID(),
+    name: overrides.name ?? "Team",
+    description: overrides.description ?? "",
+    parentTeamId: overrides.parentTeamId !== undefined ? overrides.parentTeamId : null,
+    color: overrides.color ?? "var(--color-accent)",
+    ...overrides
+  };
+}
+
 export function createMember(overrides = {}) {
   return {
     id: overrides.id ?? randomUUID(),

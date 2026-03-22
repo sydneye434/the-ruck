@@ -76,7 +76,7 @@ teamsRoutes.post("/", asyncHandler(async (req: Request, res: Response) => {
     parentTeamId,
     color: String(input.color ?? "var(--color-accent)")
   });
-  return sendSuccess(res, created, { location: `/api/teams/${created.id}` });
+  return sendSuccess(res, created, { location: `/api/teams/${created.id}` }, 201);
 }));
 
 teamsRoutes.patch("/:id", asyncHandler(async (req: Request, res: Response) => {

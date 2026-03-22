@@ -1,7 +1,7 @@
 // Developed by Sydney Edwards
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildTeamTree } from "./utils/buildTeamTree";
+import { buildTeamTree, withComputedDepth } from "./utils/buildTeamTree";
 import type { Team } from "./types/domain";
 
 test("flat list of root-only teams → each is its own root node", () => {
@@ -53,4 +53,21 @@ test("circular reference input → does not throw; mutual parent links leave no 
 
 test("empty array → returns empty array", () => {
   assert.deepEqual(buildTeamTree([]), []);
+});
+
+test("withComputedDepth assigns depths", () => {
+  const teams: Team[] = [
+    { id: "root", name: "R", parentTeamId: null, color: "#000" },
+    { id: "child", name: "C", parentTeamId: "root", color: "#000" }
+  ];
+  const withDepth = withComputedDepth(teams);
+  assert.equal(withDepth.find((t) => t.id === "root")?.depth, 0);
+  assert.equal(withDepth.find((t) => t.id === "child")?.depth, 1);
+});
+
+test("orphan parent id → node treated as root", () => {
+  const teams: Team[] = [{ id: "solo", name: "S", parentTeamId: "missing", color: "#000" }];
+  const roots = buildTeamTree(teams);
+  assert.equal(roots.length, 1);
+  assert.equal(roots[0].id, "solo");
 });

@@ -127,6 +127,14 @@ Details: **`server/API.md`** and **`http://localhost:3001/api/docs`** (when runn
 
 ---
 
+## Testing
+
+- **Run everything:** `npm test` (workspaces: client → server → shared). Server tests share one Node process with `--test-concurrency=1` so `server/tests/test-data` is not corrupted by parallel files.
+- **Coverage:** `npm run test:coverage`
+  - **Client:** `src/lib/**` only — Vitest thresholds warn below **85%** lines/statements (see `client/vitest.config.ts`).
+  - **Shared:** Node’s built-in coverage over `velocityEngine`, `buildTeamTree`, retro templates, and dashboard helpers (typically **~97%+** lines on those sources).
+  - **Server:** `--experimental-test-coverage` over the whole server tree; integration tests hit routes, app shell, and export/OpenAPI. Line % for the full package is lower than routes alone because `seed.ts`, `workingDays`, etc. are mostly unused in tests.
+
 ## Architecture
 
 - **Repository pattern:** handlers use repositories only; swap `server/src/repositories/*` implementations to move to Postgres/Prisma without changing business logic.
@@ -174,7 +182,7 @@ Details: **`server/API.md`** and **`http://localhost:3001/api/docs`** (when runn
 
 1. Fork the repo and create a feature branch.  
 2. Run `npm install` and `npm run typecheck` before opening a PR.  
-3. Run `npm test` when touching shared logic (velocity engine).  
+3. Run `npm test` (and `npm run test:coverage` when changing testable library code).  
 4. Keep UI/API changes documented in the PR; update **`README.md`**, **`server/API.md`**, and the OpenAPI spec when endpoints change.
 
 ---

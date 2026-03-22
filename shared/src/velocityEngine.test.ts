@@ -6,7 +6,11 @@ import {
   calculateTrend,
   calculateTeamAvailability,
   calculateRecommendedCapacity,
-  getVelocityWindow
+  getVelocityWindow,
+  getConfidenceLevel,
+  calculateAverageVelocity,
+  buildCapacitySnapshot,
+  calculateEffectiveDays
 } from "./velocityEngine";
 
 test("snapToFibonacci cases", () => {
@@ -113,4 +117,71 @@ test("calculateTrend: two sprints only", () => {
     ]),
     "up"
   );
+});
+
+test("getConfidenceLevel maps sprint counts", () => {
+  assert.equal(getConfidenceLevel(0), "none");
+  assert.equal(getConfidenceLevel(1), "low");
+  assert.equal(getConfidenceLevel(3), "medium");
+  assert.equal(getConfidenceLevel(5), "high");
+  assert.equal(getConfidenceLevel(null), "none");
+});
+
+test("calculateAverageVelocity", () => {
+  assert.equal(calculateAverageVelocity(null), null);
+  assert.equal(calculateAverageVelocity([]), null);
+  assert.equal(calculateAverageVelocity([{ velocityDataPoint: 10 }, { velocityDataPoint: 20 }]), 15);
+});
+
+test("buildCapacitySnapshot preserves fields", () => {
+  const snap = buildCapacitySnapshot({
+    velocityWindow: 3,
+    averageVelocity: 12,
+    teamAvailabilityRatio: 0.8,
+    memberBreakdown: [],
+    recommendedCapacity: 9.6,
+    finalCapacityTarget: 8,
+    fibonacciSnapped: true
+  });
+  assert.equal(snap.velocityWindow, 3);
+  assert.equal(snap.fibonacciSnapped, true);
+  assert.ok(snap.calculatedAt instanceof Date);
+});
+
+test("getVelocityWindow edge cases", () => {
+  assert.deepEqual(getVelocityWindow(null, 3), []);
+  assert.deepEqual(getVelocityWindow([], 2), []);
+  assert.deepEqual(
+    getVelocityWindow(
+      [{ id: "x", name: "N", completedAt: "2025-01-01T00:00:00.000Z", velocityDataPoint: 1 }],
+      0
+    ),
+    []
+  );
+  const mixed = [
+    { id: "bad", name: "", completedAt: "", velocityDataPoint: 1 },
+    { id: "ok", name: "OK", completedAt: "2025-06-01T00:00:00.000Z", velocityDataPoint: 5 }
+  ];
+  assert.equal(getVelocityWindow(mixed as any, 5).length, 1);
+});
+
+test("calculateEffectiveDays", () => {
+  assert.equal(calculateEffectiveDays(10, 100), 10);
+  assert.equal(calculateEffectiveDays(10, 50), 5);
+});
+
+test("calculateTeamAvailability empty / null members", () => {
+  const empty = calculateTeamAvailability([], {});
+  assert.equal(empty.totalEffectiveDays, 0);
+  assert.equal(empty.teamAvailabilityRatio, 0);
+  assert.equal(calculateTeamAvailability(null, {}).memberBreakdown.length, 0);
+});
+
+test("snapToFibonacci invalid input", () => {
+  assert.equal(snapToFibonacci(Number.NaN), null);
+  assert.equal(snapToFibonacci(Number.POSITIVE_INFINITY), null);
+});
+
+test("calculateRecommendedCapacity when ratio undefined", () => {
+  assert.equal(calculateRecommendedCapacity(10, undefined), null);
 });
