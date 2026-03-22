@@ -224,34 +224,34 @@ See **[docs/TESTING.md](docs/TESTING.md)** for full detail: where tests live, **
 
 ## Screenshots
 
-Illustrative **SVG** mockups (dark theme, pink accents) — versioned in-repo so GitHub renders without large binaries. To swap in **real** PNG/WebP captures from your machine, see **[docs/screenshots/README.md](docs/screenshots/README.md)**.
+Illustrative mockups (**PNG** for GitHub — embedded **SVG** in README often fails with “Invalid image source”). Source **SVG**s live in **`docs/screenshots/`**; regenerate PNGs after editing SVGs: `npm run screenshots:rasterize`. To swap in **real** captures, see **[docs/screenshots/README.md](docs/screenshots/README.md)**.
 
 ### Dashboard (`/dashboard`)
-![Dashboard — active sprint, health, velocity](docs/screenshots/dashboard.svg)
+![Dashboard — active sprint, health, velocity](docs/screenshots/dashboard.png)
 
 ### Backlog (`/backlog`)
-![Backlog — stories and Planning Poker entry](docs/screenshots/backlog.svg)
+![Backlog — stories and Planning Poker entry](docs/screenshots/backlog.png)
 
 ### Active sprint (`/sprint/active`)
-![Active sprint — Kanban board with Board / Burndown / Health tabs](docs/screenshots/sprint-board.svg)
+![Active sprint — Kanban board with Board / Burndown / Health tabs](docs/screenshots/sprint-board.png)
 
 ### Planning Poker (`/poker/:sessionId`)
-![Planning poker — vote cards and facilitator](docs/screenshots/planning-poker.svg)
+![Planning poker — vote cards and facilitator](docs/screenshots/planning-poker.png)
 
 ### Capacity planning (sprint slide-over)
-![Capacity planning — velocity and capacity target](docs/screenshots/capacity-planning.svg)
+![Capacity planning — velocity and capacity target](docs/screenshots/capacity-planning.png)
 
 ### Retrospective (`/retro/:id`)
-![Retro board — columns and phases](docs/screenshots/retro-board.svg)
+![Retro board — columns and phases](docs/screenshots/retro-board.png)
 
 ### Team (`/team`)
-![Team — members and roles](docs/screenshots/team.svg)
+![Team — members and roles](docs/screenshots/team.png)
 
 ### Org chart (`/team/org-chart`)
-![Org chart — team hierarchy](docs/screenshots/org-chart.svg)
+![Org chart — team hierarchy](docs/screenshots/org-chart.png)
 
 ### Settings (`/settings`)
-![Settings — defaults and theme](docs/screenshots/settings.svg)
+![Settings — defaults and theme](docs/screenshots/settings.png)
 
 ---
 

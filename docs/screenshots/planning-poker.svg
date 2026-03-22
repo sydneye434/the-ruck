@@ -1,10 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 560" width="920">
-  <title>The Ruck  Planning poker (illustrative)</title>
+  <title>The Ruck - Planning poker (illustrative)</title>
   <rect width="920" height="560" fill="#050505"/>
-  <text x="460" y="56" fill="#ffeaf6" font-family="system-ui,sans-serif" font-size="20" font-weight="600" text-anchor="middle">Planning Poker · Sprint</text>
+  <text x="460" y="56" fill="#ffeaf6" font-family="system-ui,sans-serif" font-size="20" font-weight="600" text-anchor="middle">Planning Poker - Sprint</text>
   <circle cx="200" cy="100" r="18" fill="#ff76c5" stroke="#2a2a2a"/>
-  <text x="230" y="104" fill="#ffc8e5" font-family="system-ui,sans-serif" font-size="12">Facilitator</text>
-  <text x="250" y="118" fill="#ffc8e5" font-family="system-ui,sans-serif" font-size="14">=Q</text>
+  <text x="230" y="104" fill="#ffc8e5" font-family="system-ui,sans-serif" font-size="12">Facilitator (lead)</text>
   <text x="460" y="140" fill="#ffc8e5" font-family="system-ui,sans-serif" font-size="16" text-anchor="middle">Story title</text>
   <g transform="translate(120,280)">
     <rect x="0" y="0" width="56" height="88" fill="#1a1a1a" stroke="#2a2a2a" rx="6"/>
@@ -24,5 +23,5 @@
   </g>
   <rect x="360" y="420" width="200" height="40" fill="#ff1493" rx="4"/>
   <text x="460" y="445" fill="#050505" font-family="system-ui,sans-serif" font-size="13" font-weight="600" text-anchor="middle">Reveal votes</text>
-  <text x="460" y="548" fill="#c48aa9" font-family="system-ui,sans-serif" font-size="11" text-anchor="middle">Illustrative mock  replace with your own screenshot if you prefer</text>
+  <text x="460" y="548" fill="#c48aa9" font-family="system-ui,sans-serif" font-size="11" text-anchor="middle">Illustrative mock - replace with your own screenshot if you prefer</text>
 </svg>
