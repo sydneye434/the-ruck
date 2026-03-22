@@ -99,5 +99,17 @@
     },
     "createdAt": "2026-03-20T20:17:10.569Z",
     "id": "d41dbb69-30ce-4c84-839c-664a6bf05eca"
+  },
+  {
+    "type": "story_moved",
+    "description": "Story 'Seed Story' moved to in_progress",
+    "actorId": "573a5f66-8343-40dd-a95a-ce79cca26128",
+    "metadata": {
+      "storyId": "fd2c11c3-9974-4462-b845-0ea957474f55",
+      "sprintId": "92b66795-6eae-4c8e-838f-dc521dee9a69",
+      "boardColumn": "in_progress"
+    },
+    "createdAt": "2026-03-22T17:35:12.583Z",
+    "id": "7cb0bc44-efc7-4ceb-9fe5-5bfe966006df"
   }
 ]

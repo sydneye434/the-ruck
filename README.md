@@ -15,7 +15,7 @@ Like the rugby ruck it's named after — the contested moment where a team fight
 | **[docs/TESTING.md](docs/TESTING.md)** | How tests are organized (shared / server / client), runners, and conventions |
 | **[docs/STYLE_GUIDE.md](docs/STYLE_GUIDE.md)** | TypeScript, React, Express, and shared-package guidelines |
 | **[docs/TRAINING_AGILE_AT_SCALE.md](docs/TRAINING_AGILE_AT_SCALE.md)** | Agile-at-scale usage |
-| **[docs/screenshots/README.md](docs/screenshots/README.md)** | Replacing illustrative screenshots with real captures |
+| **[docs/screenshots/README.md](docs/screenshots/README.md)** | Capturing README screenshots from the running app |
 | **[CREDITS.md](CREDITS.md)** | Credits |
 
 ---
@@ -67,6 +67,7 @@ Then:
 | `npm run seed` | Reseed `server/data/*.json` (same as `npm -w server run seed`) |
 | `npm -w client run dev` | Client only |
 | `npm -w server run dev` | API only |
+| `npm run screenshots:capture` | Regenerate **`docs/screenshots/*.png`** from the running app (needs `npm run dev`) |
 
 ---
 
@@ -224,7 +225,14 @@ See **[docs/TESTING.md](docs/TESTING.md)** for full detail: where tests live, **
 
 ## Screenshots
 
-Illustrative mockups (**PNG** for GitHub — embedded **SVG** in README often fails with “Invalid image source”). Source **SVG**s live in **`docs/screenshots/`**; regenerate PNGs after editing SVGs: `npm run screenshots:rasterize`. To swap in **real** captures, see **[docs/screenshots/README.md](docs/screenshots/README.md)**.
+PNG captures for GitHub (embedded **SVG** in README often fails). **Regenerate from your running app:**
+
+```bash
+npm run dev          # Vite + API on :5173 / :3001
+npm run screenshots:capture
+```
+
+This uses **Playwright** (prefers **Chrome** if installed) to save **`docs/screenshots/*.png`**. For the **capacity planning** slide-over, keep at least one sprint in **planning** status and use **Plan Sprint** — otherwise the script saves the sprint list as a fallback. **SVG** sources and **`npm run screenshots:rasterize`** remain optional for hand-drawn mockups; details: **[docs/screenshots/README.md](docs/screenshots/README.md)**.
 
 ### Dashboard (`/dashboard`)
 ![Dashboard — active sprint, health, velocity](docs/screenshots/dashboard.png)

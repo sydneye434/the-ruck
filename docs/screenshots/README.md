@@ -1,10 +1,38 @@
 # Screenshots
 
-The images referenced from the root **`README.md`** live in this folder.
+Images referenced from the root **`README.md`** live in this folder as **`.png`** files (GitHub renders PNG reliably; SVG embeds often error).
 
-- **`*.svg`** — source **vector** mockups (edit these when refreshing art direction).
-- **`*.png`** — **raster** copies committed for **GitHub** (README embeds PNG; SVG embeds often show “Invalid image source”). After changing an SVG, run from repo root:  
-  `npm run screenshots:rasterize`
-- To use **real app captures**: run `npm run dev` + `npm run seed`, take PNG/WebP screenshots, replace the matching **`*.png`** here (keep filenames aligned with **`README.md`**).
+## Capture from the running app (recommended)
 
-Suggested capture sizes: **1200–1600px** wide for clarity; compress PNGs or use WebP for smaller clones.
+1. Start the stack: `npm run dev` (client **http://localhost:5173**, API **http://localhost:3001**). Optional: `npm run seed` for richer demo data.
+2. From the **repo root**:  
+   `npm run screenshots:capture`
+
+This runs **`capture.mjs`** (Playwright). It:
+
+- Grabs **Dashboard**, **Backlog**, **Active sprint**, **Settings**, **Team**, **Org chart**.
+- Opens **Sprint history** and, if a **Plan Sprint** button exists (a sprint in **planning** status), opens **capacity planning**; otherwise it saves the sprint list as **`capacity-planning.png`**.
+- Uses the first **retro** from the API for **`retro-board.png`** when possible.
+- Creates a **Planning Poker** session via **`POST /api/poker/sessions`** and captures the room (needs an **active** sprint with stories).
+
+Override URLs if needed:
+
+```bash
+SCREENSHOT_BASE=http://localhost:5174 SCREENSHOT_API=http://localhost:3001/api npm run screenshots:capture
+```
+
+First-time setup may download Chromium: `npx playwright install chromium` (or rely on system **Chrome** via `channel: 'chrome'`).
+
+## SVG + rasterize (optional)
+
+Illustrative **`*.svg`** files can be edited by hand, then:
+
+```bash
+npm run screenshots:rasterize
+```
+
+…to produce PNGs via **sharp** (useful if you don’t run the app).
+
+## Replace with manual captures
+
+You can overwrite any **`*.png`** with your own exports (e.g. 1200–1600px wide) and keep the same filenames as in **`README.md`**.

@@ -14,10 +14,12 @@
     "typecheck": "npm -w shared run typecheck && npm -w server run typecheck && npm -w client run typecheck",
     "test": "npm test --workspaces --if-present",
     "test:coverage": "npm run test:coverage --workspaces --if-present",
-    "screenshots:rasterize": "node docs/screenshots/rasterize.mjs"
+    "screenshots:rasterize": "node docs/screenshots/rasterize.mjs",
+    "screenshots:capture": "node docs/screenshots/capture.mjs"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",
+    "playwright": "^1.49.1",
     "sharp": "^0.33.5"
   }
 }
