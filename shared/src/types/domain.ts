@@ -66,6 +66,13 @@ export type TeamMemberLink = Identifiable & {
   updatedAt?: ISODateString;
 };
 
+/** Stored on sprint completion — full breakdown for history / sparklines. */
+export type SprintFinalHealthScore = {
+  total: number;
+  grade: string;
+  components: Record<string, { score: number; max: number; label: string; detail: string }>;
+};
+
 export type Sprint = Identifiable & {
   name: string;
   startDate: ISODateString;
@@ -77,6 +84,8 @@ export type Sprint = Identifiable & {
   completedAt?: ISODateString;
   // Stored when the sprint is completed (sum of "done" story points for that sprint).
   velocityDataPoint?: number;
+  /** Snapshot of sprint health at completion (for sparkline / history). */
+  finalHealthScore?: SprintFinalHealthScore | null;
   createdAt?: ISODateString;
   updatedAt?: ISODateString;
 };
@@ -90,6 +99,8 @@ export type Story = Identifiable & {
   labels: string[];
   acceptanceCriteria: string[];
   boardColumn: StoryBoardColumn;
+  /** When the story was assigned to its current sprint (ISO). Set when joining an active sprint. */
+  sprintAddedAt?: ISODateString | null;
   createdAt?: ISODateString;
   updatedAt?: ISODateString;
 };

@@ -133,6 +133,55 @@ test("POST /api/stories missing storyPoints → 400", async () => {
   assertStatus(res, 400);
 });
 
+test("POST/PATCH story assigned to active sprint sets sprintAddedAt", async () => {
+  const planning = await request(app)
+    .post("/api/sprints")
+    .send({
+      name: "Planning",
+      startDate: "2026-01-05",
+      endDate: "2026-01-16",
+      status: "planning"
+    });
+  assertStatus(planning, 201);
+
+  const active = await request(app)
+    .post("/api/sprints")
+    .send({
+      name: "Active",
+      startDate: "2026-01-19",
+      endDate: "2026-01-30",
+      status: "active"
+    });
+  assertStatus(active, 201);
+  const activeId = active.body.data.id;
+
+  const created = await request(app).post("/api/stories").send({
+    sprintId: activeId,
+    title: "Born in active",
+    storyPoints: 3,
+    boardColumn: "backlog",
+    description: ""
+  });
+  assertStatus(created, 201);
+  assert.ok(created.body.data.sprintAddedAt);
+
+  const fromPlanning = await request(app).post("/api/stories").send({
+    sprintId: planning.body.data.id,
+    title: "Started in planning",
+    storyPoints: 2,
+    boardColumn: "backlog",
+    description: ""
+  });
+  assertStatus(fromPlanning, 201);
+  assert.equal(fromPlanning.body.data.sprintAddedAt ?? null, null);
+
+  const moved = await request(app)
+    .patch(`/api/stories/${fromPlanning.body.data.id}`)
+    .send({ sprintId: activeId });
+  assertStatus(moved, 200);
+  assert.ok(moved.body.data.sprintAddedAt);
+});
+
 test("PATCH /api/stories/:id boardColumn → 200, column updated", async () => {
   const sprint = await request(app)
     .post("/api/sprints")

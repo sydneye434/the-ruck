@@ -72,7 +72,7 @@ Then:
 ## Features
 
 ### Dashboard (`/dashboard`)
-- Landing page: active sprint snapshot, multi-layer progress vs capacity, velocity sparkline (last completed sprints), team summary, retro summary, overdue action items, recent activity timeline
+- Landing page: active sprint snapshot, **Sprint Health** grade badge (hover the **ⓘ** for how the score works), multi-layer progress vs capacity, velocity sparkline (last completed sprints), team summary, retro summary, overdue action items, recent activity timeline
 - Auto-refresh when tab visible; manual refresh; “Getting Started” checklist when data is empty
 - Route title: `Dashboard · The Ruck`
 
@@ -81,9 +81,30 @@ Then:
 - Markdown description with preview; Fibonacci **or** T-shirt sizing (from settings); assignee, labels, column, acceptance criteria, sprint assignment; auto-save
 
 ### Active sprint (`/sprint/active`)
-- **Board | Burndown** tabs: Kanban default; **Burndown** shows ideal vs actual remaining work, projection, capacity target, and status (Recharts)
+- **Board | Burndown | Health** tabs: Kanban default; **Burndown** shows ideal vs actual remaining work, projection, capacity target, and status (Recharts); **Health** shows the **Sprint Health Score** (gauge, breakdown, trend, sparkline from last completed sprints)
 - Kanban (Backlog → In Progress → In Review → Done) with **@dnd-kit** drag-and-drop, optimistic updates, rollback on failure
 - Sprint header: goal, dates, days remaining, burndown-style progress, complete sprint (with confirm)
+
+### Sprint Health Score
+A **read-only** 0–100 score (letter grade **A–F**) summarizing how the sprint is going. It is **computed on demand** from existing data (not stored for the active sprint). The **Dashboard** shows a compact grade badge next to the active sprint name; the **Health** tab shows the full breakdown and a sparkline of scores from **completed** sprints (each completion stores a **final** snapshot on the sprint for history).
+
+**Design:** The score is **transparent** — every component is shown with points and a plain-language explanation. Implementation lives in **`shared/src/healthScore.ts`**; API: **`GET /api/sprints/:id/health`**.
+
+**Total:** Sum of **five** components, **20 points** each (max **100**).
+
+| Component | What it measures | Scoring (summary) |
+|-----------|------------------|---------------------|
+| **Velocity adherence** | Pace of done work vs ideal burn from the burndown | **Actual burn rate** = completed story points ÷ (working days elapsed from sprint start through today or end). **Ideal burn rate** = (capacity target, or total points if no target) ÷ total sprint working days. **Ratio** = actual ÷ ideal. Points: ≥0.95 → 20; ≥0.80 → 15; ≥0.65 → 10; ≥0.50 → 5; &lt;0.50 → 0. If **no** working days elapsed yet → **10** (neutral). |
+| **Scope stability** | Stories added after sprint start | Uses **`sprintAddedAt`** on each story (set when the story is assigned to the **active** sprint). **Scope creep ratio** = (stories with `sprintAddedAt` date **after** sprint start) ÷ (original story count). Points: 0 creep → 20; ≤10% → 16; ≤20% → 12; ≤30% → 6; &gt;30% → 0. |
+| **Capacity alignment** | Planned work vs capacity target | **Over/under** = total story points in sprint ÷ capacity target. If **no** capacity target → **10** (neutral). Points: 0.90–1.10 → 20; 0.80–1.20 → 14; 0.70–1.30 → 8; otherwise → 0. |
+| **Team availability** | Team capacity signal | Uses **`teamAvailabilityRatio`** from the planning **capacity snapshot** when present; otherwise **live** ratio from current team members. If **no** usable ratio → **10** (neutral). Points: ≥0.95 → 20; ≥0.85 → 16; ≥0.70 → 10; ≥0.55 → 5; &lt;0.55 → 0. |
+| **Retro health** | Reflection and follow-through | **+5** if a retro exists for this sprint; **+5** if the retro has **≥3** cards; **+5** if **≥1** action item; **+5** from **closure** of action items from the **last two** prior retros (≥50% closed → full 5; &gt;0% → 2; 0% → 0). |
+
+**Grade:** 90–100 → A; 80–89 → B; 70–79 → C; 60–69 → D; &lt;60 → F.
+
+**Trend:** Compares to the **previous completed sprint’s** stored health total (if any): ↑ / → / ↓, or “insufficient data” when there is no prior score.
+
+**Completion:** **`POST /api/sprints/:id/complete`** saves **`finalHealthScore`** `{ total, grade, components }` on the sprint for history and sparklines.
 
 ### Sprint history (`/sprints`)
 - All sprints, reverse chronological; status, velocity; create sprint; set active (one active sprint rule); **Capacity Planning** slide-over for planning sprints
@@ -116,6 +137,7 @@ Then:
 ### Backend & data
 - **JSON repositories** under `server/data/` (override with `THE_RUCK_DATA_DIR`)
 - **Burndown snapshots** — daily **`SprintDaySnapshot`** rows per sprint (remaining/completed points, column counts); **upsert** per calendar day. Recorded on: **cron** (23:59 local), story moves to/from **done**, sprint **complete**, sprint **active** (day‑0 snapshot). See **`GET /api/sprints/:id/burndown`** for ideal line, snapshots, and projection.
+- **Sprint Health Score** — **`shared/src/healthScore.ts`**; **`GET /api/sprints/:id/health`** returns fresh calculation + history; **`GET /api/dashboard`** includes `activeSprint.healthScore` `{ total, grade, trend }`; **sprint completion** persists **`finalHealthScore`** for sparklines.
 - **Activity log** for dashboard feed (story moves, sprint completed, retro cards, action items, etc.)
 - **Velocity engine** (`shared/src/velocityEngine.ts`) — shared TypeScript module (no Node `module.exports` in the browser bundle)
 - **Burndown math** (`shared/src/burndownUtils.ts`) — ideal line (working days), projected completion; used by the API and UI
@@ -129,11 +151,11 @@ Then:
 Core resources:
 - `GET/POST /api/team-members`, `GET/PATCH/DELETE /api/team-members/:id`
 - `GET/POST /api/teams`, tree, members, hierarchy (see `server/src/routes/teamsRoutes.ts`)
-- `GET/POST /api/sprints`, `GET/PATCH/DELETE /api/sprints/:id`, `POST /api/sprints/:id/complete`, `GET /api/sprints/:id/capacity-context`, `GET /api/sprints/:id/burndown` (snapshots, ideal burndown, projection)
+- `GET/POST /api/sprints`, `GET/PATCH/DELETE /api/sprints/:id`, `POST /api/sprints/:id/complete`, `GET /api/sprints/:id/capacity-context`, `GET /api/sprints/:id/burndown` (snapshots, ideal burndown, projection), `GET /api/sprints/:id/health` (Sprint Health Score + breakdown + history)
 - `GET/POST /api/stories`, `GET/PATCH/DELETE /api/stories/:id` — `?sprintId=backlog` or sprint id
 - `GET/POST /api/retros`, nested cards & action items under `/api/retros/:id/...`
 - `GET/PUT /api/settings` — extended settings (sprint length, velocity window, story scale, retro defaults, date format)
-- `GET /api/dashboard` — aggregated dashboard payload
+- `GET /api/dashboard` — aggregated dashboard payload (includes **`activeSprint.healthScore`** when an active sprint exists)
 - `GET /api/export` — full JSON export
 - `DELETE /api/reset` — clear data files and re-run seed
 
@@ -154,7 +176,7 @@ See **[docs/TESTING.md](docs/TESTING.md)** for full detail: where tests live, **
 ## Architecture
 
 - **Repository pattern:** handlers use repositories only; swap `server/src/repositories/*` implementations to move to Postgres/Prisma without changing business logic.
-- **Shared package (`shared/`):** domain types (`shared/src/types`), `velocityEngine`, `buildTeamTree`, API types. Client imports source via Vite alias; server uses TypeScript path mapping to `shared/src`.
+- **Shared package (`shared/`):** domain types (`shared/src/types`), `velocityEngine`, **`healthScore`**, `buildTeamTree`, API types. Client imports source via Vite alias; server uses TypeScript path mapping to `shared/src`.
 - **SettingsContext:** single settings fetch, centralized `formatDate` and `updateSetting` for consistent UX.
 
 ---

@@ -20,6 +20,7 @@ import {
   recordBurndownSnapshotForSprint,
   shouldRecordForSprintActivation
 } from "../services/burndownSnapshotService";
+import { buildHealthPayloadForSprintId, toStoredFinalHealth } from "../services/sprintHealthService";
 import { HttpError } from "../utils/httpError";
 import { sendEmptySuccess, sendSuccess } from "../utils/envelope";
 import { logActivity } from "../utils/activityLogger";
@@ -119,6 +120,19 @@ sprintsRoutes.get(
       idealBurndown,
       projectedCompletion,
       projectedLine
+    });
+  })
+);
+
+sprintsRoutes.get(
+  "/:id/health",
+  asyncHandler(async (req, res) => {
+    const payload = await buildHealthPayloadForSprintId(req.params.id);
+    if (!payload) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Sprint not found" });
+    return sendSuccess(res, {
+      healthScore: payload.healthScore,
+      calculatedAt: payload.calculatedAt,
+      history: payload.history
     });
   })
 );
@@ -245,10 +259,16 @@ sprintsRoutes.post(
 
   const velocityDataPoint = doneStories.reduce((sum, s) => sum + s.storyPoints, 0);
 
+  const healthPayload = await buildHealthPayloadForSprintId(req.params.id, {
+    asOfDateYmd: sprint.endDate.slice(0, 10)
+  });
+  const finalHealthScore = healthPayload ? toStoredFinalHealth(healthPayload.healthScore) : undefined;
+
   const updated = await sprintsRepository.update(req.params.id, {
     status: "completed",
     completedAt: new Date().toISOString(),
-    velocityDataPoint
+    velocityDataPoint,
+    ...(finalHealthScore ? { finalHealthScore } : {})
   });
 
   if (!updated) {

@@ -17,6 +17,7 @@ import { Card } from "../../components/common/Card";
 import { Badge } from "../../components/common/Badge";
 import { Avatar } from "../../components/common/Avatar";
 import { SprintProgressBar } from "../../components/common/SprintProgressBar";
+import { HealthScoreInfoIcon } from "../../components/common/HealthScoreInfoIcon";
 import { DashboardSkeleton } from "./components/DashboardSkeleton";
 import { formatRelativeTime } from "../../lib/formatRelativeTime";
 import { useSettings } from "../../settings/SettingsContext";
@@ -30,6 +31,21 @@ const ACTIVITY_ICON: Record<DashboardData["recentActivity"][number]["type"], str
   retro_card_added: "📝",
   action_item_completed: "✔"
 };
+
+function healthBadgeStyle(grade: string): { background: string; color: string } {
+  switch (grade) {
+    case "A":
+      return { background: "var(--color-success)", color: "var(--color-bg-primary)" };
+    case "B":
+      return { background: "color-mix(in srgb, var(--color-success) 72%, white)", color: "var(--color-bg-primary)" };
+    case "C":
+      return { background: "var(--color-warning)", color: "var(--color-bg-primary)" };
+    case "D":
+      return { background: "#f4a261", color: "var(--color-bg-primary)" };
+    default:
+      return { background: "var(--color-danger)", color: "var(--color-bg-primary)" };
+  }
+}
 
 export function DashboardPage() {
   const { formatDate } = useSettings();
@@ -175,7 +191,29 @@ export function DashboardPage() {
         <div className="space-y-3">
           {active ? (
             <Card padding="md">
-              <h2 className="font-heading text-3xl text-[var(--color-text-primary)]">{active.name}</h2>
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="font-heading text-3xl text-[var(--color-text-primary)]">{active.name}</h2>
+                {active.healthScore ? (
+                  <>
+                    <span
+                      className="inline-flex h-9 min-w-[2.25rem] items-center justify-center rounded-full px-2 font-heading text-lg font-bold"
+                      style={healthBadgeStyle(active.healthScore.grade)}
+                      title={`Sprint health ${active.healthScore.total}/100 · ${
+                        active.healthScore.trend === "up"
+                          ? "Trending up"
+                          : active.healthScore.trend === "down"
+                            ? "Trending down"
+                            : active.healthScore.trend === "stable"
+                              ? "Stable vs last sprint"
+                              : "Trend N/A"
+                      }`}
+                    >
+                      {active.healthScore.grade}
+                    </span>
+                    <HealthScoreInfoIcon className="h-9" />
+                  </>
+                ) : null}
+              </div>
               <p className="mt-1 text-sm italic text-[var(--color-text-secondary)]">
                 {active.goal?.trim() ? active.goal : "No sprint goal set"}
               </p>

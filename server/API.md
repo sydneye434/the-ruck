@@ -31,6 +31,7 @@ All responses use this envelope:
 - `POST /api/sprints/:id/complete`
 - `GET /api/sprints/:id/capacity-context` — capacity planning context (velocity window, teams, working days)
 - `GET /api/sprints/:id/burndown` — sprint summary, **snapshots**, **ideal burndown** (working days), **projected completion**, **projected line** for charts
+- `GET /api/sprints/:id/health` — **Sprint Health Score** (0–100, grade, five components, trend), `calculatedAt`, and recent completed-sprint history — see **README** (“Sprint Health Score”) for calculation rules
 
 ### Stories
 - `GET /api/stories`

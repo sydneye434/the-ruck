@@ -24,6 +24,10 @@ import {
   SprintBurndownChart,
   type BurndownApiPayload
 } from "../../components/burndown/SprintBurndownChart";
+import {
+  SprintHealthPanel,
+  type SprintHealthApiPayload
+} from "./components/SprintHealthPanel";
 
 const COLUMN_ORDER: StoryBoardColumn[] = ["backlog", "in_progress", "in_review", "done"];
 
@@ -119,9 +123,11 @@ export function ActiveSprintPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [activeDragStoryId, setActiveDragStoryId] = useState<string | null>(null);
-  const [sprintTab, setSprintTab] = useState<"board" | "burndown">("board");
+  const [sprintTab, setSprintTab] = useState<"board" | "burndown" | "health">("board");
   const [burndownData, setBurndownData] = useState<BurndownApiPayload | null>(null);
   const [burndownLoading, setBurndownLoading] = useState(false);
+  const [healthData, setHealthData] = useState<SprintHealthApiPayload | null>(null);
+  const [healthLoading, setHealthLoading] = useState(false);
 
   const membersById = useMemo(() => {
     const map = new Map<string, TeamMember>();
@@ -189,6 +195,25 @@ export function ActiveSprintPage() {
     };
   }, [sprintTab, activeSprint?.id]);
 
+  useEffect(() => {
+    if (sprintTab !== "health" || !activeSprint) return;
+    let cancelled = false;
+    (async () => {
+      setHealthLoading(true);
+      try {
+        const raw = await api.sprints.getHealth(activeSprint.id);
+        if (!cancelled) setHealthData(raw);
+      } catch {
+        if (!cancelled) setHealthData(null);
+      } finally {
+        if (!cancelled) setHealthLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [sprintTab, activeSprint?.id]);
+
   async function completeSprint() {
     if (!activeSprint) return;
     setCompleting(true);
@@ -236,6 +261,14 @@ export function ActiveSprintPage() {
           /* ignore */
         }
       }
+      if (sprintTab === "health" && activeSprint) {
+        try {
+          const h = await api.sprints.getHealth(activeSprint.id);
+          setHealthData(h);
+        } catch {
+          /* ignore */
+        }
+      }
     } catch (e) {
       setStories(previous);
       toast.error(e instanceof ApiClientError ? e.message : "Failed to move story. Reverted.");
@@ -255,6 +288,14 @@ export function ActiveSprintPage() {
       const updated = await api.stories.update(selectedStory.id, patch);
       setSelectedStory(updated);
       setStories((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
+      if (sprintTab === "health" && activeSprint) {
+        try {
+          const h = await api.sprints.getHealth(activeSprint.id);
+          setHealthData(h);
+        } catch {
+          /* ignore */
+        }
+      }
       setSaveState("saved");
       window.setTimeout(() => setSaveState("idle"), 1000);
     } catch (e) {
@@ -380,6 +421,17 @@ export function ActiveSprintPage() {
               >
                 Burndown
               </button>
+              <button
+                type="button"
+                onClick={() => setSprintTab("health")}
+                className={`border-b-2 px-3 py-2 text-sm font-medium ${
+                  sprintTab === "health"
+                    ? "border-[var(--color-accent)] text-[var(--color-text-primary)]"
+                    : "border-transparent text-[var(--color-text-muted)]"
+                }`}
+              >
+                Health
+              </button>
             </div>
           </Card>
 
@@ -412,7 +464,7 @@ export function ActiveSprintPage() {
                 ) : null}
               </DragOverlay>
             </DndContext>
-          ) : (
+          ) : sprintTab === "burndown" ? (
             <Card padding="md">
               {burndownLoading ? (
                 <p className="text-sm text-[var(--color-text-muted)]">Loading burndown…</p>
@@ -421,6 +473,10 @@ export function ActiveSprintPage() {
               ) : (
                 <p className="text-sm text-[var(--color-text-muted)]">Could not load burndown.</p>
               )}
+            </Card>
+          ) : (
+            <Card padding="md">
+              <SprintHealthPanel data={healthData} loading={healthLoading} />
             </Card>
           )}
         </>

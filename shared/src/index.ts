@@ -5,4 +5,5 @@ export * from "./repository/Repository";
 export * from "./utils/buildTeamTree";
 export * from "./velocityEngine";
 export * from "./burndownUtils";
+export * from "./healthScore";
 

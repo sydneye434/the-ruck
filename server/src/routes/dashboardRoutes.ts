@@ -14,6 +14,7 @@ import {
 } from "../repositories";
 import { sendSuccess } from "../utils/envelope";
 import { asyncHandler } from "../utils/asyncHandler";
+import { buildHealthPayloadForSprintId } from "../services/sprintHealthService";
 
 export const dashboardRoutes = Router();
 
@@ -46,8 +47,30 @@ dashboardRoutes.get(
   const retroCards = await retroCardsRepository.getAll();
 
   const activeSprint = sprints.find((s) => s.status === "active") ?? null;
-  const activeSprintData = (() => {
-    if (!activeSprint) return null;
+
+  let activeSprintData = null as null | {
+    id: string;
+    name: string;
+    goal: string;
+    startDate: string;
+    endDate: string;
+    daysRemaining: number;
+    isOverdue: boolean;
+    capacityTarget: number | null;
+    totalPoints: number;
+    completedPoints: number;
+    progressPercent: number;
+    capacityUsedPercent: number | null;
+    storiesByColumn: {
+      backlog: number;
+      in_progress: number;
+      in_review: number;
+      done: number;
+    };
+    healthScore: { total: number; grade: string; trend: string } | null;
+  };
+
+  if (activeSprint) {
     const sprintStories = stories.filter((story) => story.sprintId === activeSprint.id);
     const totalPoints = sprintStories.reduce((sum, story) => sum + (story.storyPoints ?? 0), 0);
     const completedPoints = sprintStories
@@ -61,7 +84,17 @@ dashboardRoutes.get(
     };
     const daysRemaining = dashboardUtils.calculateDaysRemaining(activeSprint.endDate);
     const capacityTarget = activeSprint.capacityTarget ?? null;
-    return {
+
+    const healthPayload = await buildHealthPayloadForSprintId(activeSprint.id);
+    const healthScore = healthPayload
+      ? {
+          total: healthPayload.healthScore.total,
+          grade: healthPayload.healthScore.grade,
+          trend: healthPayload.healthScore.trend
+        }
+      : null;
+
+    activeSprintData = {
       id: activeSprint.id,
       name: activeSprint.name,
       goal: activeSprint.goal,
@@ -77,9 +110,10 @@ dashboardRoutes.get(
         typeof capacityTarget === "number" && capacityTarget > 0
           ? dashboardUtils.calculateProgressPercent(completedPoints, capacityTarget)
           : null,
-      storiesByColumn
+      storiesByColumn,
+      healthScore
     };
-  })();
+  }
 
   const velocityTrend = dashboardUtils.buildVelocityTrend(
     sprints.filter((s) => s.status === "completed"),

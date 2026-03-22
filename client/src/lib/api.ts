@@ -2,6 +2,7 @@
 import type {
   ApiResponse,
   AppSettings,
+  HealthScoreResult,
   Retro,
   RetroActionItem,
   RetroCard,
@@ -159,6 +160,18 @@ export const api = {
       }>(`/sprints/${id}/capacity-context`),
     complete: (id: string) => request<Sprint>(`/sprints/${id}/complete`, { method: "POST" }),
     delete: (id: string) => del(`/sprints/${id}`),
+    getHealth: (id: string) =>
+      request<{
+        healthScore: HealthScoreResult;
+        calculatedAt: string;
+        history: Array<{
+          sprintId: string;
+          name: string;
+          total: number;
+          grade: string;
+          completedAt?: string;
+        }>;
+      }>(`/sprints/${id}/health`),
     getBurndown: (id: string) =>
       request<{
         sprint: {
@@ -291,6 +304,11 @@ export const api = {
             in_review: number;
             done: number;
           };
+          healthScore: {
+            total: number;
+            grade: string;
+            trend: HealthScoreResult["trend"];
+          } | null;
         } | null;
         velocityTrend: Array<{
           id: string;

@@ -14,6 +14,12 @@ export const storiesRoutes = Router();
 const VALID_POINTS = new Set([1, 2, 3, 5, 8, 13]);
 const VALID_COLUMNS = new Set<StoryBoardColumn>(["backlog", "in_progress", "in_review", "done"]);
 
+async function getActiveSprintId(): Promise<string | null> {
+  const sprints = await sprintsRepository.getAll();
+  const active = sprints.find((s) => s.status === "active");
+  return active?.id ?? null;
+}
+
 function asStoryPoints(v: unknown): StoryPoints | null {
   return typeof v === "number" && VALID_POINTS.has(v as number) ? (v as StoryPoints) : null;
 }
@@ -64,6 +70,10 @@ storiesRoutes.post(
     });
   }
 
+  const activeId = await getActiveSprintId();
+  const sprintAddedAt =
+    activeId != null && String(input.sprintId) === activeId ? new Date().toISOString() : undefined;
+
   const created = await storiesRepository.create({
     sprintId: String(input.sprintId),
     title: String(input.title),
@@ -74,7 +84,8 @@ storiesRoutes.post(
     acceptanceCriteria: Array.isArray(input.acceptanceCriteria)
       ? input.acceptanceCriteria.map((x: unknown) => String(x))
       : [],
-    boardColumn
+    boardColumn,
+    ...(sprintAddedAt ? { sprintAddedAt } : {})
   });
 
   const sprint = await sprintsRepository.getById(created.sprintId);
@@ -105,6 +116,18 @@ storiesRoutes.patch(
   const existing = await storiesRepository.getById(req.params.id);
   if (!existing) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Story not found" });
 
+  const activeId = await getActiveSprintId();
+  const nextSprintId =
+    patch.sprintId !== undefined ? String(patch.sprintId) : existing.sprintId;
+  const sprintChanged =
+    patch.sprintId !== undefined && String(patch.sprintId) !== existing.sprintId;
+  const sprintAddedAt =
+    sprintChanged && activeId != null && nextSprintId === activeId
+      ? new Date().toISOString()
+      : sprintChanged
+        ? null
+        : undefined;
+
   const updatePatch: Partial<Omit<Story, "id">> = {
     ...(patch.sprintId !== undefined ? { sprintId: String(patch.sprintId) } : {}),
     ...(patch.title !== undefined ? { title: String(patch.title) } : {}),
@@ -127,7 +150,8 @@ storiesRoutes.patch(
       : {}),
     ...(patch.boardColumn !== undefined && asBoardColumn(patch.boardColumn) !== null
       ? { boardColumn: asBoardColumn(patch.boardColumn)! }
-      : {})
+      : {}),
+    ...(sprintAddedAt !== undefined ? { sprintAddedAt } : {})
   };
 
   const updated = await storiesRepository.update(req.params.id, updatePatch);

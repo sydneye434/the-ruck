@@ -94,6 +94,11 @@ test("POST /api/sprints/:id/complete calculates velocity and sets completed fiel
   assert.equal(complete.body.data.velocityDataPoint, 8);
   assert.ok(complete.body.data.completedAt);
   assert.equal(complete.body.meta?.velocityDataPoint, 8);
+  const fh = complete.body.data.finalHealthScore;
+  assert.ok(fh);
+  assert.equal(typeof fh.total, "number");
+  assert.equal(typeof fh.grade, "string");
+  assert.ok(fh.components);
 });
 
 test("POST /api/sprints/:id/complete on already-completed sprint → 400", async () => {
