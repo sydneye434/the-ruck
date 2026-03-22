@@ -1,6 +1,6 @@
 // Developed by Sydney Edwards
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, within } from "@testing-library/react";
+import { render, screen, fireEvent, within, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { RetroDetailPage } from "../src/pages/retros/RetroDetailPage";
 import { ToastProvider } from "../src/components/feedback/ToastProvider";
@@ -144,6 +144,9 @@ describe("RetroDetailPage (retro board)", () => {
     renderBoard("start_stop_continue", { phase: "discuss", cards: [card] });
     const upBtn = await screen.findByRole("button", { name: /👍/ });
     expect(within(upBtn).getByText("1")).toBeInTheDocument();
-    expect(upBtn).toHaveStyle({ color: "var(--color-accent)" });
+    // currentMemberId is set in useEffect after members load; first paint can be un-highlighted.
+    await waitFor(() => {
+      expect(upBtn).toHaveStyle({ color: "var(--color-accent)" });
+    });
   });
 });
