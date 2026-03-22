@@ -6,7 +6,7 @@ Like the rugby ruck it's named after — the contested moment where a team fight
 
 **The Ruck** is a portfolio-quality, scrum-native web app: **React (Vite)** + **Express** + **JSON file persistence** (repository pattern, swappable for Postgres later). No auth in v1 — built for a single team running locally.
 
-[![CI](https://github.com/YOUR_GITHUB_USER/the-ruck/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_GITHUB_USER/the-ruck/actions/workflows/ci.yml)
+[![CI](https://github.com/sydneye434/the-ruck/actions/workflows/ci.yml/badge.svg)](https://github.com/sydneye434/the-ruck/actions/workflows/ci.yml)
 
 **Training:** See **[docs/TRAINING_AGILE_AT_SCALE.md](docs/TRAINING_AGILE_AT_SCALE.md)** for how to use the app to run **Agile at scale** (teams, cadence, capacity, ceremonies, governance habits).
 
@@ -270,7 +270,7 @@ This uses **Playwright** (prefers **Chrome** if installed) to save **`docs/scree
 ### Local development
 
 ```bash
-git clone https://github.com/YOUR_GITHUB_USER/the-ruck.git
+git clone https://github.com/sydneye434/the-ruck.git
 cd the-ruck
 npm install
 npm run seed    # optional: demo JSON data under server/data (ignored by git when present)
@@ -327,8 +327,6 @@ Set these in **Settings → Secrets and variables → Actions** for automatic de
 | **`NETLIFY_AUTH_TOKEN`** | Netlify → **User settings** → **Applications** → personal access token. |
 | **`NETLIFY_SITE_ID`** | Netlify → your site → **Site settings** → **Site details** → **Site ID**. |
 | **`VITE_API_URL`** | Full production API base including **`/api`**, e.g. `https://your-railway-app.up.railway.app/api` — used when building the client in **Deploy**. |
-
-Replace **`YOUR_GITHUB_USER`** in the CI badge URL at the top of this README with your GitHub username or org so the badge stays green and links to the Actions tab.
 
 ---
 
