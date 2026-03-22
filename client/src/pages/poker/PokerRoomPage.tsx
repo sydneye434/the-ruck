@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { io, type Socket } from "socket.io-client";
 import type { Story, StoryPoints, TeamMember } from "@the-ruck/shared";
 import { api, ApiClientError } from "../../lib/api";
+import { pickAvatarColor } from "../../lib/avatarPalette";
 import { getSocketUrl } from "../../lib/socketUrl";
 import type { PokerSessionPayload, PokerVoteValue } from "../../lib/pokerTypes";
 import { Avatar } from "../../components/common/Avatar";
@@ -13,7 +14,6 @@ const CARDS: (StoryPoints | "?" | "∞")[] = [...FIB, "?", "∞"];
 
 const LS_MEMBER = "theRuck.poker.memberId";
 const LS_NAME = "theRuck.poker.memberName";
-const LS_COLOR = "theRuck.poker.avatarColor";
 
 function medianNumeric(nums: number[]): StoryPoints {
   if (nums.length === 0) return 5;
@@ -95,7 +95,7 @@ export function PokerRoomPage() {
   useEffect(() => {
     if (!sessionId || !myId) return;
     const name = localStorage.getItem(LS_NAME) ?? "Member";
-    const color = localStorage.getItem(LS_COLOR) ?? "#888888";
+    const color = pickAvatarColor(myId);
     const s = io(getSocketUrl(), { transports: ["websocket", "polling"] });
     s.on("connect", () => {
       s.emit("session:join", {
@@ -225,7 +225,6 @@ export function PokerRoomPage() {
           onPick={(m) => {
             localStorage.setItem(LS_MEMBER, m.id);
             localStorage.setItem(LS_NAME, m.name);
-            localStorage.setItem(LS_COLOR, m.avatar.color);
             setMyMemberId(m.id);
           }}
         />
@@ -288,8 +287,8 @@ export function PokerRoomPage() {
         <div className="flex flex-wrap items-center gap-2">
           {session.participants.map((p) => (
             <div key={p.socketId} className="relative flex items-center gap-1" title={p.memberName}>
-              <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-[var(--color-success)] ring-2 ring-[var(--color-bg-primary)]" />
-              <Avatar name={p.memberName} color={p.avatarColor} size="sm" />
+              <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-[var(--color-accent)] ring-2 ring-[var(--color-bg-primary)]" />
+              <Avatar name={p.memberName} color={pickAvatarColor(p.memberId)} size="sm" />
               {session.facilitatorSocketId === p.socketId ? (
                 <span className="text-xs" aria-hidden title="Facilitator">
                   👑
@@ -308,7 +307,7 @@ export function PokerRoomPage() {
               <p className="mt-1 text-xs text-[var(--color-text-muted)]">{currentStory.labels.join(", ")}</p>
             ) : null}
             {currentStory.storyPoints != null ? (
-              <p className="mt-1 text-sm text-[var(--color-warning)]">Current estimate: {currentStory.storyPoints} pts</p>
+              <p className="mt-1 text-sm text-[var(--color-accent)]">Current estimate: {currentStory.storyPoints} pts</p>
             ) : null}
             <button
               type="button"
@@ -355,7 +354,7 @@ export function PokerRoomPage() {
                       "flex h-28 w-16 flex-col items-center justify-center rounded-lg border-2 text-xl font-bold shadow-md transition-transform",
                       selected
                         ? "scale-105 border-[var(--color-accent)] bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)]"
-                        : "border-[var(--color-border)] bg-[var(--color-bg-tertiary)] text-[var(--color-text-muted)] hover:border-[var(--color-text-muted)]"
+                        : "border-[var(--color-border)] bg-[var(--color-bg-tertiary)] text-[var(--color-text-muted)] hover:border-[var(--color-accent)]/45"
                     ].join(" ")}
                   >
                     {c}
@@ -371,7 +370,7 @@ export function PokerRoomPage() {
                 const voted = p.hasVoted ?? p.vote != null;
                 return (
                   <span key={p.socketId} className="flex items-center gap-1 text-[var(--color-text-muted)]">
-                    <Avatar name={p.memberName} color={p.avatarColor} size="sm" />
+                    <Avatar name={p.memberName} color={pickAvatarColor(p.memberId)} size="sm" />
                     {voted ? "✓" : "⏳"} {p.memberName}
                   </span>
                 );
@@ -409,7 +408,7 @@ export function PokerRoomPage() {
                       {p.vote == null ? "—" : String(p.vote)}
                     </div>
                   </div>
-                  <Avatar name={p.memberName} color={p.avatarColor} size="sm" />
+                  <Avatar name={p.memberName} color={pickAvatarColor(p.memberId)} size="sm" />
                   <span className="max-w-[5rem] truncate text-center text-xs text-[var(--color-text-muted)]">{p.memberName}</span>
                 </div>
               ))}
@@ -424,11 +423,17 @@ export function PokerRoomPage() {
               <p className="mt-1 text-[var(--color-text-secondary)]">Average (numeric): {avg}</p>
               <p className="mt-2">
                 {cons === "consensus" ? (
-                  <span className="rounded bg-[var(--color-success)]/20 px-2 py-1 text-[var(--color-success)]">Consensus!</span>
+                  <span className="rounded border border-[var(--color-accent)]/50 bg-[color-mix(in_srgb,var(--color-accent)_22%,var(--color-bg-secondary))] px-2 py-1 text-[var(--color-accent)]">
+                    Consensus!
+                  </span>
                 ) : cons === "near" ? (
-                  <span className="rounded bg-[var(--color-warning)]/20 px-2 py-1 text-[var(--color-warning)]">Near consensus</span>
+                  <span className="rounded border border-[var(--color-avatar-5)]/45 bg-[color-mix(in_srgb,var(--color-avatar-3)_32%,var(--color-bg-secondary))] px-2 py-1 text-[var(--color-text-primary)]">
+                    Near consensus
+                  </span>
                 ) : (
-                  <span className="rounded bg-[var(--color-danger)]/20 px-2 py-1 text-[var(--color-danger)]">Wide spread — discuss</span>
+                  <span className="rounded border border-[var(--color-avatar-8)]/55 bg-[color-mix(in_srgb,var(--color-avatar-8)_28%,var(--color-bg-secondary))] px-2 py-1 text-[var(--color-text-primary)]">
+                    Wide spread — discuss
+                  </span>
                 )}
               </p>
             </div>
@@ -541,7 +546,7 @@ function CompleteScreen({
 
   return (
     <div className="flex min-h-screen flex-col items-center gap-6 bg-[var(--color-bg-primary)] px-4 py-10">
-      <h1 className="font-heading text-4xl text-[var(--color-success)]">Estimation complete!</h1>
+      <h1 className="font-heading text-4xl text-[var(--color-accent)]">Estimation complete!</h1>
       <table className="w-full max-w-2xl border-collapse text-sm">
         <thead>
           <tr className="border-b border-[var(--color-border)] text-left">

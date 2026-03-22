@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { TeamMember, TeamWithDepth } from "@the-ruck/shared";
 import { Spinner } from "../../components/feedback/Spinner";
-import { AVATAR_COLOR_VARIABLES, pickAvatarColor } from "./avatarPalette";
+import { AVATAR_COLOR_VARIABLES, pickAvatarColor } from "../../lib/avatarPalette";
 
 type TeamMemberFormInput = {
   name: string;

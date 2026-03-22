@@ -1,4 +1,5 @@
 // Developed by Sydney Edwards
+/** Eight pink shades from `index.css` — use for avatars and poker identity chips. */
 export const AVATAR_COLOR_VARIABLES = [
   "var(--color-avatar-1)",
   "var(--color-avatar-2)",
@@ -19,4 +20,3 @@ export function pickAvatarColor(seedValue: string) {
   }
   return AVATAR_COLOR_VARIABLES[Math.abs(hash) % AVATAR_COLOR_VARIABLES.length];
 }
-

@@ -2,11 +2,11 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Sprint, Story, TeamMember } from "@the-ruck/shared";
 import { api, ApiClientError } from "../../lib/api";
+import { pickAvatarColor } from "../../lib/avatarPalette";
 import { useToast } from "../feedback/ToastProvider";
 
 const LS_MEMBER = "theRuck.poker.memberId";
 const LS_NAME = "theRuck.poker.memberName";
-const LS_COLOR = "theRuck.poker.avatarColor";
 
 type Props = {
   open: boolean;
@@ -131,7 +131,6 @@ export function PlanningPokerModal({ open, onClose, sprintId: sprintIdProp, onSe
     }
     localStorage.setItem(LS_MEMBER, m.id);
     localStorage.setItem(LS_NAME, m.name);
-    localStorage.setItem(LS_COLOR, m.avatar.color);
     setCreating(true);
     try {
       const storyQueue = queue.filter((id) => selected[id]);
@@ -144,7 +143,7 @@ export function PlanningPokerModal({ open, onClose, sprintId: sprintIdProp, onSe
         storyQueue,
         memberId: m.id,
         memberName: m.name,
-        avatarColor: m.avatar.color
+        avatarColor: pickAvatarColor(m.id)
       });
       setSessionId(res.sessionId);
       setStep(3);
@@ -277,7 +276,7 @@ export function PlanningPokerModal({ open, onClose, sprintId: sprintIdProp, onSe
                   void navigator.clipboard.writeText(shareUrl);
                   toast.success("Copied.");
                 }}
-                className="border border-[var(--color-border)] px-3 py-1 text-sm"
+                className="border border-[var(--color-accent)]/60 bg-[var(--color-bg-tertiary)] px-3 py-1 text-sm text-[var(--color-accent)]"
               >
                 Copy
               </button>

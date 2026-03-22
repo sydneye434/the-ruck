@@ -20,8 +20,8 @@
   --color-danger: #ff3b8d;
   --color-success: #4fdaaa;
   --color-warning: #ffb347;
-  --color-role-product-owner: #69c0ff;
-  --color-role-coordinator: #c78cff;
+  --color-role-product-owner: #ff8ac9;
+  --color-role-coordinator: #ffb3dd;
 
   --color-avatar-1: #ffb3dd;
   --color-avatar-2: #ff94d1;
@@ -32,14 +32,15 @@
   --color-avatar-7: #ff1493;
   --color-avatar-8: #e4007f;
 
-  --color-team-1: #ff7096;
-  --color-team-2: #ff8fa3;
-  --color-team-3: #f4a261;
-  --color-team-4: #e9c46a;
-  --color-team-5: #2a9d8f;
-  --color-team-6: #4cc9f0;
-  --color-team-7: #6d72c3;
-  --color-team-8: #a06cd5;
+  /* Team / org-chart stripes — eight pink family shades (distinct but on-theme) */
+  --color-team-1: #ffb3dd;
+  --color-team-2: #ff94d1;
+  --color-team-3: #ff76c5;
+  --color-team-4: #ff5fbc;
+  --color-team-5: #ff49b2;
+  --color-team-6: #ff2ea6;
+  --color-team-7: #ff1493;
+  --color-team-8: #e4007f;
 
   /* Status & chart — pink family (dark mode) */
   --color-status-on-track-border: rgba(255, 105, 180, 0.45);
@@ -74,8 +75,8 @@
   --color-danger: #d91a77;
   --color-success: #1d9b73;
   --color-warning: #b87607;
-  --color-role-product-owner: #368fc6;
-  --color-role-coordinator: #905dcf;
+  --color-role-product-owner: #c40070;
+  --color-role-coordinator: #e30083;
 
   --color-avatar-1: #ffd3ea;
   --color-avatar-2: #ffbce0;
@@ -86,14 +87,14 @@
   --color-avatar-7: #f833a0;
   --color-avatar-8: #d81e87;
 
-  --color-team-1: #e85f86;
-  --color-team-2: #e37f94;
-  --color-team-3: #d98f50;
-  --color-team-4: #d1b25a;
-  --color-team-5: #22897d;
-  --color-team-6: #36a8cc;
-  --color-team-7: #5960ae;
-  --color-team-8: #8b57c0;
+  --color-team-1: #ffd3ea;
+  --color-team-2: #ffc2e2;
+  --color-team-3: #ffa8d6;
+  --color-team-4: #ff8ac9;
+  --color-team-5: #ff6ebe;
+  --color-team-6: #f833a0;
+  --color-team-7: #e30083;
+  --color-team-8: #b8006a;
 
   /* Status & chart — pink family (light mode) */
   --color-status-on-track-border: rgba(200, 0, 110, 0.35);
