@@ -6,7 +6,16 @@ Like the rugby ruck it's named after — the contested moment where a team fight
 
 **The Ruck** is a portfolio-quality, scrum-native web app: **React (Vite)** + **Express** + **JSON file persistence** (repository pattern, swappable for Postgres later). No auth in v1 — built for a single team running locally.
 
-**Training:** See **[docs/TRAINING_AGILE_AT_SCALE.md](docs/TRAINING_AGILE_AT_SCALE.md)** for how to use the app to run **Agile at scale** (teams, cadence, capacity, ceremonies, governance habits). **Credits:** [CREDITS.md](CREDITS.md).
+**Training:** See **[docs/TRAINING_AGILE_AT_SCALE.md](docs/TRAINING_AGILE_AT_SCALE.md)** for how to use the app to run **Agile at scale** (teams, cadence, capacity, ceremonies, governance habits).
+
+**Project docs**
+
+| Doc | Contents |
+|-----|----------|
+| **[docs/TESTING.md](docs/TESTING.md)** | How tests are organized (shared / server / client), runners, and conventions |
+| **[docs/STYLE_GUIDE.md](docs/STYLE_GUIDE.md)** | TypeScript, React, Express, and shared-package guidelines |
+| **[docs/TRAINING_AGILE_AT_SCALE.md](docs/TRAINING_AGILE_AT_SCALE.md)** | Agile-at-scale usage |
+| **[CREDITS.md](CREDITS.md)** | Credits |
 
 ---
 
@@ -53,7 +62,7 @@ Then:
 |---------|---------|
 | `npm run build` | Production build: `shared` → `server` → `client` |
 | `npm run typecheck` | Typecheck all workspaces |
-| `npm test` | Run shared unit tests (velocity engine, etc.) |
+| `npm test` | Run all workspace test suites (**client** Vitest, **server** integration, **shared** unit tests) |
 | `npm run seed` | Reseed `server/data/*.json` (same as `npm -w server run seed`) |
 | `npm -w client run dev` | Client only |
 | `npm -w server run dev` | API only |
@@ -72,11 +81,13 @@ Then:
 - Markdown description with preview; Fibonacci **or** T-shirt sizing (from settings); assignee, labels, column, acceptance criteria, sprint assignment; auto-save
 
 ### Active sprint (`/sprint/active`)
+- **Board | Burndown** tabs: Kanban default; **Burndown** shows ideal vs actual remaining work, projection, capacity target, and status (Recharts)
 - Kanban (Backlog → In Progress → In Review → Done) with **@dnd-kit** drag-and-drop, optimistic updates, rollback on failure
 - Sprint header: goal, dates, days remaining, burndown-style progress, complete sprint (with confirm)
 
 ### Sprint history (`/sprints`)
 - All sprints, reverse chronological; status, velocity; create sprint; set active (one active sprint rule); **Capacity Planning** slide-over for planning sprints
+- **Completed** sprints: expandable **View burndown** with a compact chart and final velocity
 
 ### Capacity planning
 - Velocity window (1 / 2 / 3 / 5 sprints), team availability (days off, subteam grouping), Fibonacci snap, manual override, save **capacity target** + snapshot on sprint
@@ -104,9 +115,12 @@ Then:
 
 ### Backend & data
 - **JSON repositories** under `server/data/` (override with `THE_RUCK_DATA_DIR`)
+- **Burndown snapshots** — daily **`SprintDaySnapshot`** rows per sprint (remaining/completed points, column counts); **upsert** per calendar day. Recorded on: **cron** (23:59 local), story moves to/from **done**, sprint **complete**, sprint **active** (day‑0 snapshot). See **`GET /api/sprints/:id/burndown`** for ideal line, snapshots, and projection.
 - **Activity log** for dashboard feed (story moves, sprint completed, retro cards, action items, etc.)
 - **Velocity engine** (`shared/src/velocityEngine.ts`) — shared TypeScript module (no Node `module.exports` in the browser bundle)
+- **Burndown math** (`shared/src/burndownUtils.ts`) — ideal line (working days), projected completion; used by the API and UI
 - **OpenAPI** + Swagger UI (`/api/docs`) and `server/API.md`
+- On server start, the burndown scheduler logs: **`Burndown snapshot scheduler registered`**
 
 ---
 
@@ -115,7 +129,7 @@ Then:
 Core resources:
 - `GET/POST /api/team-members`, `GET/PATCH/DELETE /api/team-members/:id`
 - `GET/POST /api/teams`, tree, members, hierarchy (see `server/src/routes/teamsRoutes.ts`)
-- `GET/POST /api/sprints`, `GET/PATCH/DELETE /api/sprints/:id`, `POST /api/sprints/:id/complete`, `GET /api/sprints/:id/capacity-context`
+- `GET/POST /api/sprints`, `GET/PATCH/DELETE /api/sprints/:id`, `POST /api/sprints/:id/complete`, `GET /api/sprints/:id/capacity-context`, `GET /api/sprints/:id/burndown` (snapshots, ideal burndown, projection)
 - `GET/POST /api/stories`, `GET/PATCH/DELETE /api/stories/:id` — `?sprintId=backlog` or sprint id
 - `GET/POST /api/retros`, nested cards & action items under `/api/retros/:id/...`
 - `GET/PUT /api/settings` — extended settings (sprint length, velocity window, story scale, retro defaults, date format)
@@ -129,11 +143,13 @@ Details: **`server/API.md`** and **`http://localhost:3001/api/docs`** (when runn
 
 ## Testing
 
-- **Run everything:** `npm test` (workspaces: client → server → shared). Server tests share one Node process with `--test-concurrency=1` so `server/tests/test-data` is not corrupted by parallel files.
+See **[docs/TESTING.md](docs/TESTING.md)** for full detail: where tests live, **Node test runner** vs **Vitest**, **server `DATA_DIR`** isolation, and adding new test files to **`package.json`** scripts.
+
+- **Run everything:** `npm test` (all workspaces with a `test` script). **Server** tests use `--test-concurrency=1` and an explicit file list so `server/tests/test-data` is not corrupted by parallel runs.
 - **Coverage:** `npm run test:coverage`
   - **Client:** `src/lib/**` only — Vitest thresholds warn below **85%** lines/statements (see `client/vitest.config.ts`).
-  - **Shared:** Node’s built-in coverage over `velocityEngine`, `buildTeamTree`, retro templates, and dashboard helpers (typically **~97%+** lines on those sources).
-  - **Server:** `--experimental-test-coverage` over the whole server tree; integration tests hit routes, app shell, and export/OpenAPI. Line % for the full package is lower than routes alone because `seed.ts`, `workingDays`, etc. are mostly unused in tests.
+  - **Shared:** Node’s built-in coverage over `velocityEngine`, `buildTeamTree`, retro templates, dashboard helpers, **burndown utils**, etc.
+  - **Server:** `--experimental-test-coverage` over the whole server tree; integration tests hit routes, app shell, export/OpenAPI, and burndown. Line % for the full package is lower than routes alone because `seed.ts`, `workingDays`, etc. are mostly unused in tests.
 
 ## Architecture
 
@@ -183,7 +199,8 @@ Details: **`server/API.md`** and **`http://localhost:3001/api/docs`** (when runn
 1. Fork the repo and create a feature branch.  
 2. Run `npm install` and `npm run typecheck` before opening a PR.  
 3. Run `npm test` (and `npm run test:coverage` when changing testable library code).  
-4. Keep UI/API changes documented in the PR; update **`README.md`**, **`server/API.md`**, and the OpenAPI spec when endpoints change.
+4. Follow **[docs/STYLE_GUIDE.md](docs/STYLE_GUIDE.md)** for conventions; extend **[docs/TESTING.md](docs/TESTING.md)** if you introduce new test patterns.  
+5. Keep UI/API changes documented in the PR; update **`README.md`**, **`server/API.md`**, and the OpenAPI spec when endpoints change.
 
 ---
 

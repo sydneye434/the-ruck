@@ -29,6 +29,8 @@ All responses use this envelope:
 - `PATCH /api/sprints/:id`
 - `DELETE /api/sprints/:id`
 - `POST /api/sprints/:id/complete`
+- `GET /api/sprints/:id/capacity-context` — capacity planning context (velocity window, teams, working days)
+- `GET /api/sprints/:id/burndown` — sprint summary, **snapshots**, **ideal burndown** (working days), **projected completion**, **projected line** for charts
 
 ### Stories
 - `GET /api/stories`
