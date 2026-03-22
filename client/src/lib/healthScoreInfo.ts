@@ -1,5 +1,8 @@
 // Developed by Sydney Edwards
 
-/** Native `title` tooltip + aria descriptions — brief; see README for full rules. */
+/**
+ * Native `title` on the ⓘ icon — what the score *is*, then how it’s built.
+ * (See README for full scoring rules.)
+ */
 export const HEALTH_SCORE_TOOLTIP =
-  "Sprint Health is 0–100: five components × 20 pts — velocity vs ideal burn rate, scope added after sprint start, planned points vs capacity target, team availability (snapshot or live), and retro health (retro, cards, actions, closure of prior actions). Letter grade A–F; trend compares to the last completed sprint. Recalculated on each request from current data.";
+  "Sprint Health Score is a read-only snapshot of how this sprint is going: one number from 0–100 with a letter grade (A–F). It’s meant to surface risks early—not a target to optimize in isolation. The score combines five equal parts (20 points each): how delivery pace compares to the burndown plan, how much scope was added after the sprint started, whether planned points fit the capacity target, team availability, and how strong retros and action follow-through are. The trend compares to the last completed sprint. It refreshes when this screen loads.";

@@ -138,3 +138,308 @@ h4,
   letter-spacing: 0.015em;
 }
 
+/* Capacity planning / accessibility — instant transitions when reduced motion is preferred */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --- Capacity planning panel polish --- */
+.capacity-panel-backdrop {
+  transition: opacity 200ms ease;
+}
+
+.capacity-panel-aside {
+  transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.capacity-panel-aside--closing {
+  transition: transform 250ms cubic-bezier(0.4, 0, 1, 1);
+}
+
+.capacity-panel-col {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: capacity-col-in 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.capacity-panel-col--1 {
+  animation-delay: 100ms;
+}
+
+.capacity-panel-col--2 {
+  animation-delay: 180ms;
+}
+
+.capacity-panel-col--3 {
+  animation-delay: 260ms;
+}
+
+@keyframes capacity-col-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.capacity-column-divider {
+  width: 1px;
+  min-height: 100%;
+  align-self: stretch;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--color-border),
+    transparent
+  );
+}
+
+.capacity-member-row {
+  transition:
+    background-color 150ms ease,
+    box-shadow 200ms ease;
+}
+
+.capacity-member-row:hover {
+  background-color: var(--color-bg-tertiary);
+}
+
+.capacity-member-row--focus {
+  box-shadow: inset 3px 0 0 var(--color-accent);
+  transition:
+    background-color 150ms ease,
+    box-shadow 100ms ease;
+}
+
+.capacity-ratio-ring {
+  transition: stroke-dashoffset 400ms ease-out;
+}
+
+.capacity-days-stepper {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  min-height: 2.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-primary);
+  transition: background-color 200ms ease;
+}
+
+.capacity-days-stepper--amber {
+  background-color: color-mix(in srgb, var(--color-warning) 8%, var(--color-bg-primary));
+}
+
+.capacity-days-stepper--danger {
+  background-color: color-mix(in srgb, var(--color-danger) 8%, var(--color-bg-primary));
+}
+
+.capacity-mini-bar-fill {
+  transition: width 300ms ease-out, filter 200ms ease;
+  transform-origin: left center;
+}
+
+.capacity-mini-bar-fill--pulse {
+  animation: capacity-bar-pulse 400ms ease-out;
+}
+
+@keyframes capacity-bar-pulse {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(1.03);
+  }
+}
+
+.capacity-available-days {
+  transition: color 200ms ease;
+  font-variant-numeric: tabular-nums;
+}
+
+.capacity-receipt-row-value {
+  transition: color 600ms ease, background-color 600ms ease;
+}
+
+.capacity-receipt-row-value--flash {
+  color: color-mix(in srgb, var(--color-accent) 60%, var(--color-text-primary)) !important;
+}
+
+.capacity-strike-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.capacity-strike-raw {
+  position: relative;
+  font-size: 0.85em;
+  color: var(--color-text-muted);
+}
+
+.capacity-strike-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  background: var(--color-text-muted);
+  transform-origin: left center;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 200ms ease;
+}
+
+.capacity-strike-line--drawn {
+  clip-path: inset(0 0 0 0);
+}
+
+.capacity-strike-line--retract {
+  clip-path: inset(0 0 0 100%);
+  transform-origin: right center;
+}
+
+.capacity-snap-snapped {
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.capacity-snap-snapped--visible {
+  opacity: 1;
+}
+
+.capacity-override-warning {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition:
+    max-height 200ms ease,
+    opacity 200ms ease,
+    transform 200ms ease;
+}
+
+.capacity-override-warning--open {
+  max-height: 100px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes capacity-warn-shake {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-3px);
+  }
+  40% {
+    transform: translateX(3px);
+  }
+  60% {
+    transform: translateX(-2px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.capacity-warn-icon-shake {
+  animation: capacity-warn-shake 300ms ease-out;
+}
+
+@keyframes capacity-badge-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.capacity-confidence-badge {
+  animation: capacity-badge-pop 250ms ease-out forwards;
+}
+
+.capacity-spark-dot {
+  transition:
+    transform 200ms ease,
+    opacity 200ms ease;
+}
+
+.capacity-spark-dot--exit {
+  transform: translateX(-8px);
+  opacity: 0;
+}
+
+.capacity-spark-dot--enter {
+  transform: translateX(8px);
+  opacity: 0;
+}
+
+.capacity-spark-dot--enter-done {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+@keyframes capacity-spark-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.4);
+  }
+}
+
+.capacity-spark-dot--pulse {
+  animation: capacity-spark-pulse 2s ease-in-out infinite;
+}
+
+.capacity-velocity-bar {
+  transition:
+    width 500ms ease-out,
+    opacity 200ms ease,
+    filter 150ms ease;
+}
+
+.capacity-team-total-row {
+  border-top: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-bg-tertiary) 65%, var(--color-bg-secondary));
+}
+
+.capacity-save-btn {
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease,
+    background-color 200ms ease,
+    color 150ms ease;
+}
+
+.capacity-save-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--color-accent) 35%, transparent);
+}
+
+.capacity-save-btn:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: none;
+  transition-duration: 80ms;
+}
+
+.capacity-receipt-block {
+  font-family: "JetBrains Mono", "Fira Code", "Courier New", monospace;
+  box-shadow: inset 0 0 0 1px var(--color-border);
+}
+

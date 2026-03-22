@@ -19,7 +19,7 @@ export function HealthScoreInfoIcon({ title = HEALTH_SCORE_TOOLTIP, className = 
         className
       ].join(" ")}
       title={title}
-      aria-label="How Sprint Health Score is calculated"
+      aria-label="What Sprint Health Score is and how it is calculated"
     >
       <svg
         width="18"
