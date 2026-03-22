@@ -15,6 +15,7 @@ Like the rugby ruck it's named after — the contested moment where a team fight
 | **[docs/TESTING.md](docs/TESTING.md)** | How tests are organized (shared / server / client), runners, and conventions |
 | **[docs/STYLE_GUIDE.md](docs/STYLE_GUIDE.md)** | TypeScript, React, Express, and shared-package guidelines |
 | **[docs/TRAINING_AGILE_AT_SCALE.md](docs/TRAINING_AGILE_AT_SCALE.md)** | Agile-at-scale usage |
+| **[docs/screenshots/README.md](docs/screenshots/README.md)** | Replacing illustrative screenshots with real captures |
 | **[CREDITS.md](CREDITS.md)** | Credits |
 
 ---
@@ -97,7 +98,7 @@ Real-time **collaborative estimation**: the team picks story points for sprint b
 4. **Create session & continue** → copy the share link (`/poker/:sessionId`) for teammates → **Open poker room** (or share the URL). Others open the link, pick themselves if needed, and join the same session over the WebSocket.
 
 #### In the room
-- **Full-screen** UI (no sidebar): sprint name, connected participants (green presence dot), **👑** on the current facilitator’s avatar.
+- **Full-screen** UI (no sidebar): sprint name, connected participants (presence dot on avatars), **👑** on the current facilitator’s avatar.
 - **Voting:** everyone taps a **Fibonacci** card: `0, 1, 2, 3, 5, 8, 13, 21`, or **`?`** / **`∞`**. Until reveal, others only see that you’ve voted (✓ / ⏳), **not** your number.
 - **Facilitator** (creator’s `memberId` on `POST /api/poker/sessions`, or the **first remaining participant** in join order if the facilitator disconnects): **Reveal votes** → cards flip; summary shows distribution, numeric average, and consensus hint (consensus / near / wide spread). Then choose **agreed points** (defaults to the **median** of numeric votes), **Save & next story** (writes `storyPoints` via the stories API and moves on), **Re-vote** (clear votes, same story), or **Skip story** (no save, next in queue).
 - When the queue is empty, **Estimation complete** shows a summary table; **Close session** ends the room and returns to the sprint board.
@@ -223,23 +224,42 @@ See **[docs/TESTING.md](docs/TESTING.md)** for full detail: where tests live, **
 
 ## Screenshots
 
-- [Screenshot: Dashboard]
-- [Screenshot: Backlog]
-- [Screenshot: Sprint Board]
-- [Screenshot: Capacity Planner]
-- [Screenshot: Retrospective Board]
-- [Screenshot: Team Management]
-- [Screenshot: Org Chart]
-- [Screenshot: Settings]
+Illustrative **SVG** mockups (dark theme, pink accents) — versioned in-repo so GitHub renders without large binaries. To swap in **real** PNG/WebP captures from your machine, see **[docs/screenshots/README.md](docs/screenshots/README.md)**.
+
+### Dashboard (`/dashboard`)
+![Dashboard — active sprint, health, velocity](docs/screenshots/dashboard.svg)
+
+### Backlog (`/backlog`)
+![Backlog — stories and Planning Poker entry](docs/screenshots/backlog.svg)
+
+### Active sprint (`/sprint/active`)
+![Active sprint — Kanban board with Board / Burndown / Health tabs](docs/screenshots/sprint-board.svg)
+
+### Planning Poker (`/poker/:sessionId`)
+![Planning poker — vote cards and facilitator](docs/screenshots/planning-poker.svg)
+
+### Capacity planning (sprint slide-over)
+![Capacity planning — velocity and capacity target](docs/screenshots/capacity-planning.svg)
+
+### Retrospective (`/retro/:id`)
+![Retro board — columns and phases](docs/screenshots/retro-board.svg)
+
+### Team (`/team`)
+![Team — members and roles](docs/screenshots/team.svg)
+
+### Org chart (`/team/org-chart`)
+![Org chart — team hierarchy](docs/screenshots/org-chart.svg)
+
+### Settings (`/settings`)
+![Settings — defaults and theme](docs/screenshots/settings.svg)
 
 ---
 
 ## Roadmap (v2 ideas)
 
 - Auth (team-scoped) + user identity  
-- WebSockets / realtime updates  
+- Broader realtime updates (beyond Planning Poker)  
 - Postgres migration via repository swap (Prisma)  
-- Sprint planning poker  
 - Richer retro clustering & voting  
 - Capacity UX polish  
 

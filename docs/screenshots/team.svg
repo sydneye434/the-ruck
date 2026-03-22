@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 560" width="920">
+  <title>The Ruck  Team (illustrative)</title>
+  <rect width="920" height="560" fill="#050505"/>
+  <text x="88" y="48" fill="#ffeaf6" font-family="system-ui,sans-serif" font-size="18" font-weight="600">Team</text>
+  <rect x="88" y="72" width="200" height="36" fill="#1a1a1a" stroke="#ff1493" rx="4"/>
+  <text x="188" y="94" fill="#ff1493" font-family="system-ui,sans-serif" font-size="11" text-anchor="middle">Members</text>
+  <rect x="296" y="72" width="200" height="36" fill="#101010" stroke="#2a2a2a" rx="4"/>
+  <text x="396" y="94" fill="#c48aa9" font-family="system-ui,sans-serif" font-size="11" text-anchor="middle">Teams</text>
+  <rect x="88" y="128" width="744" height="72" fill="#101010" stroke="#2a2a2a" rx="4"/>
+  <circle cx="120" cy="164" r="20" fill="#ff76c5"/>
+  <text x="152" y="160" fill="#ffeaf6" font-family="system-ui,sans-serif" font-size="14">Alex Kim</text>
+  <text x="152" y="178" fill="#c48aa9" font-family="system-ui,sans-serif" font-size="11">Team member</text>
+  <rect x="88" y="216" width="744" height="72" fill="#101010" stroke="#2a2a2a" rx="4"/>
+  <circle cx="120" cy="252" r="20" fill="#ff1493"/>
+  <text x="152" y="248" fill="#ffeaf6" font-family="system-ui,sans-serif" font-size="14">Jamie Lee</text>
+  <text x="460" y="548" fill="#c48aa9" font-family="system-ui,sans-serif" font-size="11" text-anchor="middle">Illustrative mock  replace with your own screenshot if you prefer</text>
+</svg>
