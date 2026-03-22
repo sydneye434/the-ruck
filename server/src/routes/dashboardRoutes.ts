@@ -12,6 +12,7 @@ import {
   teamMembersRepository
 } from "../repositories";
 import { sendSuccess } from "../utils/envelope";
+import { asyncHandler } from "../utils/asyncHandler";
 
 export const dashboardRoutes = Router();
 
@@ -22,7 +23,9 @@ const dashboardUtils = require(path.resolve(__dirname, "../utils/dashboardUtils.
   getOverdueActionItems: (items: any[]) => any[];
 };
 
-dashboardRoutes.get("/", async (_req, res) => {
+dashboardRoutes.get(
+  "/",
+  asyncHandler(async (_req, res) => {
   const [sprints, stories, teamMembers, retros, actionItems, activityLogs] = await Promise.all([
     sprintsRepository.getAll(),
     storiesRepository.getAll(),
@@ -151,4 +154,5 @@ dashboardRoutes.get("/", async (_req, res) => {
     },
     recentActivity
   });
-});
+  })
+);

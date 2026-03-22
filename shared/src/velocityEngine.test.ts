@@ -5,7 +5,8 @@ import {
   snapToFibonacci,
   calculateTrend,
   calculateTeamAvailability,
-  calculateRecommendedCapacity
+  calculateRecommendedCapacity,
+  getVelocityWindow
 } from "./velocityEngine";
 
 test("snapToFibonacci cases", () => {
@@ -18,28 +19,28 @@ test("snapToFibonacci cases", () => {
   assert.equal(snapToFibonacci(150), 144);
 });
 
-test("calculateTrend cases", () => {
-  assert.equal(
-    calculateTrend([
-      { velocityDataPoint: 30 },
-      { velocityDataPoint: 40 },
-      { velocityDataPoint: 50 }
-    ]),
-    "up"
-  );
+test("calculateTrend cases (newest-first, matches getVelocityWindow order)", () => {
   assert.equal(
     calculateTrend([
       { velocityDataPoint: 50 },
       { velocityDataPoint: 40 },
       { velocityDataPoint: 30 }
     ]),
+    "up"
+  );
+  assert.equal(
+    calculateTrend([
+      { velocityDataPoint: 30 },
+      { velocityDataPoint: 40 },
+      { velocityDataPoint: 50 }
+    ]),
     "down"
   );
   assert.equal(
     calculateTrend([
-      { velocityDataPoint: 38 },
+      { velocityDataPoint: 42 },
       { velocityDataPoint: 40 },
-      { velocityDataPoint: 42 }
+      { velocityDataPoint: 38 }
     ]),
     "flat"
   );
@@ -82,4 +83,34 @@ test("calculateTeamAvailability single member with days off", () => {
 test("calculateRecommendedCapacity cases", () => {
   assert.equal(calculateRecommendedCapacity(42, 0.85), 35.7);
   assert.equal(calculateRecommendedCapacity(null, 0.85), null);
+});
+
+test("getVelocityWindow when n > available sprints → returns all available", () => {
+  const sprints = [
+    { id: "a", name: "A", completedAt: "2025-01-01T00:00:00.000Z", velocityDataPoint: 10 },
+    { id: "b", name: "B", completedAt: "2024-12-01T00:00:00.000Z", velocityDataPoint: 8 }
+  ];
+  const w = getVelocityWindow(sprints, 5);
+  assert.equal(w.length, 2);
+});
+
+test("calculateTrend: all same velocity → flat", () => {
+  assert.equal(
+    calculateTrend([
+      { velocityDataPoint: 10 },
+      { velocityDataPoint: 10 },
+      { velocityDataPoint: 10 }
+    ]),
+    "flat"
+  );
+});
+
+test("calculateTrend: two sprints only", () => {
+  assert.equal(
+    calculateTrend([
+      { velocityDataPoint: 12 },
+      { velocityDataPoint: 8 }
+    ]),
+    "up"
+  );
 });

@@ -51,7 +51,7 @@ retroActionItemsRoutes.post("/", asyncHandler(async (req, res) => {
     carriedOverFromId: input.carriedOverFromId ? String(input.carriedOverFromId) : null
   } as Omit<RetroActionItem, "id">);
 
-  return sendSuccess(res, created, { location: `/api/retros/${retroId}/action-items/${created.id}` });
+  return sendSuccess(res, created, { location: `/api/retros/${retroId}/action-items/${created.id}` }, 201);
 }));
 
 retroActionItemsRoutes.get("/:actionItemId", asyncHandler(async (req, res) => {

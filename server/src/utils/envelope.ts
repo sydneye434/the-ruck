@@ -2,9 +2,14 @@
 import type { Response } from "express";
 import type { ApiResponse, ApiError } from "@the-ruck/shared";
 
-export function sendSuccess<T>(res: Response, data: T, meta?: Record<string, unknown>) {
+export function sendSuccess<T>(
+  res: Response,
+  data: T,
+  meta?: Record<string, unknown>,
+  statusCode = 200
+) {
   const payload: ApiResponse<T> = { data, error: null, meta };
-  res.json(payload);
+  res.status(statusCode).json(payload);
 }
 
 export function sendEmptySuccess(res: Response, meta?: Record<string, unknown>) {

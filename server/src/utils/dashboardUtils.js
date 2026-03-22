@@ -1,7 +1,15 @@
 // Developed by Sydney Edwards
+function parseCalendarDate(endDate) {
+  if (typeof endDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(endDate)) {
+    const [y, m, d] = endDate.split("-").map(Number);
+    return new Date(y, m - 1, d);
+  }
+  return new Date(endDate);
+}
+
 function calculateDaysRemaining(endDate) {
   const now = new Date();
-  const end = new Date(endDate);
+  const end = parseCalendarDate(endDate);
   now.setHours(0, 0, 0, 0);
   end.setHours(0, 0, 0, 0);
   return Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));

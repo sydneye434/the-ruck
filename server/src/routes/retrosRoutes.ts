@@ -55,7 +55,11 @@ retrosRoutes.post("/", asyncHandler(async (req, res) => {
 
   const duplicate = (await retrosRepository.getAll()).find((r) => r.sprintId === sprint.id);
   if (duplicate) {
-    throw new HttpError({ statusCode: 409, code: "RETRO_EXISTS", message: "A retro already exists for this sprint" });
+    throw new HttpError({
+      statusCode: 400,
+      code: "RETRO_EXISTS",
+      message: "A retro already exists for this sprint"
+    });
   }
 
   const template = input.template as RetroTemplate;
@@ -70,7 +74,7 @@ retrosRoutes.post("/", asyncHandler(async (req, res) => {
     phase: input.phase ?? "reflect",
     isAnonymous: Boolean(input.isAnonymous ?? false)
   } as Omit<Retro, "id">);
-  return sendSuccess(res, created, { location: `/api/retros/${created.id}` });
+  return sendSuccess(res, created, { location: `/api/retros/${created.id}` }, 201);
 }));
 
 retrosRoutes.get("/:id", asyncHandler(async (req, res) => {

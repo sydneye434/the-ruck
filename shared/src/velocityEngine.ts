@@ -41,7 +41,8 @@ export function calculateTrend(
 ): "up" | "down" | "flat" | "insufficient_data" {
   if (!Array.isArray(sprints) || sprints.length < 2) return "insufficient_data";
 
-  const mostRecent = Number(sprints[sprints.length - 1].velocityDataPoint || 0);
+  // Window lists are sorted newest-first (see getVelocityWindow); index 0 is the latest sprint.
+  const mostRecent = Number(sprints[0].velocityDataPoint || 0);
   const fullAvg =
     sprints.reduce((acc, sprint) => acc + Number(sprint.velocityDataPoint || 0), 0) / sprints.length;
   if (fullAvg === 0) return "flat";

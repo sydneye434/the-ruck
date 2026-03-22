@@ -4,6 +4,7 @@ import type { AppSettings } from "@the-ruck/shared";
 import { settingsRepository } from "../repositories";
 import { HttpError } from "../utils/httpError";
 import { sendSuccess } from "../utils/envelope";
+import { asyncHandler } from "../utils/asyncHandler";
 
 export const settingsRoutes = Router();
 
@@ -13,12 +14,17 @@ function asVelocityWindow(v: unknown): AppSettings["velocityWindow"] | null {
   return null;
 }
 
-settingsRoutes.get("/", async (_req, res) => {
-  const settings = await settingsRepository.getOrCreateDefault();
-  return sendSuccess(res, settings);
-});
+settingsRoutes.get(
+  "/",
+  asyncHandler(async (_req, res) => {
+    const settings = await settingsRepository.getOrCreateDefault();
+    return sendSuccess(res, settings);
+  })
+);
 
-settingsRoutes.put("/", async (req, res) => {
+settingsRoutes.put(
+  "/",
+  asyncHandler(async (req, res) => {
   const input = req.body as any;
   const existing = await settingsRepository.getOrCreateDefault();
 
@@ -58,5 +64,6 @@ settingsRoutes.put("/", async (req, res) => {
   if (!updated) throw new HttpError({ statusCode: 500, code: "INTERNAL_ERROR", message: "Failed to update settings" });
 
   return sendSuccess(res, updated);
-});
+  })
+);
 

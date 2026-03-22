@@ -7,5 +7,6 @@ build
 .vscode
 .idea
 coverage
+server/tests/test-data
 *.log
 

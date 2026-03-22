@@ -3,6 +3,7 @@ import { Router } from "express";
 import { teamMembersRepository } from "../repositories";
 import { HttpError } from "../utils/httpError";
 import { sendEmptySuccess, sendSuccess } from "../utils/envelope";
+import { asyncHandler } from "../utils/asyncHandler";
 
 export const teamMembersRoutes = Router();
 
@@ -23,12 +24,17 @@ function normalizeMember(member: any) {
   };
 }
 
-teamMembersRoutes.get("/", async (_req, res) => {
-  const data = (await teamMembersRepository.getAll()).map(normalizeMember);
-  return sendSuccess(res, data);
-});
+teamMembersRoutes.get(
+  "/",
+  asyncHandler(async (_req, res) => {
+    const data = (await teamMembersRepository.getAll()).map(normalizeMember);
+    return sendSuccess(res, data);
+  })
+);
 
-teamMembersRoutes.post("/", async (req, res) => {
+teamMembersRoutes.post(
+  "/",
+  asyncHandler(async (req, res) => {
   const input = req.body as any;
   if (!input?.name || !input?.avatar || typeof input.defaultAvailabilityDays !== "number") {
     throw new HttpError({
@@ -54,6 +60,17 @@ teamMembersRoutes.post("/", async (req, res) => {
     });
   }
 
+  if (typeof input.capacityMultiplier === "number") {
+    const cap = Number(input.capacityMultiplier);
+    if (!Number.isFinite(cap) || cap < 0 || cap > 100) {
+      throw new HttpError({
+        statusCode: 400,
+        code: "INVALID_REQUEST",
+        message: "capacityMultiplier must be between 0 and 100"
+      });
+    }
+  }
+
   const created = await teamMembersRepository.create({
     name: String(input.name),
     roleType,
@@ -73,19 +90,35 @@ teamMembersRoutes.post("/", async (req, res) => {
       : []
   });
 
-  return sendSuccess(res, created, { location: `/api/team-members/${created.id}` });
-});
+  return sendSuccess(res, created, { location: `/api/team-members/${created.id}` }, 201);
+  })
+);
 
-teamMembersRoutes.get("/:id", async (req, res) => {
+teamMembersRoutes.get(
+  "/:id",
+  asyncHandler(async (req, res) => {
   const member = await teamMembersRepository.getById(req.params.id);
   if (!member) {
     throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Team member not found" });
   }
   return sendSuccess(res, normalizeMember(member));
-});
+  })
+);
 
-teamMembersRoutes.patch("/:id", async (req, res) => {
+teamMembersRoutes.patch(
+  "/:id",
+  asyncHandler(async (req, res) => {
   const patch = req.body as any;
+  if (patch?.capacityMultiplier !== undefined) {
+    const cap = Number(patch.capacityMultiplier);
+    if (!Number.isFinite(cap) || cap < 0 || cap > 100) {
+      throw new HttpError({
+        statusCode: 400,
+        code: "INVALID_REQUEST",
+        message: "capacityMultiplier must be between 0 and 100"
+      });
+    }
+  }
   const activeAlias = patch?.active;
   const roleType = patch?.roleType;
   if (roleType === "coordinator" && patch?.coordinatorTitle !== undefined && !String(patch.coordinatorTitle).trim()) {
@@ -126,13 +159,17 @@ teamMembersRoutes.patch("/:id", async (req, res) => {
   }
 
   return sendSuccess(res, normalizeMember(updated));
-});
+  })
+);
 
-teamMembersRoutes.delete("/:id", async (req, res) => {
+teamMembersRoutes.delete(
+  "/:id",
+  asyncHandler(async (req, res) => {
   const deleted = await teamMembersRepository.delete(req.params.id);
   if (!deleted) {
     throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Team member not found" });
   }
   return sendEmptySuccess(res, { deletedId: req.params.id });
-});
+  })
+);
 

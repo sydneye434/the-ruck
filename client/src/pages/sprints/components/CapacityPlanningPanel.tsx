@@ -17,6 +17,7 @@ import { EmptyState } from "../../../components/common/EmptyState";
 import { Badge } from "../../../components/common/Badge";
 import { Avatar } from "../../../components/common/Avatar";
 import { buildTeamTree } from "../../../lib/buildTeamTree";
+import { computeOverridePercent } from "../../../lib/capacityPlanningUtils";
 import { Spinner } from "../../../components/feedback/Spinner";
 import { useToast } from "../../../components/feedback/ToastProvider";
 import { useSettings } from "../../../settings/SettingsContext";
@@ -447,10 +448,7 @@ export function CapacityPlanningPanel({
   const windowNote = actualWindow < selectedWindow;
   const availabilityPct = Math.round((capacityState.teamAvailability?.teamAvailabilityRatio ?? 0) * 100);
   const recommended = capacityState.recommendedCapacity;
-  const override =
-    capacityState.manualOverride != null && recommended != null
-      ? Math.round(((capacityState.manualOverride - recommended) / recommended) * 100)
-      : null;
+  const override = computeOverridePercent(capacityState.manualOverride, recommended);
   const savedSnapshot = (context?.sprint.capacitySnapshot ?? null) as SavedCapacitySnapshot | null;
   const savedCalculatedAt = savedSnapshot?.calculatedAt ? formatDate(savedSnapshot.calculatedAt) : null;
 

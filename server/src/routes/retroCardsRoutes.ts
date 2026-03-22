@@ -63,7 +63,7 @@ retroCardsRoutes.post("/", asyncHandler(async (req, res) => {
     metadata: { retroId, cardId: created.id, sprintId: retro.sprintId, columnKey: created.columnKey }
   });
 
-  return sendSuccess(res, created, { location: `/api/retros/${retroId}/cards/${created.id}` });
+  return sendSuccess(res, created, { location: `/api/retros/${retroId}/cards/${created.id}` }, 201);
 }));
 
 retroCardsRoutes.get("/:cardId", asyncHandler(async (req, res) => {

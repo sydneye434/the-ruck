@@ -9,7 +9,8 @@ export function getDataFilePath(fileName: string) {
   const defaultDataDir = cwd.endsWith(`${path.sep}server`)
     ? path.join(cwd, "data")
     : path.join(cwd, "server", "data");
-  const baseDir = process.env.THE_RUCK_DATA_DIR ?? defaultDataDir;
+  // DATA_DIR (tests) or THE_RUCK_DATA_DIR (runtime override)
+  const baseDir = process.env.DATA_DIR ?? process.env.THE_RUCK_DATA_DIR ?? defaultDataDir;
   return path.join(baseDir, fileName);
 }
 

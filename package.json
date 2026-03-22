@@ -12,7 +12,8 @@
     "seed": "npm -w server run seed",
     "build": "npm -w shared run build && npm -w server run build && npm -w client run build",
     "typecheck": "npm -w shared run typecheck && npm -w server run typecheck && npm -w client run typecheck",
-    "test": "npm -w shared run test"
+    "test": "npm test --workspaces --if-present",
+    "test:coverage": "npm run test:coverage --workspaces --if-present"
   },
   "devDependencies": {
     "concurrently": "^9.1.0"

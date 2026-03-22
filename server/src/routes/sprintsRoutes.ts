@@ -6,6 +6,7 @@ import { sprintsRepository, storiesRepository, teamMemberLinksRepository, teamMe
 import { HttpError } from "../utils/httpError";
 import { sendEmptySuccess, sendSuccess } from "../utils/envelope";
 import { logActivity } from "../utils/activityLogger";
+import { asyncHandler } from "../utils/asyncHandler";
 
 export const sprintsRoutes = Router();
 
@@ -16,15 +17,30 @@ const workingDays = require(path.join(sharedWorkspaceRoot, "workingDays.js")) as
   countWorkingDaysInRange: (startDate: string, endDate: string) => number;
 };
 
-sprintsRoutes.get("/", async (_req, res) => {
-  const data = await sprintsRepository.getAll();
-  return sendSuccess(res, data);
-});
+sprintsRoutes.get(
+  "/",
+  asyncHandler(async (_req, res) => {
+    const data = await sprintsRepository.getAll();
+    return sendSuccess(res, data);
+  })
+);
 
-sprintsRoutes.post("/", async (req, res) => {
+sprintsRoutes.post(
+  "/",
+  asyncHandler(async (req, res) => {
   const input = req.body as any;
   if (!input?.name || !input?.startDate || !input?.endDate) {
     throw new HttpError({ statusCode: 400, code: "INVALID_REQUEST", message: "Missing required sprint fields" });
+  }
+
+  const startMs = new Date(String(input.startDate)).getTime();
+  const endMs = new Date(String(input.endDate)).getTime();
+  if (!Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs) {
+    throw new HttpError({
+      statusCode: 400,
+      code: "INVALID_REQUEST",
+      message: "endDate must be after startDate"
+    });
   }
 
   // Default to "planning" unless explicitly provided.
@@ -38,16 +54,22 @@ sprintsRoutes.post("/", async (req, res) => {
     status
   });
 
-  return sendSuccess(res, created, { location: `/api/sprints/${created.id}` });
-});
+  return sendSuccess(res, created, { location: `/api/sprints/${created.id}` }, 201);
+  })
+);
 
-sprintsRoutes.get("/:id", async (req, res) => {
+sprintsRoutes.get(
+  "/:id",
+  asyncHandler(async (req, res) => {
   const sprint = await sprintsRepository.getById(req.params.id);
   if (!sprint) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Sprint not found" });
   return sendSuccess(res, sprint);
-});
+  })
+);
 
-sprintsRoutes.patch("/:id", async (req, res) => {
+sprintsRoutes.patch(
+  "/:id",
+  asyncHandler(async (req, res) => {
   const patch = req.body as any;
   const updated = await sprintsRepository.update(req.params.id, {
     ...(patch?.name !== undefined ? { name: String(patch.name) } : {}),
@@ -61,15 +83,21 @@ sprintsRoutes.patch("/:id", async (req, res) => {
 
   if (!updated) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Sprint not found" });
   return sendSuccess(res, updated);
-});
+  })
+);
 
-sprintsRoutes.delete("/:id", async (req, res) => {
+sprintsRoutes.delete(
+  "/:id",
+  asyncHandler(async (req, res) => {
   const deleted = await sprintsRepository.delete(req.params.id);
   if (!deleted) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Sprint not found" });
   return sendEmptySuccess(res, { deletedId: req.params.id });
-});
+  })
+);
 
-sprintsRoutes.get("/:id/capacity-context", async (req, res) => {
+sprintsRoutes.get(
+  "/:id/capacity-context",
+  asyncHandler(async (req, res) => {
   const sprint = await sprintsRepository.getById(req.params.id);
   if (!sprint) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Sprint not found" });
 
@@ -119,12 +147,23 @@ sprintsRoutes.get("/:id/capacity-context", async (req, res) => {
     memberships,
     workingDaysInSprint
   });
-});
+  })
+);
 
 // Triggers velocity calculation and marks the sprint as completed.
-sprintsRoutes.post("/:id/complete", async (req, res) => {
+sprintsRoutes.post(
+  "/:id/complete",
+  asyncHandler(async (req, res) => {
   const sprint = await sprintsRepository.getById(req.params.id);
   if (!sprint) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Sprint not found" });
+
+  if (sprint.status === "completed") {
+    throw new HttpError({
+      statusCode: 400,
+      code: "INVALID_REQUEST",
+      message: "Sprint is already completed"
+    });
+  }
 
   const allStories = await storiesRepository.getAll();
   const doneStories = allStories.filter(
@@ -151,5 +190,6 @@ sprintsRoutes.post("/:id/complete", async (req, res) => {
   });
 
   return sendSuccess(res, updated, { velocityDataPoint, doneStoryCount: doneStories.length });
-});
+  })
+);
 

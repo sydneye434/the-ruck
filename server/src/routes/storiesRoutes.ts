@@ -5,6 +5,7 @@ import { sprintsRepository, storiesRepository } from "../repositories";
 import { HttpError } from "../utils/httpError";
 import { sendEmptySuccess, sendSuccess } from "../utils/envelope";
 import { logActivity } from "../utils/activityLogger";
+import { asyncHandler } from "../utils/asyncHandler";
 
 export const storiesRoutes = Router();
 
@@ -24,25 +25,30 @@ function asBoardColumn(v: unknown): StoryBoardColumn | null {
 // Query-aware list:
 // - GET /api/stories?sprintId=:id -> stories for that sprint
 // - GET /api/stories?sprintId=backlog -> unassigned backlog stories
-storiesRoutes.get("/", async (req, res) => {
-  const data = await storiesRepository.getAll();
-  const sprintId = req.query.sprintId;
+storiesRoutes.get(
+  "/",
+  asyncHandler(async (req, res) => {
+    const data = await storiesRepository.getAll();
+    const sprintId = req.query.sprintId;
 
-  if (typeof sprintId !== "string" || !sprintId) {
-    return sendSuccess(res, data);
-  }
+    if (typeof sprintId !== "string" || !sprintId) {
+      return sendSuccess(res, data);
+    }
 
-  if (sprintId === "backlog") {
-    // Backlog stories are those sitting in the Backlog column (unassigned until pulled).
-    const backlogStories = data.filter((s) => s.boardColumn === "backlog");
-    return sendSuccess(res, backlogStories);
-  }
+    if (sprintId === "backlog") {
+      // Backlog stories are those sitting in the Backlog column (unassigned until pulled).
+      const backlogStories = data.filter((s) => s.boardColumn === "backlog");
+      return sendSuccess(res, backlogStories);
+    }
 
-  const scoped = data.filter((s) => s.sprintId === sprintId);
-  return sendSuccess(res, scoped);
-});
+    const scoped = data.filter((s) => s.sprintId === sprintId);
+    return sendSuccess(res, scoped);
+  })
+);
 
-storiesRoutes.post("/", async (req, res) => {
+storiesRoutes.post(
+  "/",
+  asyncHandler(async (req, res) => {
   const input = req.body as any;
 
   const storyPoints = asStoryPoints(input?.storyPoints);
@@ -77,16 +83,22 @@ storiesRoutes.post("/", async (req, res) => {
     metadata: { storyId: created.id, sprintId: created.sprintId }
   });
 
-  return sendSuccess(res, created, { location: `/api/stories/${created.id}` });
-});
+  return sendSuccess(res, created, { location: `/api/stories/${created.id}` }, 201);
+  })
+);
 
-storiesRoutes.get("/:id", async (req, res) => {
+storiesRoutes.get(
+  "/:id",
+  asyncHandler(async (req, res) => {
   const story = await storiesRepository.getById(req.params.id);
   if (!story) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Story not found" });
   return sendSuccess(res, story);
-});
+  })
+);
 
-storiesRoutes.patch("/:id", async (req, res) => {
+storiesRoutes.patch(
+  "/:id",
+  asyncHandler(async (req, res) => {
   const patch = req.body as any;
   const existing = await storiesRepository.getById(req.params.id);
   if (!existing) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Story not found" });
@@ -127,11 +139,15 @@ storiesRoutes.patch("/:id", async (req, res) => {
     });
   }
   return sendSuccess(res, updated);
-});
+  })
+);
 
-storiesRoutes.delete("/:id", async (req, res) => {
+storiesRoutes.delete(
+  "/:id",
+  asyncHandler(async (req, res) => {
   const deleted = await storiesRepository.delete(req.params.id);
   if (!deleted) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Story not found" });
   return sendEmptySuccess(res, { deletedId: req.params.id });
-});
+  })
+);
 
