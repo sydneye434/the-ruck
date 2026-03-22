@@ -1,7 +1,7 @@
 // Developed by Sydney Edwards
 import { Router } from "express";
 import path from "node:path";
-import type { Retro, RetroTemplate } from "@the-ruck/shared";
+import type { Retro, RetroPhase, RetroTemplate } from "@the-ruck/shared";
 import { retroCardsRoutes } from "./retroCardsRoutes";
 import { retroActionItemsRoutes } from "./retroActionItemsRoutes";
 import { retroActionItemsRepository, retroCardsRepository, retrosRepository, sprintsRepository } from "../repositories";
@@ -9,6 +9,7 @@ import { HttpError } from "../utils/httpError";
 import { sendEmptySuccess, sendSuccess } from "../utils/envelope";
 import { getCarriedOverItems } from "../utils/getCarriedOverItems";
 import { asyncHandler } from "../utils/asyncHandler";
+import { getJsonBody } from "../utils/jsonBody";
 
 export const retrosRoutes = Router();
 
@@ -45,8 +46,8 @@ retrosRoutes.get("/", asyncHandler(async (req, res) => {
 }));
 
 retrosRoutes.post("/", asyncHandler(async (req, res) => {
-  const input = req.body as any;
-  if (!input?.sprintId || !input?.template) {
+  const input = getJsonBody(req);
+  if (input.sprintId == null || input.template == null) {
     throw new HttpError({ statusCode: 400, code: "INVALID_REQUEST", message: "Missing required retro fields" });
   }
 
@@ -67,13 +68,22 @@ retrosRoutes.post("/", asyncHandler(async (req, res) => {
     throw new HttpError({ statusCode: 400, code: "INVALID_REQUEST", message: "Invalid retro template" });
   }
 
+  const phaseRaw = input.phase;
+  const phase =
+    phaseRaw === "reflect" ||
+    phaseRaw === "discuss" ||
+    phaseRaw === "action_items" ||
+    phaseRaw === "closed"
+      ? phaseRaw
+      : "reflect";
+
   const created = await retrosRepository.create({
     sprintId: sprint.id,
     title: input.title ? String(input.title) : `${sprint.name} Retrospective`,
     template,
-    phase: input.phase ?? "reflect",
+    phase,
     isAnonymous: Boolean(input.isAnonymous ?? false)
-  } as Omit<Retro, "id">);
+  });
   return sendSuccess(res, created, { location: `/api/retros/${created.id}` }, 201);
 }));
 
@@ -94,19 +104,20 @@ retrosRoutes.get("/:id", asyncHandler(async (req, res) => {
 }));
 
 retrosRoutes.patch("/:id", asyncHandler(async (req, res) => {
-  const patch = req.body as any;
+  const patch = getJsonBody(req);
   const updatePatch: Partial<Omit<Retro, "id">> = {
-    ...(patch?.title !== undefined ? { title: String(patch.title) } : {}),
-    ...(patch?.isAnonymous !== undefined ? { isAnonymous: Boolean(patch.isAnonymous) } : {})
+    ...(patch.title !== undefined ? { title: String(patch.title) } : {}),
+    ...(patch.isAnonymous !== undefined ? { isAnonymous: Boolean(patch.isAnonymous) } : {})
   };
 
-  if (patch?.phase !== undefined) {
-    if (!["reflect", "discuss", "action_items", "closed"].includes(String(patch.phase))) {
+  if (patch.phase !== undefined) {
+    const phaseStr = String(patch.phase);
+    if (!["reflect", "discuss", "action_items", "closed"].includes(phaseStr)) {
       throw new HttpError({ statusCode: 400, code: "INVALID_REQUEST", message: "Invalid retro phase" });
     }
-    updatePatch.phase = patch.phase;
+    updatePatch.phase = phaseStr as RetroPhase;
   }
-  if (patch?.template !== undefined) {
+  if (patch.template !== undefined) {
     const candidate = String(patch.template) as RetroTemplate;
     if (!VALID_TEMPLATES.has(candidate)) {
       throw new HttpError({ statusCode: 400, code: "INVALID_REQUEST", message: "Invalid retro template" });

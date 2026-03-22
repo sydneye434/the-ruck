@@ -1,13 +1,47 @@
 // Developed by Sydney Edwards
 import { Router } from "express";
+import type { TeamMember } from "@the-ruck/shared";
 import { teamMembersRepository } from "../repositories";
 import { HttpError } from "../utils/httpError";
 import { sendEmptySuccess, sendSuccess } from "../utils/envelope";
 import { asyncHandler } from "../utils/asyncHandler";
+import { getJsonBody } from "../utils/jsonBody";
 
 export const teamMembersRoutes = Router();
 
-function normalizeMember(member: any) {
+const TEAM_ROLES: readonly TeamMember["roleType"][] = [
+  "team_member",
+  "scrum_master",
+  "product_owner",
+  "coordinator"
+];
+
+type MemberRaw = TeamMember & { role?: string };
+
+function parseRoleTypeFromBody(input: Record<string, unknown>): TeamMember["roleType"] {
+  const raw = input.roleType;
+  if (typeof raw === "string" && (TEAM_ROLES as readonly string[]).includes(raw)) {
+    return raw as TeamMember["roleType"];
+  }
+  if (typeof input.role === "string" && input.role.toLowerCase().includes("scrum")) return "scrum_master";
+  if (typeof input.role === "string" && input.role.toLowerCase().includes("product")) return "product_owner";
+  return "team_member";
+}
+
+function parseRoleTypePatch(input: Record<string, unknown>): TeamMember["roleType"] | undefined {
+  if (input.roleType === undefined) return undefined;
+  const raw = input.roleType;
+  if (typeof raw !== "string" || !(TEAM_ROLES as readonly string[]).includes(raw)) {
+    throw new HttpError({
+      statusCode: 400,
+      code: "INVALID_REQUEST",
+      message: "roleType must be team_member, scrum_master, product_owner, or coordinator"
+    });
+  }
+  return raw as TeamMember["roleType"];
+}
+
+function normalizeMember(member: MemberRaw): TeamMember {
   const roleType =
     member.roleType ??
     (typeof member.role === "string" && member.role.toLowerCase().includes("scrum")
@@ -35,8 +69,12 @@ teamMembersRoutes.get(
 teamMembersRoutes.post(
   "/",
   asyncHandler(async (req, res) => {
-  const input = req.body as any;
-  if (!input?.name || !input?.avatar || typeof input.defaultAvailabilityDays !== "number") {
+  const input = getJsonBody(req);
+  if (
+    input.name == null ||
+    input.avatar == null ||
+    typeof input.defaultAvailabilityDays !== "number"
+  ) {
     throw new HttpError({
       statusCode: 400,
       code: "INVALID_REQUEST",
@@ -44,13 +82,8 @@ teamMembersRoutes.post(
     });
   }
 
-  const roleType =
-    input.roleType ??
-    (typeof input.role === "string" && input.role.toLowerCase().includes("scrum")
-      ? "scrum_master"
-      : typeof input.role === "string" && input.role.toLowerCase().includes("product")
-        ? "product_owner"
-        : "team_member");
+  const avatarObj = input.avatar as Record<string, unknown>;
+  const roleType = parseRoleTypeFromBody(input);
 
   if (roleType === "coordinator" && !String(input.coordinatorTitle ?? "").trim()) {
     throw new HttpError({
@@ -77,8 +110,8 @@ teamMembersRoutes.post(
     coordinatorTitle:
       roleType === "coordinator" ? String(input.coordinatorTitle ?? "").trim() : undefined,
     avatar: {
-      color: String(input.avatar.color),
-      initials: String(input.avatar.initials)
+      color: String(avatarObj.color),
+      initials: String(avatarObj.initials)
     },
     defaultAvailabilityDays: input.defaultAvailabilityDays,
     capacityMultiplier:
@@ -108,8 +141,8 @@ teamMembersRoutes.get(
 teamMembersRoutes.patch(
   "/:id",
   asyncHandler(async (req, res) => {
-  const patch = req.body as any;
-  if (patch?.capacityMultiplier !== undefined) {
+  const patch = getJsonBody(req);
+  if (patch.capacityMultiplier !== undefined) {
     const cap = Number(patch.capacityMultiplier);
     if (!Number.isFinite(cap) || cap < 0 || cap > 100) {
       throw new HttpError({
@@ -119,9 +152,13 @@ teamMembersRoutes.patch(
       });
     }
   }
-  const activeAlias = patch?.active;
-  const roleType = patch?.roleType;
-  if (roleType === "coordinator" && patch?.coordinatorTitle !== undefined && !String(patch.coordinatorTitle).trim()) {
+  const activeAlias = patch.active;
+  const patchRoleType = parseRoleTypePatch(patch);
+  if (
+    patchRoleType === "coordinator" &&
+    patch.coordinatorTitle !== undefined &&
+    !String(patch.coordinatorTitle).trim()
+  ) {
     throw new HttpError({
       statusCode: 400,
       code: "INVALID_REQUEST",
@@ -129,28 +166,31 @@ teamMembersRoutes.patch(
     });
   }
   const updated = await teamMembersRepository.update(req.params.id, {
-    ...(patch?.name !== undefined ? { name: String(patch.name) } : {}),
-    ...(patch?.roleType !== undefined ? { roleType: patch.roleType } : {}),
-    ...(patch?.coordinatorTitle !== undefined
+    ...(patch.name !== undefined ? { name: String(patch.name) } : {}),
+    ...(patchRoleType !== undefined ? { roleType: patchRoleType } : {}),
+    ...(patch.coordinatorTitle !== undefined
       ? { coordinatorTitle: patch.coordinatorTitle ? String(patch.coordinatorTitle) : undefined }
       : {}),
-    ...(patch?.avatar !== undefined
-      ? { avatar: { color: String(patch.avatar.color), initials: String(patch.avatar.initials) } }
+    ...(patch.avatar !== undefined
+      ? (() => {
+          const a = patch.avatar as Record<string, unknown>;
+          return { avatar: { color: String(a.color), initials: String(a.initials) } };
+        })()
       : {}),
-    ...(patch?.defaultAvailabilityDays !== undefined
+    ...(patch.defaultAvailabilityDays !== undefined
       ? { defaultAvailabilityDays: Number(patch.defaultAvailabilityDays) }
       : {}),
-    ...(patch?.capacityMultiplier !== undefined
+    ...(patch.capacityMultiplier !== undefined
       ? { capacityMultiplier: Number(patch.capacityMultiplier) }
       : {}),
-    ...(patch?.coordinatorTeamIds !== undefined
+    ...(patch.coordinatorTeamIds !== undefined
       ? {
           coordinatorTeamIds: Array.isArray(patch.coordinatorTeamIds)
             ? patch.coordinatorTeamIds.map((x: unknown) => String(x))
             : []
         }
       : {}),
-    ...(patch?.isActive !== undefined ? { isActive: Boolean(patch.isActive) } : {}),
+    ...(patch.isActive !== undefined ? { isActive: Boolean(patch.isActive) } : {}),
     ...(activeAlias !== undefined ? { isActive: Boolean(activeAlias) } : {})
   });
 

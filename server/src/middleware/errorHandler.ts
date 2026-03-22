@@ -17,7 +17,8 @@ export function errorHandler(): ErrorRequestHandler {
       }
 
       if (err && typeof err === "object" && "message" in err) {
-        return { message: String((err as any).message), code: "INTERNAL_ERROR" };
+        const msg = (err as { message?: unknown }).message;
+        return { message: typeof msg === "string" ? msg : String(msg), code: "INTERNAL_ERROR" };
       }
 
       return { message: "Internal server error", code: "INTERNAL_ERROR" };

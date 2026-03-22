@@ -24,6 +24,7 @@ import { HttpError } from "../utils/httpError";
 import { sendEmptySuccess, sendSuccess } from "../utils/envelope";
 import { logActivity } from "../utils/activityLogger";
 import { asyncHandler } from "../utils/asyncHandler";
+import { getJsonBody } from "../utils/jsonBody";
 
 export const sprintsRoutes = Router();
 
@@ -45,8 +46,8 @@ sprintsRoutes.get(
 sprintsRoutes.post(
   "/",
   asyncHandler(async (req, res) => {
-  const input = req.body as any;
-  if (!input?.name || !input?.startDate || !input?.endDate) {
+  const input = getJsonBody(req);
+  if (input.name == null || input.startDate == null || input.endDate == null) {
     throw new HttpError({ statusCode: 400, code: "INVALID_REQUEST", message: "Missing required sprint fields" });
   }
 
@@ -61,7 +62,11 @@ sprintsRoutes.post(
   }
 
   // Default to "planning" unless explicitly provided.
-  const status: Sprint["status"] = input.status ?? "planning";
+  const rawStatus = input.status;
+  const status: Sprint["status"] =
+    rawStatus === "planning" || rawStatus === "active" || rawStatus === "completed"
+      ? rawStatus
+      : "planning";
 
   const created = await sprintsRepository.create({
     name: String(input.name),
@@ -108,7 +113,7 @@ sprintsRoutes.get(
         name: sprint.name,
         startDate: sprint.startDate,
         endDate: sprint.endDate,
-        capacityTarget: (sprint as { capacityTarget?: number | null }).capacityTarget ?? null
+        capacityTarget: sprint.capacityTarget ?? null
       },
       snapshots,
       idealBurndown,
@@ -130,23 +135,23 @@ sprintsRoutes.get(
 sprintsRoutes.patch(
   "/:id",
   asyncHandler(async (req, res) => {
-  const patch = req.body as any;
+  const patch = getJsonBody(req);
   const existing = await sprintsRepository.getById(req.params.id);
   if (!existing) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Sprint not found" });
 
   const updated = await sprintsRepository.update(req.params.id, {
-    ...(patch?.name !== undefined ? { name: String(patch.name) } : {}),
-    ...(patch?.startDate !== undefined ? { startDate: String(patch.startDate) } : {}),
-    ...(patch?.endDate !== undefined ? { endDate: String(patch.endDate) } : {}),
-    ...(patch?.goal !== undefined ? { goal: String(patch.goal) } : {}),
-    ...(patch?.status !== undefined ? { status: patch.status } : {}),
-    ...(patch?.capacityTarget !== undefined ? { capacityTarget: Number(patch.capacityTarget) } : {}),
-    ...(patch?.capacitySnapshot !== undefined ? { capacitySnapshot: patch.capacitySnapshot } : {})
+    ...(patch.name !== undefined ? { name: String(patch.name) } : {}),
+    ...(patch.startDate !== undefined ? { startDate: String(patch.startDate) } : {}),
+    ...(patch.endDate !== undefined ? { endDate: String(patch.endDate) } : {}),
+    ...(patch.goal !== undefined ? { goal: String(patch.goal) } : {}),
+    ...(patch.status !== undefined ? { status: patch.status as Sprint["status"] } : {}),
+    ...(patch.capacityTarget !== undefined ? { capacityTarget: Number(patch.capacityTarget) } : {}),
+    ...(patch.capacitySnapshot !== undefined ? { capacitySnapshot: patch.capacitySnapshot } : {})
   });
 
   if (!updated) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Sprint not found" });
 
-  if (shouldRecordForSprintActivation(existing, patch)) {
+  if (shouldRecordForSprintActivation(existing, { status: patch.status as Sprint["status"] | undefined })) {
     recordBurndownSnapshotForSprint(updated.id);
   }
 
@@ -206,8 +211,8 @@ sprintsRoutes.get(
       goal: sprint.goal,
       startDate: sprint.startDate,
       endDate: sprint.endDate,
-      capacityTarget: (sprint as any).capacityTarget ?? null,
-      capacitySnapshot: (sprint as any).capacitySnapshot ?? null
+      capacityTarget: sprint.capacityTarget ?? null,
+      capacitySnapshot: sprint.capacitySnapshot ?? null
     },
     completedSprints,
     activeMembers,

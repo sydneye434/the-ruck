@@ -252,7 +252,7 @@ export async function runSeed() {
       groupId: null,
       createdAt: new Date(now - 36 * 3600000).toISOString(),
       updatedAt: new Date(now - 36 * 3600000).toISOString()
-    } as any),
+    }),
     retroCardsRepository.create({
       retroId: retroActive.id,
       columnKey: "sad",
@@ -262,7 +262,7 @@ export async function runSeed() {
       groupId: null,
       createdAt: new Date(now - 18 * 3600000).toISOString(),
       updatedAt: new Date(now - 18 * 3600000).toISOString()
-    } as any),
+    }),
     retroCardsRepository.create({
       retroId: retroActive.id,
       columnKey: "glad",
@@ -272,7 +272,7 @@ export async function runSeed() {
       groupId: null,
       createdAt: new Date(now - 8 * 3600000).toISOString(),
       updatedAt: new Date(now - 8 * 3600000).toISOString()
-    } as any),
+    }),
     retroCardsRepository.create({
       retroId: retroActive.id,
       columnKey: "glad",

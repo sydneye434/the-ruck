@@ -1,6 +1,7 @@
 // Developed by Sydney Edwards
 import { Router } from "express";
 import path from "node:path";
+import type { RetroActionItem, Sprint } from "@the-ruck/shared";
 import { calculateEffectiveDays } from "@the-ruck/shared";
 import {
   activityLogRepository,
@@ -16,11 +17,19 @@ import { asyncHandler } from "../utils/asyncHandler";
 
 export const dashboardRoutes = Router();
 
+type VelocityTrendRow = {
+  id: string;
+  name: string;
+  completedAt?: string;
+  velocityDataPoint: number;
+  capacityTarget: number | null;
+};
+
 const dashboardUtils = require(path.resolve(__dirname, "../utils/dashboardUtils.js")) as {
   calculateDaysRemaining: (endDate: string) => number;
   calculateProgressPercent: (completed: number, total: number) => number;
-  buildVelocityTrend: (completedSprints: any[], limit?: number) => any[];
-  getOverdueActionItems: (items: any[]) => any[];
+  buildVelocityTrend: (completedSprints: Sprint[], limit?: number) => VelocityTrendRow[];
+  getOverdueActionItems: (items: RetroActionItem[]) => RetroActionItem[];
 };
 
 dashboardRoutes.get(
@@ -51,7 +60,7 @@ dashboardRoutes.get(
       done: sprintStories.filter((s) => s.boardColumn === "done").length
     };
     const daysRemaining = dashboardUtils.calculateDaysRemaining(activeSprint.endDate);
-    const capacityTarget = (activeSprint as any).capacityTarget ?? null;
+    const capacityTarget = activeSprint.capacityTarget ?? null;
     return {
       id: activeSprint.id,
       name: activeSprint.name,

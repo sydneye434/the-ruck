@@ -1,7 +1,5 @@
 # Code style guide — The Ruck
 
-*Developed by Sydney Edwards.*
-
 This project does not enforce a single formatter across all workspaces in CI; these guidelines keep **TypeScript**, **React**, and **Node** code consistent and easy to review.
 
 ---
@@ -26,7 +24,7 @@ This project does not enforce a single formatter across all workspaces in CI; th
 
 ## React (client)
 
-- **Functional components** and hooks only (no class components).
+- **Functional components** and hooks by default. **Exception:** React **error boundaries** must be **class components** (e.g. `AppErrorBoundary`) because `getDerivedStateFromError` has no hooks equivalent.
 - **File naming:** `PascalCase.tsx` for components, `camelCase.ts` for non-component modules.
 - **Imports:** group external packages first, then internal aliases (`@/`, `@the-ruck/shared`), then relative paths.
 - **Styling:** Tailwind-style utility classes with **CSS variables** for theme tokens (e.g. `var(--color-accent)`). Prefer semantic tokens over raw hex in new UI.
@@ -38,6 +36,7 @@ This project does not enforce a single formatter across all workspaces in CI; th
 ## Express / server
 
 - **Handlers:** keep route handlers thin; validate input, call repositories/services, return **`sendSuccess` / `sendEmptySuccess`** (or throw **`HttpError`**).
+- **Request bodies:** use **`getJsonBody(req)`** from **`server/src/utils/jsonBody.ts`** to obtain `Record<string, unknown>` instead of **`req.body as any`**.
 - **Async:** use **`asyncHandler`** (or equivalent) so rejected promises become proper HTTP errors.
 - **Persistence:** all file access goes through **repositories** under `server/src/repositories/`. Do not read/write `server/data/*.json` directly from routes.
 - **Side effects:** background work (e.g. activity log, burndown snapshots) should **not block** the response; use fire-and-forget with internal error logging.
@@ -64,7 +63,12 @@ This project does not enforce a single formatter across all workspaces in CI; th
 
 ## Comments & attribution
 
-- New files may include a one-line attribution: `// Developed by Sydney Edwards` (match existing files in the same area).
+- New source files should include a one-line attribution where appropriate:
+  - **TypeScript/JavaScript:** `// Developed by Sydney Edwards` as the first line (or after a shebang / `use strict` if required).
+  - **CSS:** `/* Developed by Sydney Edwards */` at the top.
+  - **HTML:** `<!-- Developed by Sydney Edwards -->` after `<!doctype html>` when present.
+  - **Markdown:** footer `*Developed by Sydney Edwards.*` (see existing `README.md`, `docs/*.md`, `server/API.md`).
+- The repo script **`scripts/add-developer-credit.mjs`** can prepend credits to many paths; prefer matching the pattern already used in neighboring files.
 - **Explain why**, not what, when the code is non-obvious (workarounds, spec edge cases, performance).
 
 ---

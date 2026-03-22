@@ -55,7 +55,7 @@ function processHtml(filePath) {
 let count = 0;
 
 // Source trees
-for (const rel of ["client/src", "server/src", "shared/src"]) {
+for (const rel of ["client/src", "client/tests", "server/src", "server/tests", "shared/src"]) {
   const dir = path.join(root, rel);
   for (const file of walk(dir)) {
     if (!shouldProcessFile(file)) continue;
@@ -94,7 +94,14 @@ if (fs.existsSync(indexHtml) && processHtml(indexHtml)) count++;
 
 // Markdown: append footer
 const mdFooter = `\n\n---\n\n*${MARKER}.*\n`;
-for (const rel of ["README.md", "docs/TRAINING_AGILE_AT_SCALE.md", "server/API.md"]) {
+for (const rel of [
+  "README.md",
+  "docs/TRAINING_AGILE_AT_SCALE.md",
+  "docs/TESTING.md",
+  "docs/STYLE_GUIDE.md",
+  "server/API.md",
+  "CREDITS.md"
+]) {
   const file = path.join(root, rel);
   if (!fs.existsSync(file)) continue;
   const raw = fs.readFileSync(file, "utf8");

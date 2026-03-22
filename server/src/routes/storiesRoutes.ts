@@ -7,6 +7,7 @@ import { sendEmptySuccess, sendSuccess } from "../utils/envelope";
 import { logActivity } from "../utils/activityLogger";
 import { asyncHandler } from "../utils/asyncHandler";
 import { recordBurndownSnapshotForSprint, shouldRecordForStoryMove } from "../services/burndownSnapshotService";
+import { getJsonBody } from "../utils/jsonBody";
 
 export const storiesRoutes = Router();
 
@@ -50,12 +51,12 @@ storiesRoutes.get(
 storiesRoutes.post(
   "/",
   asyncHandler(async (req, res) => {
-  const input = req.body as any;
+  const input = getJsonBody(req);
 
-  const storyPoints = asStoryPoints(input?.storyPoints);
-  const boardColumn = asBoardColumn(input?.boardColumn);
+  const storyPoints = asStoryPoints(input.storyPoints);
+  const boardColumn = asBoardColumn(input.boardColumn);
 
-  if (!input?.sprintId || !input?.title || !storyPoints || !boardColumn) {
+  if (input.sprintId == null || input.title == null || !storyPoints || !boardColumn) {
     throw new HttpError({
       statusCode: 400,
       code: "INVALID_REQUEST",
@@ -69,12 +70,12 @@ storiesRoutes.post(
     description: String(input.description ?? ""),
     storyPoints,
     assigneeMemberId: input.assigneeMemberId ? String(input.assigneeMemberId) : null,
-    labels: Array.isArray(input.labels) ? input.labels.map((x: any) => String(x)) : [],
+    labels: Array.isArray(input.labels) ? input.labels.map((x: unknown) => String(x)) : [],
     acceptanceCriteria: Array.isArray(input.acceptanceCriteria)
-      ? input.acceptanceCriteria.map((x: any) => String(x))
+      ? input.acceptanceCriteria.map((x: unknown) => String(x))
       : [],
-    boardColumn,
-  } as Omit<Story, "id">);
+    boardColumn
+  });
 
   const sprint = await sprintsRepository.getById(created.sprintId);
   logActivity({
@@ -100,31 +101,31 @@ storiesRoutes.get(
 storiesRoutes.patch(
   "/:id",
   asyncHandler(async (req, res) => {
-  const patch = req.body as any;
+  const patch = getJsonBody(req);
   const existing = await storiesRepository.getById(req.params.id);
   if (!existing) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Story not found" });
 
   const updatePatch: Partial<Omit<Story, "id">> = {
-    ...(patch?.sprintId !== undefined ? { sprintId: String(patch.sprintId) } : {}),
-    ...(patch?.title !== undefined ? { title: String(patch.title) } : {}),
-    ...(patch?.description !== undefined ? { description: String(patch.description) } : {}),
-    ...(patch?.storyPoints !== undefined && asStoryPoints(patch.storyPoints) !== null
+    ...(patch.sprintId !== undefined ? { sprintId: String(patch.sprintId) } : {}),
+    ...(patch.title !== undefined ? { title: String(patch.title) } : {}),
+    ...(patch.description !== undefined ? { description: String(patch.description) } : {}),
+    ...(patch.storyPoints !== undefined && asStoryPoints(patch.storyPoints) !== null
       ? { storyPoints: asStoryPoints(patch.storyPoints)! }
       : {}),
-    ...(patch?.assigneeMemberId !== undefined
+    ...(patch.assigneeMemberId !== undefined
       ? { assigneeMemberId: patch.assigneeMemberId ? String(patch.assigneeMemberId) : null }
       : {}),
-    ...(patch?.labels !== undefined
-      ? { labels: Array.isArray(patch.labels) ? patch.labels.map((x: any) => String(x)) : [] }
+    ...(patch.labels !== undefined
+      ? { labels: Array.isArray(patch.labels) ? patch.labels.map((x: unknown) => String(x)) : [] }
       : {}),
-    ...(patch?.acceptanceCriteria !== undefined
+    ...(patch.acceptanceCriteria !== undefined
       ? {
           acceptanceCriteria: Array.isArray(patch.acceptanceCriteria)
-            ? patch.acceptanceCriteria.map((x: any) => String(x))
+            ? patch.acceptanceCriteria.map((x: unknown) => String(x))
             : []
         }
       : {}),
-    ...(patch?.boardColumn !== undefined && asBoardColumn(patch.boardColumn) !== null
+    ...(patch.boardColumn !== undefined && asBoardColumn(patch.boardColumn) !== null
       ? { boardColumn: asBoardColumn(patch.boardColumn)! }
       : {})
   };

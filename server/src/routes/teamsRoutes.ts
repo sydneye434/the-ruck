@@ -4,6 +4,7 @@ import { buildTeamTree, withComputedDepth, type Team } from "@the-ruck/shared";
 import { teamMemberLinksRepository, teamMembersRepository, teamsRepository } from "../repositories";
 import { HttpError } from "../utils/httpError";
 import { sendEmptySuccess, sendSuccess } from "../utils/envelope";
+import { getJsonBody } from "../utils/jsonBody";
 
 export const teamsRoutes = Router();
 const asyncHandler =
@@ -58,8 +59,8 @@ teamsRoutes.get("/tree", asyncHandler(async (_req: Request, res: Response) => {
 }));
 
 teamsRoutes.post("/", asyncHandler(async (req: Request, res: Response) => {
-  const input = req.body as any;
-  if (!input?.name) {
+  const input = getJsonBody(req);
+  if (input.name == null || String(input.name).trim() === "") {
     throw new HttpError({ statusCode: 400, code: "INVALID_REQUEST", message: "Team name is required" });
   }
 
@@ -81,7 +82,7 @@ teamsRoutes.post("/", asyncHandler(async (req: Request, res: Response) => {
 
 teamsRoutes.patch("/:id", asyncHandler(async (req: Request, res: Response) => {
   const id = req.params.id;
-  const patch = req.body as any;
+  const patch = getJsonBody(req);
   const all = await teamsRepository.getAll();
   const existing = all.find((team) => team.id === id);
   if (!existing) {
@@ -89,7 +90,7 @@ teamsRoutes.patch("/:id", asyncHandler(async (req: Request, res: Response) => {
   }
 
   const nextParentTeamId =
-    patch?.parentTeamId === undefined
+    patch.parentTeamId === undefined
       ? existing.parentTeamId
       : patch.parentTeamId
         ? String(patch.parentTeamId)
@@ -101,10 +102,10 @@ teamsRoutes.patch("/:id", asyncHandler(async (req: Request, res: Response) => {
   }
 
   const updated = await teamsRepository.update(id, {
-    ...(patch?.name !== undefined ? { name: String(patch.name) } : {}),
-    ...(patch?.description !== undefined ? { description: String(patch.description) } : {}),
-    ...(patch?.color !== undefined ? { color: String(patch.color) } : {}),
-    ...(patch?.parentTeamId !== undefined ? { parentTeamId: nextParentTeamId } : {})
+    ...(patch.name !== undefined ? { name: String(patch.name) } : {}),
+    ...(patch.description !== undefined ? { description: String(patch.description) } : {}),
+    ...(patch.color !== undefined ? { color: String(patch.color) } : {}),
+    ...(patch.parentTeamId !== undefined ? { parentTeamId: nextParentTeamId } : {})
   });
   if (!updated) {
     throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Team not found" });
@@ -160,7 +161,7 @@ teamsRoutes.delete("/:id", asyncHandler(async (req: Request, res: Response) => {
 
 teamsRoutes.post("/:id/members", asyncHandler(async (req: Request, res: Response) => {
   const teamId = req.params.id;
-  const memberId = String((req.body as any)?.memberId ?? "");
+  const memberId = String(getJsonBody(req).memberId ?? "");
   if (!memberId) {
     throw new HttpError({ statusCode: 400, code: "INVALID_REQUEST", message: "memberId is required" });
   }

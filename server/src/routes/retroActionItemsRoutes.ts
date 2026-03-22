@@ -6,22 +6,23 @@ import { HttpError } from "../utils/httpError";
 import { sendEmptySuccess, sendSuccess } from "../utils/envelope";
 import { asyncHandler } from "../utils/asyncHandler";
 import { logActivity } from "../utils/activityLogger";
+import { getJsonBody } from "../utils/jsonBody";
 
 export const retroActionItemsRoutes = Router({ mergeParams: true });
 const VALID_STATUSES = new Set<RetroActionItem["status"]>(["open", "in_progress", "complete"]);
 
 retroActionItemsRoutes.get("/", asyncHandler(async (req, res) => {
-  const retroId = (req.params as any).id as string;
+  const retroId = req.params.id as string;
   const all = await retroActionItemsRepository.getAll();
   const data = all.filter((i) => i.retroId === retroId);
   return sendSuccess(res, data);
 }));
 
 retroActionItemsRoutes.post("/", asyncHandler(async (req, res) => {
-  const retroId = (req.params as any).id as string;
-  const input = req.body as any;
+  const retroId = req.params.id as string;
+  const input = getJsonBody(req);
 
-  if (!input?.description) {
+  if (input.description == null || String(input.description).trim() === "") {
     throw new HttpError({
       statusCode: 400,
       code: "INVALID_REQUEST",
@@ -36,7 +37,8 @@ retroActionItemsRoutes.post("/", asyncHandler(async (req, res) => {
       throw new HttpError({ statusCode: 400, code: "INVALID_REQUEST", message: "ownerId must be an active team member" });
     }
   }
-  const status = input.status ?? "open";
+  const rawStatus = input.status ?? "open";
+  const status = rawStatus as RetroActionItem["status"];
   if (!VALID_STATUSES.has(status)) {
     throw new HttpError({ statusCode: 400, code: "INVALID_REQUEST", message: "Invalid action item status" });
   }
@@ -49,13 +51,13 @@ retroActionItemsRoutes.post("/", asyncHandler(async (req, res) => {
     dueDate: input.dueDate ? String(input.dueDate) : null,
     status,
     carriedOverFromId: input.carriedOverFromId ? String(input.carriedOverFromId) : null
-  } as Omit<RetroActionItem, "id">);
+  });
 
   return sendSuccess(res, created, { location: `/api/retros/${retroId}/action-items/${created.id}` }, 201);
 }));
 
 retroActionItemsRoutes.get("/:actionItemId", asyncHandler(async (req, res) => {
-  const retroId = (req.params as any).id as string;
+  const retroId = req.params.id as string;
   const item = await retroActionItemsRepository.getById(req.params.actionItemId);
   if (!item || item.retroId !== retroId) {
     throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Action item not found" });
@@ -64,15 +66,15 @@ retroActionItemsRoutes.get("/:actionItemId", asyncHandler(async (req, res) => {
 }));
 
 retroActionItemsRoutes.patch("/:actionItemId", asyncHandler(async (req, res) => {
-  const retroId = (req.params as any).id as string;
-  const patch = req.body as any;
+  const retroId = req.params.id as string;
+  const patch = getJsonBody(req);
 
   const existing = await retroActionItemsRepository.getById(req.params.actionItemId);
   if (!existing || existing.retroId !== retroId) {
     throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Action item not found" });
   }
 
-  if (patch?.ownerId !== undefined) {
+  if (patch.ownerId !== undefined) {
     if (patch.ownerId !== null && String(patch.ownerId).length > 0) {
       const owner = await teamMembersRepository.getById(String(patch.ownerId));
       if (!owner || !owner.isActive) {
@@ -80,13 +82,16 @@ retroActionItemsRoutes.patch("/:actionItemId", asyncHandler(async (req, res) => 
       }
     }
   }
-  if (patch?.status !== undefined && !VALID_STATUSES.has(String(patch.status) as RetroActionItem["status"])) {
+  if (
+    patch.status !== undefined &&
+    !VALID_STATUSES.has(String(patch.status) as RetroActionItem["status"])
+  ) {
     throw new HttpError({ statusCode: 400, code: "INVALID_REQUEST", message: "Invalid action item status" });
   }
 
   const updated = await retroActionItemsRepository.update(req.params.actionItemId, {
-    ...(patch?.description !== undefined ? { description: String(patch.description) } : {}),
-    ...(patch?.ownerId !== undefined
+    ...(patch.description !== undefined ? { description: String(patch.description) } : {}),
+    ...(patch.ownerId !== undefined
       ? {
           ownerId:
             patch.ownerId === null || String(patch.ownerId).length === 0
@@ -94,16 +99,16 @@ retroActionItemsRoutes.patch("/:actionItemId", asyncHandler(async (req, res) => 
               : String(patch.ownerId)
         }
       : {}),
-    ...(patch?.dueDate !== undefined ? { dueDate: patch.dueDate ? String(patch.dueDate) : null } : {}),
-    ...(patch?.status !== undefined ? { status: String(patch.status) as RetroActionItem["status"] } : {}),
-    ...(patch?.carriedOverFromId !== undefined
+    ...(patch.dueDate !== undefined ? { dueDate: patch.dueDate ? String(patch.dueDate) : null } : {}),
+    ...(patch.status !== undefined ? { status: String(patch.status) as RetroActionItem["status"] } : {}),
+    ...(patch.carriedOverFromId !== undefined
       ? { carriedOverFromId: patch.carriedOverFromId ? String(patch.carriedOverFromId) : null }
       : {}),
     retroId
   });
 
   if (!updated) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Action item not found" });
-  if (patch?.status !== undefined && String(patch.status) === "complete" && existing.status !== "complete") {
+  if (patch.status !== undefined && String(patch.status) === "complete" && existing.status !== "complete") {
     logActivity({
       type: "action_item_completed",
       description: `Action item '${updated.description}' marked complete`,
@@ -115,7 +120,7 @@ retroActionItemsRoutes.patch("/:actionItemId", asyncHandler(async (req, res) => 
 }));
 
 retroActionItemsRoutes.delete("/:actionItemId", asyncHandler(async (req, res) => {
-  const retroId = (req.params as any).id as string;
+  const retroId = req.params.id as string;
   const existing = await retroActionItemsRepository.getById(req.params.actionItemId);
   if (!existing || existing.retroId !== retroId) {
     throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Action item not found" });

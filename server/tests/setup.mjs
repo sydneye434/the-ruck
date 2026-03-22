@@ -1,3 +1,4 @@
+// Developed by Sydney Edwards
 // Must load before any server modules so JSON repositories use isolated test data.
 import path from "node:path";
 import { fileURLToPath } from "node:url";

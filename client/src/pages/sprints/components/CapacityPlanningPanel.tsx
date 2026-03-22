@@ -1,6 +1,6 @@
 // Developed by Sydney Edwards
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import type { Sprint, TeamMemberLink, TeamWithDepth } from "@the-ruck/shared";
+import type { Sprint, TeamMemberLink, TeamTreeNode, TeamWithDepth } from "@the-ruck/shared";
 import { api, ApiClientError } from "../../../lib/api";
 import {
   calculateAverageVelocity,
@@ -359,7 +359,7 @@ export function CapacityPlanningPanel({
     const assigned = new Set<string>();
     const groups: TeamGroup[] = [];
 
-    const walk = (nodes: TeamWithDepth[]) => {
+    const walk = (nodes: TeamTreeNode[]) => {
       nodes.forEach((team) => {
         const memberIds = (memberIdsByTeam.get(team.id) ?? []).filter((id) => membersById.has(id));
         memberIds.forEach((id) => assigned.add(id));
@@ -369,13 +369,12 @@ export function CapacityPlanningPanel({
           color: team.color,
           depth: team.depth,
           memberIds,
-          hasChildren: (team as any).children?.length > 0
+          hasChildren: team.children.length > 0
         });
-        const children = ((team as any).children ?? []) as TeamWithDepth[];
-        walk(children);
+        walk(team.children);
       });
     };
-    walk(teamTree as unknown as TeamWithDepth[]);
+    walk(teamTree);
 
     const unassigned = context.activeMembers
       .map((m) => m.id)

@@ -119,7 +119,14 @@ export function SprintBurndownChart({ data, completed = false, compact = false, 
     if (p.status === "on_track") {
       const early = late < 0 ? Math.abs(late) : 0;
       return (
-        <div className="rounded border border-emerald-700/50 bg-emerald-950/40 px-3 py-2 text-sm text-emerald-200">
+        <div
+          className="rounded border px-3 py-2 text-sm"
+          style={{
+            borderColor: "var(--color-status-on-track-border)",
+            background: "var(--color-status-on-track-bg)",
+            color: "var(--color-status-on-track-text)"
+          }}
+        >
           On track · Projected completion {dStr}
           {early > 0 ? ` (${early} day${early === 1 ? "" : "s"} early)` : ""}
         </div>
@@ -127,13 +134,27 @@ export function SprintBurndownChart({ data, completed = false, compact = false, 
     }
     if (p.status === "at_risk") {
       return (
-        <div className="rounded border border-amber-500/50 bg-amber-950/40 px-3 py-2 text-sm text-amber-100">
+        <div
+          className="rounded border px-3 py-2 text-sm"
+          style={{
+            borderColor: "var(--color-status-at-risk-border)",
+            background: "var(--color-status-at-risk-bg)",
+            color: "var(--color-status-at-risk-text)"
+          }}
+        >
           At risk · Projected completion {dStr} ({late} day{late === 1 ? "" : "s"} late)
         </div>
       );
     }
     return (
-      <div className="rounded border border-red-500/50 bg-red-950/40 px-3 py-2 text-sm text-red-100">
+      <div
+        className="rounded border px-3 py-2 text-sm"
+        style={{
+          borderColor: "var(--color-status-behind-border)",
+          background: "var(--color-status-behind-bg)",
+          color: "var(--color-status-behind-text)"
+        }}
+      >
         Behind schedule · At current pace, work may extend beyond the sprint end
       </div>
     );
@@ -185,14 +206,14 @@ export function SprintBurndownChart({ data, completed = false, compact = false, 
             <Area
               dataKey="ahead"
               name="Ahead (ideal − actual)"
-              fill="rgba(34,197,94,0.25)"
+              fill="var(--color-chart-area-ahead)"
               stroke="none"
               connectNulls
             />
             <Area
               dataKey="behind"
               name="Behind (actual − ideal)"
-              fill="rgba(248,113,113,0.25)"
+              fill="var(--color-chart-area-behind)"
               stroke="none"
               connectNulls
             />
@@ -220,7 +241,7 @@ export function SprintBurndownChart({ data, completed = false, compact = false, 
                 type="linear"
                 dataKey="projected"
                 name="Projected"
-                stroke="#f59e0b"
+                stroke="var(--color-chart-projected)"
                 strokeWidth={2}
                 strokeDasharray="4 4"
                 dot={false}
@@ -238,9 +259,13 @@ export function SprintBurndownChart({ data, completed = false, compact = false, 
             {capacity != null && capacity > 0 ? (
               <ReferenceLine
                 y={capacity}
-                stroke="#a78bfa"
+                stroke="var(--color-chart-capacity)"
                 strokeDasharray="4 4"
-                label={{ value: "Capacity target", position: "right", fill: "#a78bfa" }}
+                label={{
+                  value: "Capacity target",
+                  position: "right",
+                  fill: "var(--color-chart-capacity)"
+                }}
               />
             ) : null}
           </ComposedChart>

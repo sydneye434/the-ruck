@@ -5,6 +5,7 @@ import { settingsRepository } from "../repositories";
 import { HttpError } from "../utils/httpError";
 import { sendSuccess } from "../utils/envelope";
 import { asyncHandler } from "../utils/asyncHandler";
+import { getJsonBody } from "../utils/jsonBody";
 
 export const settingsRoutes = Router();
 
@@ -25,29 +26,31 @@ settingsRoutes.get(
 settingsRoutes.put(
   "/",
   asyncHandler(async (req, res) => {
-  const input = req.body as any;
+  const input = getJsonBody(req);
   const existing = await settingsRepository.getOrCreateDefault();
 
   const patch: Partial<Omit<AppSettings, "id">> = {
-    ...(input?.sprintLengthDays !== undefined
+    ...(input.sprintLengthDays !== undefined
       ? { sprintLengthDays: Number(input.sprintLengthDays) }
       : {}),
-    ...(input?.velocityWindow !== undefined && asVelocityWindow(input.velocityWindow) !== null
+    ...(input.velocityWindow !== undefined && asVelocityWindow(input.velocityWindow) !== null
       ? { velocityWindow: asVelocityWindow(input.velocityWindow)! }
       : {}),
-    ...(input?.storyPointScale !== undefined ? { storyPointScale: input.storyPointScale } : {}),
-    ...(input?.defaultRetroTemplate !== undefined
-      ? { defaultRetroTemplate: input.defaultRetroTemplate }
+    ...(input.storyPointScale !== undefined
+      ? { storyPointScale: input.storyPointScale as AppSettings["storyPointScale"] }
       : {}),
-    ...(input?.defaultAnonymous !== undefined ? { defaultAnonymous: Boolean(input.defaultAnonymous) } : {}),
-    ...(input?.dateFormat !== undefined ? { dateFormat: input.dateFormat } : {})
+    ...(input.defaultRetroTemplate !== undefined
+      ? { defaultRetroTemplate: input.defaultRetroTemplate as AppSettings["defaultRetroTemplate"] }
+      : {}),
+    ...(input.defaultAnonymous !== undefined ? { defaultAnonymous: Boolean(input.defaultAnonymous) } : {}),
+    ...(input.dateFormat !== undefined ? { dateFormat: input.dateFormat as AppSettings["dateFormat"] } : {})
   };
 
   if (patch.sprintLengthDays !== undefined && (patch.sprintLengthDays < 1 || patch.sprintLengthDays > 90)) {
     throw new HttpError({ statusCode: 400, code: "INVALID_REQUEST", message: "sprintLengthDays must be between 1 and 90" });
   }
 
-  if (input?.velocityWindow !== undefined && patch.velocityWindow === undefined) {
+  if (input.velocityWindow !== undefined && patch.velocityWindow === undefined) {
     throw new HttpError({ statusCode: 400, code: "INVALID_REQUEST", message: "velocityWindow must be 1, 2, 3, or 5" });
   }
   if (patch.storyPointScale && !["fibonacci", "tshirt"].includes(patch.storyPointScale)) {

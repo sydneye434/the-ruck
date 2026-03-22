@@ -7,6 +7,7 @@ import { HttpError } from "../utils/httpError";
 import { sendEmptySuccess, sendSuccess } from "../utils/envelope";
 import { asyncHandler } from "../utils/asyncHandler";
 import { logActivity } from "../utils/activityLogger";
+import { getJsonBody } from "../utils/jsonBody";
 
 export const retroCardsRoutes = Router({ mergeParams: true });
 
@@ -18,17 +19,17 @@ const retroTemplates = require(path.join(sharedWorkspaceRoot, "retroTemplates.js
 };
 
 retroCardsRoutes.get("/", asyncHandler(async (req, res) => {
-  const retroId = (req.params as any).id as string;
+  const retroId = req.params.id as string;
   const all = await retroCardsRepository.getAll();
   const data = all.filter((c) => c.retroId === retroId);
   return sendSuccess(res, data);
 }));
 
 retroCardsRoutes.post("/", asyncHandler(async (req, res) => {
-  const retroId = (req.params as any).id as string;
-  const input = req.body as any;
+  const retroId = req.params.id as string;
+  const input = getJsonBody(req);
 
-  if (!retroId || !input?.content || !input?.authorId || !input?.columnKey) {
+  if (!retroId || input.content == null || input.authorId == null || input.columnKey == null) {
     throw new HttpError({ statusCode: 400, code: "INVALID_REQUEST", message: "Missing required card fields" });
   }
   if (String(input.content).trim().length > 500) {
@@ -53,7 +54,7 @@ retroCardsRoutes.post("/", asyncHandler(async (req, res) => {
     authorId: String(input.authorId),
     upvotes: Array.isArray(input.upvotes) ? input.upvotes.map(String) : [],
     groupId: input.groupId === null || input.groupId === undefined ? null : String(input.groupId)
-  } as Omit<RetroCard, "id">);
+  });
 
   const sprint = await sprintsRepository.getById(retro.sprintId);
   logActivity({
@@ -67,7 +68,7 @@ retroCardsRoutes.post("/", asyncHandler(async (req, res) => {
 }));
 
 retroCardsRoutes.get("/:cardId", asyncHandler(async (req, res) => {
-  const retroId = (req.params as any).id as string;
+  const retroId = req.params.id as string;
   const card = await retroCardsRepository.getById(req.params.cardId);
   if (!card || card.retroId !== retroId) {
     throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Retro card not found" });
@@ -76,21 +77,21 @@ retroCardsRoutes.get("/:cardId", asyncHandler(async (req, res) => {
 }));
 
 retroCardsRoutes.patch("/:cardId", asyncHandler(async (req, res) => {
-  const retroId = (req.params as any).id as string;
-  const patch = req.body as any;
+  const retroId = req.params.id as string;
+  const patch = getJsonBody(req);
 
   const updatePatch: Partial<Omit<RetroCard, "id">> = {
-    ...(patch?.columnKey !== undefined ? { columnKey: String(patch.columnKey) } : {}),
-    ...(patch?.content !== undefined ? { content: String(patch.content) } : {}),
-    ...(patch?.authorId !== undefined ? { authorId: String(patch.authorId) } : {}),
-    ...(patch?.groupId !== undefined
+    ...(patch.columnKey !== undefined ? { columnKey: String(patch.columnKey) } : {}),
+    ...(patch.content !== undefined ? { content: String(patch.content) } : {}),
+    ...(patch.authorId !== undefined ? { authorId: String(patch.authorId) } : {}),
+    ...(patch.groupId !== undefined
       ? { groupId: patch.groupId === null ? null : String(patch.groupId) }
       : {})
   };
-  if (patch?.upvotes !== undefined && Array.isArray(patch.upvotes)) {
+  if (patch.upvotes !== undefined && Array.isArray(patch.upvotes)) {
     updatePatch.upvotes = patch.upvotes.map(String);
   }
-  if (patch?.content !== undefined && String(patch.content).trim().length > 500) {
+  if (patch.content !== undefined && String(patch.content).trim().length > 500) {
     throw new HttpError({ statusCode: 400, code: "INVALID_REQUEST", message: "Card content exceeds 500 characters" });
   }
 
@@ -98,7 +99,7 @@ retroCardsRoutes.patch("/:cardId", asyncHandler(async (req, res) => {
   if (!existing || existing.retroId !== retroId) {
     throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Retro card not found" });
   }
-  if (patch?.columnKey !== undefined) {
+  if (patch.columnKey !== undefined) {
     const retro = await retrosRepository.getById(retroId);
     if (!retro) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Retro not found" });
     const template = retroTemplates.TEMPLATES[retro.template];
@@ -118,7 +119,7 @@ retroCardsRoutes.patch("/:cardId", asyncHandler(async (req, res) => {
 }));
 
 retroCardsRoutes.delete("/:cardId", asyncHandler(async (req, res) => {
-  const retroId = (req.params as any).id as string;
+  const retroId = req.params.id as string;
   const existing = await retroCardsRepository.getById(req.params.cardId);
   if (!existing || existing.retroId !== retroId) {
     throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Retro card not found" });
@@ -130,8 +131,9 @@ retroCardsRoutes.delete("/:cardId", asyncHandler(async (req, res) => {
 }));
 
 retroCardsRoutes.post("/:cardId/upvote", asyncHandler(async (req, res) => {
-  const retroId = (req.params as any).id as string;
-  const memberId = req.body?.memberId ? String(req.body.memberId) : null;
+  const retroId = req.params.id as string;
+  const upvoteBody = getJsonBody(req);
+  const memberId = upvoteBody.memberId ? String(upvoteBody.memberId) : null;
   if (!memberId) throw new HttpError({ statusCode: 400, code: "INVALID_REQUEST", message: "memberId is required" });
   const card = await retroCardsRepository.getById(req.params.cardId);
   if (!card || card.retroId !== retroId) {
@@ -147,12 +149,14 @@ retroCardsRoutes.post("/:cardId/upvote", asyncHandler(async (req, res) => {
 }));
 
 retroCardsRoutes.post("/:cardId/group", asyncHandler(async (req, res) => {
-  const retroId = (req.params as any).id as string;
+  const retroId = req.params.id as string;
   const card = await retroCardsRepository.getById(req.params.cardId);
   if (!card || card.retroId !== retroId) {
     throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Retro card not found" });
   }
-  const groupId = req.body?.groupId === null || req.body?.groupId === undefined ? null : String(req.body.groupId);
+  const groupBody = getJsonBody(req);
+  const groupId =
+    groupBody.groupId === null || groupBody.groupId === undefined ? null : String(groupBody.groupId);
   const updated = await retroCardsRepository.update(card.id, { groupId });
   return sendSuccess(res, updated);
 }));

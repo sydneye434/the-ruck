@@ -30,11 +30,16 @@ export const settingsRepository = {
     const existing = (await base.getAll())[0];
     if (existing) {
       const patch: Partial<Omit<AppSettings, "id">> = {};
-      if ((existing as any).sprintLengthDays == null && (existing as any).sprintLengthDefaultDays != null) {
-        patch.sprintLengthDays = Number((existing as any).sprintLengthDefaultDays) || 10;
+      type LegacySettings = AppSettings & {
+        sprintLengthDefaultDays?: number;
+        velocityWindowN?: number;
+      };
+      const legacy = existing as LegacySettings;
+      if (legacy.sprintLengthDays == null && legacy.sprintLengthDefaultDays != null) {
+        patch.sprintLengthDays = Number(legacy.sprintLengthDefaultDays) || 10;
       }
-      if ((existing as any).velocityWindow == null && (existing as any).velocityWindowN != null) {
-        patch.velocityWindow = (Number((existing as any).velocityWindowN) as 1 | 2 | 3 | 5) || 3;
+      if (legacy.velocityWindow == null && legacy.velocityWindowN != null) {
+        patch.velocityWindow = (Number(legacy.velocityWindowN) as 1 | 2 | 3 | 5) || 3;
       }
       if (existing.storyPointScale == null) patch.storyPointScale = "fibonacci";
       if (existing.defaultRetroTemplate == null) patch.defaultRetroTemplate = "start_stop_continue";
