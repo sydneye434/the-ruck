@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-shared:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npm -w shared run test:coverage
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-shared
+          path: shared/coverage/
+          if-no-files-found: ignore
+
+  test-server:
+    runs-on: ubuntu-latest
+    needs: test-shared
+    env:
+      DATA_DIR: ./server/tests/test-data
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npm -w server run test:coverage
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-server
+          path: server/coverage/
+          if-no-files-found: ignore
+
+  test-client:
+    runs-on: ubuntu-latest
+    needs: test-shared
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npm -w client run test:coverage
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-client
+          path: client/coverage/
+          if-no-files-found: ignore
+
+  build-check:
+    runs-on: ubuntu-latest
+    needs: [test-server, test-client]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npm -w shared run build && npm -w client run build
+      - name: Verify client dist
+        run: test -d client/dist && [ "$(ls -A client/dist)" ]

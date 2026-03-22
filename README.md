@@ -6,6 +6,8 @@ Like the rugby ruck it's named after — the contested moment where a team fight
 
 **The Ruck** is a portfolio-quality, scrum-native web app: **React (Vite)** + **Express** + **JSON file persistence** (repository pattern, swappable for Postgres later). No auth in v1 — built for a single team running locally.
 
+[![CI](https://github.com/YOUR_GITHUB_USER/the-ruck/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_GITHUB_USER/the-ruck/actions/workflows/ci.yml)
+
 **Training:** See **[docs/TRAINING_AGILE_AT_SCALE.md](docs/TRAINING_AGILE_AT_SCALE.md)** for how to use the app to run **Agile at scale** (teams, cadence, capacity, ceremonies, governance habits).
 
 **Project docs**
@@ -23,7 +25,7 @@ Like the rugby ruck it's named after — the contested moment where a team fight
 ## Quick start
 
 ### Prerequisites
-- **Node.js** 18+ (LTS recommended) and **npm**
+- **Node.js** 20+ and **npm**
 
 ### Install & run
 From the **repository root**:
@@ -107,7 +109,7 @@ Real-time **collaborative estimation**: the team picks story points for sprint b
 #### Technical notes
 | Topic | Detail |
 |--------|--------|
-| **Transport** | **Socket.io** is attached to the **same HTTP server** as Express (`server/src/index.ts`) — not a separate port. Client uses the API origin with `/api` stripped (see `client/src/lib/socketUrl.ts`). CORS defaults to `http://localhost:5173`; override with **`CLIENT_ORIGIN`** if needed. |
+| **Transport** | **Socket.io** is attached to the **same HTTP server** as Express (`server/src/index.ts`) — not a separate port. Client uses the API origin with `/api` stripped (see `client/src/lib/socketUrl.ts`). CORS defaults to `http://localhost:5173`; override with **`CLIENT_URL`** (or **`CLIENT_ORIGIN`**) for production. |
 | **State** | In-memory `Map` in `server/src/poker/sessionStore.ts`. Handlers: `server/src/sockets/pokerSocket.ts`. |
 | **REST** | `POST /api/poker/sessions` — `{ sprintId, storyQueue, memberId, memberName, avatarColor }` → `{ sessionId }`. `GET /api/poker/sessions/:id?memberId=` — current snapshot (votes masked until reveal); used after refresh before the socket reconnects. |
 | **Persistence** | Only **story points** on each story when facilitator confirms; session history is not stored on disk. |
@@ -263,6 +265,40 @@ This uses **Playwright** (prefers **Chrome** if installed) to save **`docs/scree
 
 ---
 
+## Deployment
+
+### Local development
+
+```bash
+git clone https://github.com/YOUR_GITHUB_USER/the-ruck.git
+cd the-ruck
+npm install
+npm run seed    # optional: demo JSON data under server/data (ignored by git when present)
+npm run dev     # Vite + API (see **Quick start** for URLs)
+```
+
+Copy **`server/.env.example`** → **`server/.env`** and **`client/.env.example`** → **`client/.env.local`** if you need non-default ports or API URLs. Never commit `.env` files.
+
+### Production (live demo)
+
+| Layer | Where | Notes |
+|--------|--------|--------|
+| **Backend** | **Railway** | Set **`CLIENT_URL`** to your Netlify site origin (no trailing slash). **`PORT`** is set by Railway. Use repo-root **`railway.toml`** (service root = repository root). |
+| **Frontend** | **Netlify** | Base directory **`client`**, or build from CI with **`VITE_API_URL`** = `https://your-railway-host/api`. **`client/netlify.toml`** includes the SPA fallback so deep links (e.g. `/sprint/active`) work on refresh. |
+
+Replace placeholders with your real URLs after deploy:
+
+- **Backend:** `https://your-app.up.railway.app` (example)
+- **Frontend:** `https://your-site.netlify.app` (example)
+
+**Ephemeral data on Railway:** The filesystem is reset on redeploy. On startup, if there is no team data, the server runs **`seedIfEmpty()`** so the demo repopulates. The live demo therefore **reseeds when the data directory is empty** — fine for a portfolio. To make data durable, swap the JSON repositories for **Postgres** via the same repository interface — **no other architectural change** is required.
+
+### CI/CD
+
+Every **push** runs **[`.github/workflows/ci.yml`](.github/workflows/ci.yml)** (shared, server, and client tests + production build check). After **CI succeeds on `main`**, **[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)** deploys the **server** (Railway CLI) then the **client** (Netlify CLI). Configure the GitHub **secrets** below so deploy jobs can authenticate.
+
+---
+
 ## Roadmap (v2 ideas)
 
 - Auth (team-scoped) + user identity  
@@ -280,6 +316,19 @@ This uses **Playwright** (prefers **Chrome** if installed) to save **`docs/scree
 3. Run `npm test` (and `npm run test:coverage` when changing testable library code).  
 4. Follow **[docs/STYLE_GUIDE.md](docs/STYLE_GUIDE.md)** for conventions; extend **[docs/TESTING.md](docs/TESTING.md)** if you introduce new test patterns.  
 5. Keep UI/API changes documented in the PR; update **`README.md`**, **`server/API.md`**, and the OpenAPI spec when endpoints change.
+
+### GitHub Actions secrets (maintainers / deploy pipeline)
+
+Set these in **Settings → Secrets and variables → Actions** for automatic deploys to work:
+
+| Secret | Purpose |
+|--------|---------|
+| **`RAILWAY_TOKEN`** | Railway dashboard → **Account Settings** → **Tokens** — used by **`railway up`** in **Deploy**. |
+| **`NETLIFY_AUTH_TOKEN`** | Netlify → **User settings** → **Applications** → personal access token. |
+| **`NETLIFY_SITE_ID`** | Netlify → your site → **Site settings** → **Site details** → **Site ID**. |
+| **`VITE_API_URL`** | Full production API base including **`/api`**, e.g. `https://your-railway-app.up.railway.app/api` — used when building the client in **Deploy**. |
+
+Replace **`YOUR_GITHUB_USER`** in the CI badge URL at the top of this README with your GitHub username or org so the badge stays green and links to the Actions tab.
 
 ---
 

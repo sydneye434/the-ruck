@@ -16,7 +16,8 @@ import type {
 } from "@the-ruck/shared";
 import type { PokerSessionPayload } from "./pokerTypes";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001/api";
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL ?? import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001/api";
 type TeamMemberPatch = Partial<TeamMember> & { active?: boolean };
 
 type QueryParams = Record<string, string | number | boolean | undefined | null>;
@@ -53,7 +54,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     envelope = JSON.parse(text) as ApiResponse<T>;
   } catch {
     throw new ApiClientError(
-      `Invalid API response (${response.status}). Is VITE_API_BASE_URL set to http://localhost:3001/api ?`,
+      `Invalid API response (${response.status}). Is VITE_API_URL (or VITE_API_BASE_URL) set to http://localhost:3001/api ?`,
       "INVALID_RESPONSE",
       response.status
     );

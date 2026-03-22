@@ -1,0 +1,11 @@
+# If the Railway service uses this folder as root (advanced), build from parent.
+# Recommended: point Railway at the repository root and use /railway.toml instead.
+
+[build]
+builder = "nixpacks"
+buildCommand = "cd .. && npm ci && npm -w shared run build && npm -w server run build"
+
+[deploy]
+startCommand = "node dist/server/src/index.js"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 30

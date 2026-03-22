@@ -1,6 +1,7 @@
 // Developed by Sydney Edwards
 import express from "express";
 import cors from "cors";
+import { buildHealthData } from "./healthPayload";
 import { teamMembersRoutes } from "./routes/teamMembersRoutes";
 import { sprintsRoutes } from "./routes/sprintsRoutes";
 import { storiesRoutes } from "./routes/storiesRoutes";
@@ -14,10 +15,13 @@ import { dashboardRoutes } from "./routes/dashboardRoutes";
 import { dataManagementRoutes } from "./routes/dataManagementRoutes";
 import { pokerRoutes } from "./routes/pokerRoutes";
 
+const clientOrigin =
+  process.env.CLIENT_URL ?? process.env.CLIENT_ORIGIN ?? "http://localhost:5173";
+
 export function createApp() {
   const app = express();
 
-  app.use(cors());
+  app.use(cors({ origin: clientOrigin }));
   app.use(express.json({ limit: "1mb" }));
   app.use(requestLogger);
 
@@ -35,9 +39,8 @@ export function createApp() {
 </html>`);
   });
 
-  // Health endpoint for validating the server during scaffolding.
   app.get("/api/health", (_req, res) => {
-    res.json({ data: { status: "ok" }, error: null, meta: { at: new Date().toISOString() } });
+    res.json({ data: buildHealthData(), error: null, meta: {} });
   });
 
   app.use("/api/docs", apiDocsRoutes);

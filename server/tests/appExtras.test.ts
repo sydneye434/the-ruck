@@ -20,7 +20,13 @@ after(() => {
 test("GET /api/health → 200", async () => {
   const res = await request(app).get("/api/health");
   assertStatus(res, 200);
-  assert.equal(res.body.data?.status, "ok");
+  const d = res.body.data;
+  assert.equal(d?.status, "ok");
+  assert.equal(typeof d?.version, "string");
+  assert.ok(d?.environment === "development" || d?.environment === "production");
+  assert.equal(typeof d?.dataDir, "string");
+  assert.equal(typeof d?.uptime, "number");
+  assert.equal(typeof d?.timestamp, "string");
 });
 
 test("GET / serves HTML landing", async () => {

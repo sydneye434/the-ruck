@@ -1,0 +1,9 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# SPA fallback — required for React Router (e.g. direct load of /sprint/active)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

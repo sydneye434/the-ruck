@@ -14,12 +14,10 @@ import {
   teamsRepository
 } from "../repositories";
 import { generateSprintSnapshots } from "./generateSprintSnapshots";
+import { getDataDir, getDataFilePath } from "../data/storagePaths";
 
 export async function clearDataDir() {
-  const cwd = process.cwd();
-  const dataDir = cwd.endsWith(`${path.sep}server`)
-    ? path.join(cwd, "data")
-    : path.join(cwd, "server", "data");
+  const dataDir = getDataDir();
   await fs.mkdir(dataDir, { recursive: true });
   const entries = await fs.readdir(dataDir);
   await Promise.all(entries.map((name) => fs.rm(path.join(dataDir, name), { force: true })));
@@ -464,6 +462,19 @@ export async function runSeed() {
 
   // eslint-disable-next-line no-console
   console.log("Seed complete: teams, members, hierarchy, sprint + retros sample data created.");
+}
+
+/** If there is no team data yet, run full seed (e.g. fresh Railway deploy). */
+export async function seedIfEmpty(): Promise<void> {
+  const teamsPath = getDataFilePath("teams.json");
+  try {
+    const raw = await fs.readFile(teamsPath, "utf-8");
+    const parsed = JSON.parse(raw) as unknown;
+    if (Array.isArray(parsed) && parsed.length > 0) return;
+  } catch {
+    // missing or unreadable
+  }
+  await runSeed();
 }
 
 const isDirectRun = Boolean(process.argv[1] && path.basename(process.argv[1]).startsWith("seed."));

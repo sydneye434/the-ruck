@@ -1,16 +1,21 @@
 // Developed by Sydney Edwards
 import path from "node:path";
 
-export function getDataFilePath(fileName: string) {
-  // Resolve relative to repo root so it works in both dev (ts-node/tsx) and
-  // prod (tsc output with different directory shapes).
-  // Override via `THE_RUCK_DATA_DIR` if you want to persist elsewhere.
+/** Resolved JSON data directory (absolute or relative to cwd). */
+export function getDataDir(): string {
+  if (process.env.DATA_DIR && process.env.DATA_DIR.length > 0) {
+    return process.env.DATA_DIR;
+  }
+  if (process.env.THE_RUCK_DATA_DIR && process.env.THE_RUCK_DATA_DIR.length > 0) {
+    return process.env.THE_RUCK_DATA_DIR;
+  }
   const cwd = process.cwd();
-  const defaultDataDir = cwd.endsWith(`${path.sep}server`)
+  return cwd.endsWith(`${path.sep}server`)
     ? path.join(cwd, "data")
     : path.join(cwd, "server", "data");
-  // DATA_DIR (tests) or THE_RUCK_DATA_DIR (runtime override)
-  const baseDir = process.env.DATA_DIR ?? process.env.THE_RUCK_DATA_DIR ?? defaultDataDir;
-  return path.join(baseDir, fileName);
+}
+
+export function getDataFilePath(fileName: string) {
+  return path.join(getDataDir(), fileName);
 }
 

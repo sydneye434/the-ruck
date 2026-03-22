@@ -1,0 +1,11 @@
+# Monorepo: Railway service root = repository root (not /server).
+# Build compiles shared + server; start runs compiled Node entry.
+
+[build]
+builder = "nixpacks"
+buildCommand = "npm ci && npm -w shared run build && npm -w server run build"
+
+[deploy]
+startCommand = "node server/dist/server/src/index.js"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 30

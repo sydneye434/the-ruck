@@ -3,10 +3,12 @@ node_modules
 dist
 build
 .env
-.env.*
+.env.local
+.env.*.local
 .vscode
 .idea
 coverage
 server/tests/test-data
+server/data/
 *.log
 
