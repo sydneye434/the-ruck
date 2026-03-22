@@ -226,6 +226,29 @@ describe("api smoke (all methods)", () => {
           text: async () => env([{ id: "r1", sprintId: "s1", openActionItemCount: 0 }])
         } as Response;
       }
+      if (u.includes("/burndown")) {
+        return {
+          ok: true,
+          status: 200,
+          text: async () =>
+            env({
+              sprint: {
+                id: "s1",
+                name: "S",
+                startDate: "2025-01-01",
+                endDate: "2025-01-14",
+                capacityTarget: null
+              },
+              snapshots: [],
+              idealBurndown: [
+                { date: "2025-01-01", idealRemaining: 10 },
+                { date: "2025-01-02", idealRemaining: 0 }
+              ],
+              projectedCompletion: { date: null, status: null, daysDeltaVsEnd: null },
+              projectedLine: []
+            })
+        } as Response;
+      }
       return { ok: true, status: 200, text: async () => env({ id: "x", name: "n" }) } as Response;
     });
 
@@ -253,6 +276,7 @@ describe("api smoke (all methods)", () => {
     await api.sprints.create({ name: "S" } as any);
     await api.sprints.update("s1", { name: "S2" } as any);
     await api.sprints.getCapacityContext("s1");
+    await api.sprints.getBurndown("s1");
     await api.sprints.complete("s1");
     await api.sprints.delete("s1");
 

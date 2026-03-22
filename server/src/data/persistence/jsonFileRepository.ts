@@ -63,6 +63,25 @@ async function writeItems<T extends Identifiable>(
   await fs.writeFile(filePath, JSON.stringify(next, null, 2), "utf8");
 }
 
+/**
+ * Read-modify-write under a single file lock (avoids duplicate rows when concurrent upserts race).
+ */
+export async function atomicJsonArrayMutate<T extends Identifiable>(
+  filePath: string,
+  mutator: (items: T[]) => { nextItems: T[]; result: T }
+): Promise<T> {
+  const storeShape = "array";
+  let result!: T;
+  await withFileLock(filePath, async () => {
+    await ensureFileExists(filePath, storeShape);
+    const items = await readItems<T>(filePath, storeShape);
+    const { nextItems, result: r } = mutator(items);
+    await writeItems(filePath, storeShape, nextItems);
+    result = r;
+  });
+  return result;
+}
+
 export function createJsonRepository<T extends Identifiable>(
   options: JsonRepositoryOptions<T>
 ): Repository<T> {

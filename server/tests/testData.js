@@ -16,7 +16,8 @@ const FILES = [
   "settings.json",
   "teams.json",
   "team-member-links.json",
-  "activity-log.json"
+  "activity-log.json",
+  "sprint-day-snapshots.json"
 ];
 
 /** Remove the entire test data directory (used after each test file). */

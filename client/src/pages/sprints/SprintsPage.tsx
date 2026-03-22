@@ -10,6 +10,11 @@ import { useToast } from "../../components/feedback/ToastProvider";
 import { CreateSprintModal, type SprintInput } from "./components/CreateSprintModal";
 import { SprintsListSkeleton } from "./components/SprintsListSkeleton";
 import { CapacityPlanningPanel } from "./components/CapacityPlanningPanel";
+import {
+  SprintBurndownChart,
+  SprintBurndownStats,
+  type BurndownApiPayload
+} from "../../components/burndown/SprintBurndownChart";
 
 function dateRange(start: string, end: string) {
   const s = new Date(start);
@@ -40,6 +45,9 @@ export function SprintsPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
   const [capacitySprint, setCapacitySprint] = useState<Sprint | null>(null);
+  const [burndownOpenId, setBurndownOpenId] = useState<string | null>(null);
+  const [burndownBySprint, setBurndownBySprint] = useState<Record<string, BurndownApiPayload>>({});
+  const [burndownLoadingId, setBurndownLoadingId] = useState<string | null>(null);
 
   const activeSprint = useMemo(() => sprints.find((s) => s.status === "active") ?? null, [sprints]);
   const sortedSprints = useMemo(
@@ -87,6 +95,25 @@ export function SprintsPage() {
       toast.error(e instanceof ApiClientError ? e.message : "Failed to create sprint.");
     } finally {
       setCreating(false);
+    }
+  }
+
+  async function toggleBurndown(sprint: Sprint) {
+    if (burndownOpenId === sprint.id) {
+      setBurndownOpenId(null);
+      return;
+    }
+    setBurndownOpenId(sprint.id);
+    if (burndownBySprint[sprint.id]) return;
+    setBurndownLoadingId(sprint.id);
+    try {
+      const data = await api.sprints.getBurndown(sprint.id);
+      setBurndownBySprint((prev) => ({ ...prev, [sprint.id]: data as BurndownApiPayload }));
+    } catch (e) {
+      toast.error(e instanceof ApiClientError ? e.message : "Failed to load burndown.");
+      setBurndownOpenId(null);
+    } finally {
+      setBurndownLoadingId(null);
     }
   }
 
@@ -192,6 +219,36 @@ export function SprintsPage() {
                     ) : null}
                   </div>
                 </div>
+                {sprint.status === "completed" ? (
+                  <div className="mt-3 border-t border-[var(--color-border)] pt-3">
+                    <button
+                      type="button"
+                      onClick={() => toggleBurndown(sprint)}
+                      className="text-sm font-medium text-[var(--color-accent)] hover:underline"
+                    >
+                      {burndownOpenId === sprint.id ? "Hide burndown" : "View burndown"}
+                    </button>
+                    {burndownOpenId === sprint.id ? (
+                      <div className="mt-3">
+                        {burndownLoadingId === sprint.id ? (
+                          <p className="text-sm text-[var(--color-text-muted)]">Loading chart…</p>
+                        ) : burndownBySprint[sprint.id] ? (
+                          <>
+                            <SprintBurndownChart
+                              data={burndownBySprint[sprint.id]}
+                              completed
+                              compact
+                              showBanner={false}
+                            />
+                            <SprintBurndownStats velocity={sprint.velocityDataPoint ?? 0} />
+                          </>
+                        ) : (
+                          <p className="text-sm text-[var(--color-text-muted)]">No burndown data.</p>
+                        )}
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null}
               </Card>
             );
           })}

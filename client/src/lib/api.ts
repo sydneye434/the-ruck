@@ -158,7 +158,38 @@ export const api = {
         workingDaysInSprint: number;
       }>(`/sprints/${id}/capacity-context`),
     complete: (id: string) => request<Sprint>(`/sprints/${id}/complete`, { method: "POST" }),
-    delete: (id: string) => del(`/sprints/${id}`)
+    delete: (id: string) => del(`/sprints/${id}`),
+    getBurndown: (id: string) =>
+      request<{
+        sprint: {
+          id: string;
+          name: string;
+          startDate: string;
+          endDate: string;
+          capacityTarget: number | null;
+        };
+        snapshots: Array<{
+          id: string;
+          sprintId: string;
+          date: string;
+          totalPoints: number;
+          completedPoints: number;
+          remainingPoints: number;
+          storiesByColumn: {
+            backlog: number;
+            in_progress: number;
+            in_review: number;
+            done: number;
+          };
+        }>;
+        idealBurndown: Array<{ date: string; idealRemaining: number }>;
+        projectedCompletion: {
+          date: string | null;
+          status: "on_track" | "at_risk" | "overdue" | null;
+          daysDeltaVsEnd: number | null;
+        };
+        projectedLine: Array<{ date: string; remainingPoints: number }>;
+      }>(`/sprints/${id}/burndown`)
   },
   stories: {
     getAll: (params?: { sprintId?: string }) => request<Story[]>(withQuery("/stories", params)),

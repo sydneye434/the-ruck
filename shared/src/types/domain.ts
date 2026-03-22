@@ -94,6 +94,31 @@ export type Story = Identifiable & {
   updatedAt?: ISODateString;
 };
 
+/** One row per sprint per calendar day — remaining work for burndown charts. */
+export type SprintDaySnapshot = Identifiable & {
+  sprintId: string;
+  /** Calendar date in the server's local sense (YYYY-MM-DD). */
+  date: string;
+  totalPoints: number;
+  completedPoints: number;
+  remainingPoints: number;
+  storiesByColumn: {
+    backlog: number;
+    in_progress: number;
+    in_review: number;
+    done: number;
+  };
+};
+
+export type BurndownProjectedStatus = "on_track" | "at_risk" | "overdue";
+
+export type BurndownProjection = {
+  date: string | null;
+  status: BurndownProjectedStatus | null;
+  /** Positive = days early vs sprint end; negative = days late. */
+  daysDeltaVsEnd: number | null;
+};
+
 export type Retro = Identifiable & {
   sprintId: string;
   title: string;

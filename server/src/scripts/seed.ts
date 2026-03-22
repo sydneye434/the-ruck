@@ -13,6 +13,7 @@ import {
   teamMembersRepository,
   teamsRepository
 } from "../repositories";
+import { generateSprintSnapshots } from "./generateSprintSnapshots";
 
 export async function clearDataDir() {
   const cwd = process.cwd();
@@ -142,6 +143,7 @@ export async function runSeed() {
     goal: "Ship retrospective workflow foundations",
     status: "active"
   });
+  await sprintsRepository.update(activeSprint.id, { capacityTarget: 42 });
   const sprint2 = await sprintsRepository.create({
     name: "Sprint 2",
     startDate: new Date(now - 56 * 86400000).toISOString(),
@@ -300,6 +302,114 @@ export async function runSeed() {
     acceptanceCriteria: ["Runs locally"],
     boardColumn: "backlog"
   });
+
+  await Promise.all([
+    storiesRepository.create({
+      sprintId: sprint3.id,
+      title: "S3 — API hardening",
+      description: "",
+      storyPoints: 8,
+      assigneeMemberId: avery.id,
+      labels: [],
+      acceptanceCriteria: [],
+      boardColumn: "done"
+    }),
+    storiesRepository.create({
+      sprintId: sprint3.id,
+      title: "S3 — Dashboard polish",
+      description: "",
+      storyPoints: 5,
+      assigneeMemberId: morgan.id,
+      labels: [],
+      acceptanceCriteria: [],
+      boardColumn: "done"
+    }),
+    storiesRepository.create({
+      sprintId: sprint3.id,
+      title: "S3 — Flaky tests",
+      description: "",
+      storyPoints: 8,
+      assigneeMemberId: jordan.id,
+      labels: [],
+      acceptanceCriteria: [],
+      boardColumn: "done"
+    }),
+    storiesRepository.create({
+      sprintId: sprint3.id,
+      title: "S3 — Release train",
+      description: "",
+      storyPoints: 8,
+      assigneeMemberId: riley.id,
+      labels: [],
+      acceptanceCriteria: [],
+      boardColumn: "done"
+    }),
+    storiesRepository.create({
+      sprintId: sprint3.id,
+      title: "S3 — Hardening B",
+      description: "",
+      storyPoints: 5,
+      assigneeMemberId: parker.id,
+      labels: [],
+      acceptanceCriteria: [],
+      boardColumn: "done"
+    }),
+    storiesRepository.create({
+      sprintId: sprint2.id,
+      title: "S2 — Infra",
+      description: "",
+      storyPoints: 8,
+      assigneeMemberId: jordan.id,
+      labels: [],
+      acceptanceCriteria: [],
+      boardColumn: "done"
+    }),
+    storiesRepository.create({
+      sprintId: sprint2.id,
+      title: "S2 — UX",
+      description: "",
+      storyPoints: 5,
+      assigneeMemberId: morgan.id,
+      labels: [],
+      acceptanceCriteria: [],
+      boardColumn: "done"
+    }),
+    storiesRepository.create({
+      sprintId: sprint2.id,
+      title: "S2 — Bugs",
+      description: "",
+      storyPoints: 8,
+      assigneeMemberId: avery.id,
+      labels: [],
+      acceptanceCriteria: [],
+      boardColumn: "done"
+    }),
+    storiesRepository.create({
+      sprintId: activeSprint.id,
+      title: "Active — Analytics",
+      description: "",
+      storyPoints: 5,
+      assigneeMemberId: avery.id,
+      labels: [],
+      acceptanceCriteria: [],
+      boardColumn: "in_progress"
+    }),
+    storiesRepository.create({
+      sprintId: activeSprint.id,
+      title: "Active — Notifications",
+      description: "",
+      storyPoints: 8,
+      assigneeMemberId: morgan.id,
+      labels: [],
+      acceptanceCriteria: [],
+      boardColumn: "done"
+    })
+  ]);
+
+  const allStoriesForSeed = await storiesRepository.getAll();
+  await generateSprintSnapshots(sprint2, allStoriesForSeed);
+  await generateSprintSnapshots(sprint3, allStoriesForSeed);
+  await generateSprintSnapshots(activeSprint, allStoriesForSeed);
 
   const activityBase = now - 3 * 86400000;
   await activityLogRepository.create({

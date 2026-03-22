@@ -6,6 +6,7 @@ import { HttpError } from "../utils/httpError";
 import { sendEmptySuccess, sendSuccess } from "../utils/envelope";
 import { logActivity } from "../utils/activityLogger";
 import { asyncHandler } from "../utils/asyncHandler";
+import { recordBurndownSnapshotForSprint, shouldRecordForStoryMove } from "../services/burndownSnapshotService";
 
 export const storiesRoutes = Router();
 
@@ -137,6 +138,9 @@ storiesRoutes.patch(
       actorId: updated.assigneeMemberId ?? null,
       metadata: { storyId: updated.id, sprintId: updated.sprintId, boardColumn: updatePatch.boardColumn }
     });
+  }
+  if (shouldRecordForStoryMove(existing, updated.boardColumn)) {
+    recordBurndownSnapshotForSprint(updated.sprintId);
   }
   return sendSuccess(res, updated);
   })

@@ -1,8 +1,25 @@
 // Developed by Sydney Edwards
 import { Router } from "express";
 import path from "node:path";
-import { calculateEffectiveDays, withComputedDepth, type Sprint } from "@the-ruck/shared";
-import { sprintsRepository, storiesRepository, teamMemberLinksRepository, teamMembersRepository, teamsRepository } from "../repositories";
+import {
+  calculateEffectiveDays,
+  calculateIdealBurndown,
+  calculateProjectedCompletion,
+  withComputedDepth,
+  type Sprint
+} from "@the-ruck/shared";
+import {
+  sprintDaySnapshotRepository,
+  sprintsRepository,
+  storiesRepository,
+  teamMemberLinksRepository,
+  teamMembersRepository,
+  teamsRepository
+} from "../repositories";
+import {
+  recordBurndownSnapshotForSprint,
+  shouldRecordForSprintActivation
+} from "../services/burndownSnapshotService";
 import { HttpError } from "../utils/httpError";
 import { sendEmptySuccess, sendSuccess } from "../utils/envelope";
 import { logActivity } from "../utils/activityLogger";
@@ -54,7 +71,50 @@ sprintsRoutes.post(
     status
   });
 
+  if (created.status === "active") {
+    recordBurndownSnapshotForSprint(created.id);
+  }
+
   return sendSuccess(res, created, { location: `/api/sprints/${created.id}` }, 201);
+  })
+);
+
+sprintsRoutes.get(
+  "/:id/burndown",
+  asyncHandler(async (req, res) => {
+    const sprint = await sprintsRepository.getById(req.params.id);
+    if (!sprint) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Sprint not found" });
+
+    const allStories = await storiesRepository.getAll();
+    const sprintStories = allStories.filter((s) => s.sprintId === sprint.id);
+    const totalPoints = sprintStories.reduce((sum, s) => sum + s.storyPoints, 0);
+
+    const snapshots = await sprintDaySnapshotRepository.findBySprintId(sprint.id);
+    const idealBurndown = calculateIdealBurndown(sprint, totalPoints);
+    const projectedCompletion = calculateProjectedCompletion(snapshots, sprint);
+
+    const last = snapshots[snapshots.length - 1];
+    const projectedLine =
+      projectedCompletion.date && last
+        ? [
+            { date: last.date, remainingPoints: last.remainingPoints },
+            { date: projectedCompletion.date, remainingPoints: 0 }
+          ]
+        : [];
+
+    return sendSuccess(res, {
+      sprint: {
+        id: sprint.id,
+        name: sprint.name,
+        startDate: sprint.startDate,
+        endDate: sprint.endDate,
+        capacityTarget: (sprint as { capacityTarget?: number | null }).capacityTarget ?? null
+      },
+      snapshots,
+      idealBurndown,
+      projectedCompletion,
+      projectedLine
+    });
   })
 );
 
@@ -71,6 +131,9 @@ sprintsRoutes.patch(
   "/:id",
   asyncHandler(async (req, res) => {
   const patch = req.body as any;
+  const existing = await sprintsRepository.getById(req.params.id);
+  if (!existing) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Sprint not found" });
+
   const updated = await sprintsRepository.update(req.params.id, {
     ...(patch?.name !== undefined ? { name: String(patch.name) } : {}),
     ...(patch?.startDate !== undefined ? { startDate: String(patch.startDate) } : {}),
@@ -82,6 +145,11 @@ sprintsRoutes.patch(
   });
 
   if (!updated) throw new HttpError({ statusCode: 404, code: "NOT_FOUND", message: "Sprint not found" });
+
+  if (shouldRecordForSprintActivation(existing, patch)) {
+    recordBurndownSnapshotForSprint(updated.id);
+  }
+
   return sendSuccess(res, updated);
   })
 );
@@ -188,6 +256,8 @@ sprintsRoutes.post(
     actorId: null,
     metadata: { sprintId: updated.id, velocityDataPoint }
   });
+
+  recordBurndownSnapshotForSprint(updated.id);
 
   return sendSuccess(res, updated, { velocityDataPoint, doneStoryCount: doneStories.length });
   })

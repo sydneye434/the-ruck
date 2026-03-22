@@ -16,4 +16,5 @@ export * from "./settingsRepository";
 export * from "./teamsRepository";
 export * from "./teamMemberLinksRepository";
 export * from "./activityLogRepository";
+export * from "./sprintDaySnapshotRepository";
 

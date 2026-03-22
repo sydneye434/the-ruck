@@ -20,6 +20,10 @@ import { StoryDetailDrawer, type SaveState } from "../backlog/components/StoryDe
 import { KanbanColumn } from "./components/KanbanColumn";
 import { SprintBoardSkeleton } from "./components/SprintBoardSkeleton";
 import { StoryCardPreview } from "./components/StoryCardPreview";
+import {
+  SprintBurndownChart,
+  type BurndownApiPayload
+} from "../../components/burndown/SprintBurndownChart";
 
 const COLUMN_ORDER: StoryBoardColumn[] = ["backlog", "in_progress", "in_review", "done"];
 
@@ -115,6 +119,9 @@ export function ActiveSprintPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [activeDragStoryId, setActiveDragStoryId] = useState<string | null>(null);
+  const [sprintTab, setSprintTab] = useState<"board" | "burndown">("board");
+  const [burndownData, setBurndownData] = useState<BurndownApiPayload | null>(null);
+  const [burndownLoading, setBurndownLoading] = useState(false);
 
   const membersById = useMemo(() => {
     const map = new Map<string, TeamMember>();
@@ -161,6 +168,27 @@ export function ActiveSprintPage() {
     loadData();
   }, []);
 
+  useEffect(() => {
+    if (sprintTab !== "burndown" || !activeSprint) return;
+    let cancelled = false;
+    (async () => {
+      setBurndownLoading(true);
+      try {
+        const raw = await api.sprints.getBurndown(activeSprint.id);
+        if (!cancelled) {
+          setBurndownData(raw as BurndownApiPayload);
+        }
+      } catch {
+        if (!cancelled) setBurndownData(null);
+      } finally {
+        if (!cancelled) setBurndownLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [sprintTab, activeSprint?.id]);
+
   async function completeSprint() {
     if (!activeSprint) return;
     setCompleting(true);
@@ -200,6 +228,14 @@ export function ActiveSprintPage() {
       if (!story) return;
       await api.stories.update(activeId, { boardColumn: destinationColumn });
       toast.info("Story moved.");
+      if (sprintTab === "burndown" && activeSprint) {
+        try {
+          const b = await api.sprints.getBurndown(activeSprint.id);
+          setBurndownData(b as BurndownApiPayload);
+        } catch {
+          /* ignore */
+        }
+      }
     } catch (e) {
       setStories(previous);
       toast.error(e instanceof ApiClientError ? e.message : "Failed to move story. Reverted.");
@@ -310,7 +346,9 @@ export function ActiveSprintPage() {
               <div className="w-full max-w-md">
                 <div className="flex items-center justify-between text-xs text-[var(--color-text-muted)]">
                   <span>Burndown Progress</span>
-                  <span>{donePoints} / {totalPoints} pts</span>
+                  <span>
+                    {donePoints} / {totalPoints} pts
+                  </span>
                 </div>
                 <SprintProgressBar
                   donePoints={donePoints}
@@ -319,36 +357,72 @@ export function ActiveSprintPage() {
                 />
               </div>
             </div>
+            <div className="mt-4 flex gap-2 border-b border-[var(--color-border)]">
+              <button
+                type="button"
+                onClick={() => setSprintTab("board")}
+                className={`border-b-2 px-3 py-2 text-sm font-medium ${
+                  sprintTab === "board"
+                    ? "border-[var(--color-accent)] text-[var(--color-text-primary)]"
+                    : "border-transparent text-[var(--color-text-muted)]"
+                }`}
+              >
+                Board
+              </button>
+              <button
+                type="button"
+                onClick={() => setSprintTab("burndown")}
+                className={`border-b-2 px-3 py-2 text-sm font-medium ${
+                  sprintTab === "burndown"
+                    ? "border-[var(--color-accent)] text-[var(--color-text-primary)]"
+                    : "border-transparent text-[var(--color-text-muted)]"
+                }`}
+              >
+                Burndown
+              </button>
+            </div>
           </Card>
 
-          <DndContext collisionDetection={closestCorners} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-            <div className="grid grid-cols-1 gap-3 xl:grid-cols-4">
-              {COLUMN_ORDER.map((column) => (
-                <KanbanColumn
-                  key={column}
-                  column={column}
-                  stories={columnData[column]}
-                  membersById={membersById}
-                  onOpenStory={openStory}
-                />
-              ))}
-            </div>
-
-            <DragOverlay>
-              {dragStory ? (
-                <div className="w-[300px] opacity-90">
-                  <StoryCardPreview
-                    story={dragStory}
-                    assignee={
-                      dragStory.assigneeMemberId
-                        ? membersById.get(dragStory.assigneeMemberId) ?? null
-                        : null
-                    }
+          {sprintTab === "board" ? (
+            <DndContext collisionDetection={closestCorners} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+              <div className="grid grid-cols-1 gap-3 xl:grid-cols-4">
+                {COLUMN_ORDER.map((column) => (
+                  <KanbanColumn
+                    key={column}
+                    column={column}
+                    stories={columnData[column]}
+                    membersById={membersById}
+                    onOpenStory={openStory}
                   />
-                </div>
-              ) : null}
-            </DragOverlay>
-          </DndContext>
+                ))}
+              </div>
+
+              <DragOverlay>
+                {dragStory ? (
+                  <div className="w-[300px] opacity-90">
+                    <StoryCardPreview
+                      story={dragStory}
+                      assignee={
+                        dragStory.assigneeMemberId
+                          ? membersById.get(dragStory.assigneeMemberId) ?? null
+                          : null
+                      }
+                    />
+                  </div>
+                ) : null}
+              </DragOverlay>
+            </DndContext>
+          ) : (
+            <Card padding="md">
+              {burndownLoading ? (
+                <p className="text-sm text-[var(--color-text-muted)]">Loading burndown…</p>
+              ) : burndownData ? (
+                <SprintBurndownChart data={burndownData} completed={false} showBanner />
+              ) : (
+                <p className="text-sm text-[var(--color-text-muted)]">Could not load burndown.</p>
+              )}
+            </Card>
+          )}
         </>
       ) : null}
 
