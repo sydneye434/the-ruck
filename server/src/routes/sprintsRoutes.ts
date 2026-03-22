@@ -93,7 +93,7 @@ sprintsRoutes.get(
 
     const allStories = await storiesRepository.getAll();
     const sprintStories = allStories.filter((s) => s.sprintId === sprint.id);
-    const totalPoints = sprintStories.reduce((sum, s) => sum + s.storyPoints, 0);
+    const totalPoints = sprintStories.reduce((sum, s) => sum + (s.storyPoints ?? 0), 0);
 
     const snapshots = await sprintDaySnapshotRepository.findBySprintId(sprint.id);
     const idealBurndown = calculateIdealBurndown(sprint, totalPoints);
@@ -257,7 +257,7 @@ sprintsRoutes.post(
     (s) => s.sprintId === req.params.id && s.boardColumn === "done"
   );
 
-  const velocityDataPoint = doneStories.reduce((sum, s) => sum + s.storyPoints, 0);
+  const velocityDataPoint = doneStories.reduce((sum, s) => sum + (s.storyPoints ?? 0), 0);
 
   const healthPayload = await buildHealthPayloadForSprintId(req.params.id, {
     asOfDateYmd: sprint.endDate.slice(0, 10)

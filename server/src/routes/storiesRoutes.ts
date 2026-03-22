@@ -11,7 +11,7 @@ import { getJsonBody } from "../utils/jsonBody";
 
 export const storiesRoutes = Router();
 
-const VALID_POINTS = new Set([1, 2, 3, 5, 8, 13]);
+const VALID_POINTS = new Set<number>([0, 1, 2, 3, 5, 8, 13, 21]);
 const VALID_COLUMNS = new Set<StoryBoardColumn>(["backlog", "in_progress", "in_review", "done"]);
 
 async function getActiveSprintId(): Promise<string | null> {
@@ -21,7 +21,18 @@ async function getActiveSprintId(): Promise<string | null> {
 }
 
 function asStoryPoints(v: unknown): StoryPoints | null {
-  return typeof v === "number" && VALID_POINTS.has(v as number) ? (v as StoryPoints) : null;
+  return typeof v === "number" && VALID_POINTS.has(v) ? (v as StoryPoints) : null;
+}
+
+function parseStoryPointsForCreate(v: unknown): StoryPoints | null {
+  if (v === null || v === undefined) return null;
+  return asStoryPoints(v);
+}
+
+function parseStoryPointsForPatch(v: unknown): StoryPoints | null | undefined {
+  if (v === undefined) return undefined;
+  if (v === null) return null;
+  return asStoryPoints(v);
 }
 
 function asBoardColumn(v: unknown): StoryBoardColumn | null {
@@ -59,10 +70,17 @@ storiesRoutes.post(
   asyncHandler(async (req, res) => {
   const input = getJsonBody(req);
 
-  const storyPoints = asStoryPoints(input.storyPoints);
   const boardColumn = asBoardColumn(input.boardColumn);
+  const storyPoints = parseStoryPointsForCreate(input.storyPoints);
+  if (input.storyPoints !== null && input.storyPoints !== undefined && storyPoints === null) {
+    throw new HttpError({
+      statusCode: 400,
+      code: "INVALID_REQUEST",
+      message: "Invalid storyPoints"
+    });
+  }
 
-  if (input.sprintId == null || input.title == null || !storyPoints || !boardColumn) {
+  if (input.sprintId == null || input.title == null || !boardColumn) {
     throw new HttpError({
       statusCode: 400,
       code: "INVALID_REQUEST",
@@ -132,8 +150,15 @@ storiesRoutes.patch(
     ...(patch.sprintId !== undefined ? { sprintId: String(patch.sprintId) } : {}),
     ...(patch.title !== undefined ? { title: String(patch.title) } : {}),
     ...(patch.description !== undefined ? { description: String(patch.description) } : {}),
-    ...(patch.storyPoints !== undefined && asStoryPoints(patch.storyPoints) !== null
-      ? { storyPoints: asStoryPoints(patch.storyPoints)! }
+    ...(patch.storyPoints !== undefined
+      ? (() => {
+          const next = parseStoryPointsForPatch(patch.storyPoints);
+          if (next === undefined) return {};
+          if (patch.storyPoints !== null && next === null) {
+            throw new HttpError({ statusCode: 400, code: "INVALID_REQUEST", message: "Invalid storyPoints" });
+          }
+          return { storyPoints: next };
+        })()
       : {}),
     ...(patch.assigneeMemberId !== undefined
       ? { assigneeMemberId: patch.assigneeMemberId ? String(patch.assigneeMemberId) : null }

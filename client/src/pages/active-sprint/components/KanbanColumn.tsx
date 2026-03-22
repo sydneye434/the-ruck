@@ -27,7 +27,7 @@ export function KanbanColumn({
     id: column
   });
 
-  const totalPoints = stories.reduce((sum, story) => sum + story.storyPoints, 0);
+  const totalPoints = stories.reduce((sum, story) => sum + (story.storyPoints ?? 0), 0);
 
   return (
     <section

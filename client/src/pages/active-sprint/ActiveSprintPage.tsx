@@ -17,6 +17,7 @@ import { useToast } from "../../components/feedback/ToastProvider";
 import { Card } from "../../components/common/Card";
 import { SprintProgressBar } from "../../components/common/SprintProgressBar";
 import { StoryDetailDrawer, type SaveState } from "../backlog/components/StoryDetailDrawer";
+import { PlanningPokerModal } from "../../components/poker/PlanningPokerModal";
 import { KanbanColumn } from "./components/KanbanColumn";
 import { SprintBoardSkeleton } from "./components/SprintBoardSkeleton";
 import { StoryCardPreview } from "./components/StoryCardPreview";
@@ -128,6 +129,7 @@ export function ActiveSprintPage() {
   const [burndownLoading, setBurndownLoading] = useState(false);
   const [healthData, setHealthData] = useState<SprintHealthApiPayload | null>(null);
   const [healthLoading, setHealthLoading] = useState(false);
+  const [pokerOpen, setPokerOpen] = useState(false);
 
   const membersById = useMemo(() => {
     const map = new Map<string, TeamMember>();
@@ -136,9 +138,10 @@ export function ActiveSprintPage() {
   }, [teamMembers]);
 
   const columnData = useMemo(() => storiesByColumn(stories), [stories]);
-  const totalPoints = useMemo(() => stories.reduce((sum, s) => sum + s.storyPoints, 0), [stories]);
+  const totalPoints = useMemo(() => stories.reduce((sum, s) => sum + (s.storyPoints ?? 0), 0), [stories]);
   const donePoints = useMemo(
-    () => stories.filter((s) => s.boardColumn === "done").reduce((sum, s) => sum + s.storyPoints, 0),
+    () =>
+      stories.filter((s) => s.boardColumn === "done").reduce((sum, s) => sum + (s.storyPoints ?? 0), 0),
     [stories]
   );
   const capacityTarget = activeSprint?.capacityTarget ?? null;
@@ -342,14 +345,25 @@ export function ActiveSprintPage() {
         title="Active Sprint"
         subtitle="Move stories through your sprint workflow."
         actions={
-          <button
-            type="button"
-            onClick={() => setShowCompleteConfirm(true)}
-            disabled={!activeSprint || completing}
-            className="border border-[var(--color-accent)] bg-[var(--color-accent)] px-3 py-2 text-sm font-semibold text-[var(--color-text-primary)] disabled:opacity-70"
-          >
-            Complete Sprint
-          </button>
+          <div className="flex flex-wrap gap-2">
+            {activeSprint ? (
+              <button
+                type="button"
+                onClick={() => setPokerOpen(true)}
+                className="border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-3 py-2 text-sm font-semibold text-[var(--color-text-primary)]"
+              >
+                Start Planning Poker
+              </button>
+            ) : null}
+            <button
+              type="button"
+              onClick={() => setShowCompleteConfirm(true)}
+              disabled={!activeSprint || completing}
+              className="border border-[var(--color-accent)] bg-[var(--color-accent)] px-3 py-2 text-sm font-semibold text-[var(--color-text-primary)] disabled:opacity-70"
+            >
+              Complete Sprint
+            </button>
+          </div>
         }
       />
 
@@ -502,6 +516,13 @@ export function ActiveSprintPage() {
         confirmLabel={completing ? "Completing..." : "Complete Sprint"}
         onCancel={() => !completing && setShowCompleteConfirm(false)}
         onConfirm={completeSprint}
+      />
+
+      <PlanningPokerModal
+        open={pokerOpen}
+        onClose={() => setPokerOpen(false)}
+        sprintId={activeSprint?.id ?? null}
+        onSessionCreated={(id) => navigate(`/poker/${id}`)}
       />
     </div>
   );

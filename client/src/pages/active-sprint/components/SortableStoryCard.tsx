@@ -29,7 +29,7 @@ export function SortableStoryCard({
       ].join(" ")}
     >
       <div className="flex items-start justify-between gap-2">
-        <Badge label={`${story.storyPoints} pts`} color="accent" />
+        <Badge label={story.storyPoints == null ? "— pts" : `${story.storyPoints} pts`} color="accent" />
         <button
           type="button"
           {...attributes}

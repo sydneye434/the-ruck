@@ -13,7 +13,7 @@ export function StoryCardPreview({
   return (
     <div className="border border-[var(--color-accent)] bg-[var(--color-bg-secondary)] p-3 shadow-lg">
       <div className="flex items-start justify-between gap-2">
-        <Badge label={`${story.storyPoints} pts`} color="accent" />
+        <Badge label={story.storyPoints == null ? "— pts" : `${story.storyPoints} pts`} color="accent" />
         <span className="px-1 text-[var(--color-text-muted)]">::</span>
       </div>
 

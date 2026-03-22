@@ -12,6 +12,7 @@ import { RetroDetailBoardPage } from "../pages/retros/RetroDetailBoardPage";
 import { DashboardPage } from "../pages/dashboard/DashboardPage";
 import { SettingsPage } from "../pages/settings/SettingsPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
+import { PokerRoomPage } from "../pages/poker/PokerRoomPage";
 
 function RouteTitleSync() {
   const location = useLocation();
@@ -30,6 +31,10 @@ function RouteTitleSync() {
       document.title = "Retro Board · The Ruck";
       return;
     }
+    if (location.pathname.startsWith("/poker/")) {
+      document.title = "Planning Poker · The Ruck";
+      return;
+    }
     document.title = map[location.pathname] ?? "The Ruck";
   }, [location.pathname]);
   return null;
@@ -40,6 +45,7 @@ export function AppRoutes() {
     <>
       <RouteTitleSync />
       <Routes>
+        <Route path="/poker/:sessionId" element={<PokerRoomPage />} />
         {/* Single layout tree so <Outlet /> always matches (avoids blank main with pathless + absolute children). */}
         <Route path="/" element={<AppLayout />}>
           <Route index element={<Navigate to="/dashboard" replace />} />

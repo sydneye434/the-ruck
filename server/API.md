@@ -33,6 +33,10 @@ All responses use this envelope:
 - `GET /api/sprints/:id/burndown` — sprint summary, **snapshots**, **ideal burndown** (working days), **projected completion**, **projected line** for charts
 - `GET /api/sprints/:id/health` — **Sprint Health Score** (0–100, grade, five components, trend), `calculatedAt`, and recent completed-sprint history — see **README** (“Sprint Health Score”) for calculation rules
 
+### Planning poker (in-memory + WebSockets)
+- `POST /api/poker/sessions` — body `{ sprintId, storyQueue, memberId, memberName, avatarColor }` → `{ sessionId }` (facilitator = `memberId`)
+- `GET /api/poker/sessions/:id?memberId=` — current session snapshot (masked votes until reveal). Real-time updates use **Socket.io** on the same HTTP server as the API.
+
 ### Stories
 - `GET /api/stories`
   - `?sprintId=backlog` returns backlog stories (`boardColumn=backlog`)

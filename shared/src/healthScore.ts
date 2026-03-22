@@ -269,8 +269,8 @@ export function calculateHealthScore(params: CalculateHealthScoreParams): Health
   const stories = params.stories.filter((s) => s.sprintId === sprint.id);
   const completedPoints = stories
     .filter((s) => s.boardColumn === "done")
-    .reduce((sum, s) => sum + s.storyPoints, 0);
-  const totalPoints = stories.reduce((sum, s) => sum + s.storyPoints, 0);
+    .reduce((sum, s) => sum + (s.storyPoints ?? 0), 0);
+  const totalPoints = stories.reduce((sum, s) => sum + (s.storyPoints ?? 0), 0);
 
   const velocityAdherence = scoreVelocityAdherence({
     completedPoints,

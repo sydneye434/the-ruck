@@ -7,7 +7,8 @@ export type TeamRoleType =
   | "product_owner"
   | "coordinator";
 
-export type StoryPoints = 1 | 2 | 3 | 5 | 8 | 13;
+/** Fibonacci-style points; `0` and `21` included for planning poker. */
+export type StoryPoints = 0 | 1 | 2 | 3 | 5 | 8 | 13 | 21;
 
 export type StoryBoardColumn = "backlog" | "in_progress" | "in_review" | "done";
 
@@ -94,7 +95,8 @@ export type Story = Identifiable & {
   sprintId: string;
   title: string;
   description: string;
-  storyPoints: StoryPoints;
+  /** `null` = not yet estimated (e.g. planning poker). */
+  storyPoints: StoryPoints | null;
   assigneeMemberId: string | null;
   labels: string[];
   acceptanceCriteria: string[];

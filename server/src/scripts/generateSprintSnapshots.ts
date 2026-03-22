@@ -36,7 +36,7 @@ export async function generateSprintSnapshots(sprint: Sprint, stories: Story[]):
   if (scoped.length === 0) return;
 
   const totalStories = scoped.length;
-  const totalPoints = scoped.reduce((a, s) => a + s.storyPoints, 0);
+  const totalPoints = scoped.reduce((a, s) => a + (s.storyPoints ?? 0), 0);
   if (totalPoints <= 0) return;
 
   const finalCol = {
@@ -72,7 +72,7 @@ export async function generateSprintSnapshots(sprint: Sprint, stories: Story[]):
 
     const finalCompletedPoints = scoped
       .filter((s) => s.boardColumn === "done")
-      .reduce((a, s) => a + s.storyPoints, 0);
+      .reduce((a, s) => a + (s.storyPoints ?? 0), 0);
     const completedPoints = Math.min(totalPoints, Math.round(finalCompletedPoints * w));
     const remainingPoints = Math.max(0, totalPoints - completedPoints);
 

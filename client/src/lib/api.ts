@@ -14,6 +14,7 @@ import type {
   TeamTreeNode,
   TeamWithDepth
 } from "@the-ruck/shared";
+import type { PokerSessionPayload } from "./pokerTypes";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001/api";
 type TeamMemberPatch = Partial<TeamMember> & { active?: boolean };
@@ -358,6 +359,21 @@ export const api = {
           actorName: string | null;
         }>;
       }>("/dashboard")
+  },
+  poker: {
+    createSession: (payload: {
+      sprintId: string;
+      storyQueue: string[];
+      memberId: string;
+      memberName: string;
+      avatarColor: string;
+    }) =>
+      request<{ sessionId: string }>("/poker/sessions", {
+        method: "POST",
+        body: JSON.stringify(payload)
+      }),
+    getSession: (id: string, memberId?: string) =>
+      request<PokerSessionPayload>(withQuery(`/poker/sessions/${id}`, { memberId }))
   }
 };
 

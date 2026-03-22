@@ -32,7 +32,7 @@ export function StoryRow({
       onClick={onClick}
       className="flex w-full items-center gap-3 border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-3 text-left hover:bg-[var(--color-bg-tertiary)]"
     >
-      <Badge label={`${story.storyPoints} SP`} color="accent" />
+      <Badge label={story.storyPoints == null ? "— SP" : `${story.storyPoints} SP`} color="accent" />
       <div className="min-w-0 flex-1">
         <p className="truncate font-semibold text-[var(--color-text-primary)]">{story.title}</p>
         <div className="mt-1 flex flex-wrap items-center gap-1">

@@ -1,5 +1,6 @@
 // Developed by Sydney Edwards
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import type { Sprint, Story, TeamMember } from "@the-ruck/shared";
 import { api, ApiClientError } from "../../lib/api";
 import { EmptyState } from "../../components/common/EmptyState";
@@ -10,6 +11,7 @@ import { ConfirmDialog } from "../../components/dialog/ConfirmDialog";
 import { useToast } from "../../components/feedback/ToastProvider";
 import { StoryDetailDrawer, type SaveState, type StoryDraft } from "./components/StoryDetailDrawer";
 import { StoryRow } from "./components/StoryRow";
+import { PlanningPokerModal } from "../../components/poker/PlanningPokerModal";
 
 type SprintFilter = "backlog" | string;
 
@@ -21,6 +23,7 @@ function sprintStatusLabel(sprint: Sprint) {
 }
 
 export function BacklogPage() {
+  const navigate = useNavigate();
   const toast = useToast();
   const [sprints, setSprints] = useState<Sprint[]>([]);
   const [stories, setStories] = useState<Story[]>([]);
@@ -33,9 +36,11 @@ export function BacklogPage() {
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [pokerOpen, setPokerOpen] = useState(false);
   const savedTimerRef = useRef<number | null>(null);
 
   const activeMembers = useMemo(() => members.filter((m) => m.isActive), [members]);
+  const activeSprint = useMemo(() => sprints.find((s) => s.status === "active") ?? null, [sprints]);
   const storyByDate = useMemo(
     () =>
       [...stories].sort((a, b) => {
@@ -117,7 +122,7 @@ export function BacklogPage() {
     try {
       const created = await api.stories.create({
         title: draft.title.trim(),
-        storyPoints: draft.storyPoints!,
+        storyPoints: draft.storyPoints ?? null,
         sprintId: draft.sprintId,
         description: draft.description,
         assigneeMemberId: draft.assigneeMemberId,
@@ -182,13 +187,24 @@ export function BacklogPage() {
         title="Backlog"
         subtitle="Refine upcoming work before it enters the active sprint."
         actions={
-          <button
-            type="button"
-            onClick={openCreateDrawer}
-            className="border border-[var(--color-accent)] bg-[var(--color-accent)] px-3 py-2 text-sm font-semibold text-[var(--color-text-primary)] hover:bg-[var(--color-accent-hover)]"
-          >
-            Create Story
-          </button>
+          <div className="flex flex-wrap gap-2">
+            {activeSprint ? (
+              <button
+                type="button"
+                onClick={() => setPokerOpen(true)}
+                className="border border-[var(--color-border)] bg-[var(--color-bg-tertiary)] px-3 py-2 text-sm font-semibold text-[var(--color-text-primary)]"
+              >
+                Start Planning Poker
+              </button>
+            ) : null}
+            <button
+              type="button"
+              onClick={openCreateDrawer}
+              className="border border-[var(--color-accent)] bg-[var(--color-accent)] px-3 py-2 text-sm font-semibold text-[var(--color-text-primary)] hover:bg-[var(--color-accent-hover)]"
+            >
+              Create Story
+            </button>
+          </div>
         }
       />
 
@@ -309,6 +325,13 @@ export function BacklogPage() {
         confirmLabel="Delete"
         onCancel={() => setDeleteConfirmOpen(false)}
         onConfirm={deleteStory}
+      />
+
+      <PlanningPokerModal
+        open={pokerOpen}
+        onClose={() => setPokerOpen(false)}
+        sprintId={activeSprint?.id ?? null}
+        onSessionCreated={(id) => navigate(`/poker/${id}`)}
       />
     </div>
   );

@@ -9,14 +9,15 @@
     "seed": "tsx src/scripts/seed.ts",
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node --import ./tests/setup.mjs --import tsx --test --test-concurrency=1 tests/appExtras.test.ts tests/burndown.test.ts tests/carriedOver.test.ts tests/dashboard.test.ts tests/health.test.ts tests/retros.test.ts tests/settings.test.ts tests/sprints.test.ts tests/stories.test.ts tests/teamMembers.test.ts tests/teams.test.ts",
-    "test:coverage": "node --experimental-test-coverage --import ./tests/setup.mjs --import tsx --test --test-concurrency=1 tests/appExtras.test.ts tests/burndown.test.ts tests/carriedOver.test.ts tests/dashboard.test.ts tests/health.test.ts tests/retros.test.ts tests/settings.test.ts tests/sprints.test.ts tests/stories.test.ts tests/teamMembers.test.ts tests/teams.test.ts"
+    "test": "node --import ./tests/setup.mjs --import tsx --test --test-concurrency=1 tests/appExtras.test.ts tests/burndown.test.ts tests/carriedOver.test.ts tests/dashboard.test.ts tests/health.test.ts tests/pokerSocket.test.ts tests/retros.test.ts tests/settings.test.ts tests/sprints.test.ts tests/stories.test.ts tests/teamMembers.test.ts tests/teams.test.ts",
+    "test:coverage": "node --experimental-test-coverage --import ./tests/setup.mjs --import tsx --test --test-concurrency=1 tests/appExtras.test.ts tests/burndown.test.ts tests/carriedOver.test.ts tests/dashboard.test.ts tests/health.test.ts tests/pokerSocket.test.ts tests/retros.test.ts tests/settings.test.ts tests/sprints.test.ts tests/stories.test.ts tests/teamMembers.test.ts tests/teams.test.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "morgan": "^1.10.0",
     "node-cron": "^4.2.1",
+    "socket.io": "^4.8.3",
     "swagger-ui-express": "^5.0.0"
   },
   "devDependencies": {

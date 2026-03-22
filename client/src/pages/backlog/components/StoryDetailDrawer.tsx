@@ -61,14 +61,16 @@ function parseMarkdownBasic(input: string) {
     .replace(/(<li>.*<\/li>)/gs, "<ul>$1</ul>");
 }
 
-const STORY_POINTS: StoryPoints[] = [1, 2, 3, 5, 8, 13];
+const STORY_POINTS: StoryPoints[] = [0, 1, 2, 3, 5, 8, 13, 21];
 const TSHIRT_LABELS: Record<StoryPoints, string> = {
+  0: "—",
   1: "XS",
   2: "S",
   3: "M",
   5: "L",
   8: "XL",
-  13: "XXL"
+  13: "XXL",
+  21: "3XL"
 };
 const BOARD_COLUMNS: StoryBoardColumn[] = ["backlog", "in_progress", "in_review", "done"];
 
@@ -181,10 +183,7 @@ export function StoryDetailDrawer({
       setCreateError("Title is required.");
       return;
     }
-    if (!draft.storyPoints) {
-      setCreateError("Story points are required.");
-      return;
-    }
+    // Story points optional — use planning poker or set later
     setCreating(true);
     try {
       await onCreate(draft);

@@ -79,11 +79,39 @@ Then:
 ### Backlog (`/backlog`)
 - Sprint filter chips; flat story list; create/edit via **Story Detail Drawer**
 - Markdown description with preview; Fibonacci **or** T-shirt sizing (from settings); assignee, labels, column, acceptance criteria, sprint assignment; auto-save
+- **Start Planning Poker** when a sprint is **active** (same modal as active sprint)
 
 ### Active sprint (`/sprint/active`)
 - **Board | Burndown | Health** tabs: Kanban default; **Burndown** shows ideal vs actual remaining work, projection, capacity target, and status (Recharts); **Health** shows the **Sprint Health Score** (gauge, breakdown, trend, sparkline from last completed sprints)
 - Kanban (Backlog → In Progress → In Review → Done) with **@dnd-kit** drag-and-drop, optimistic updates, rollback on failure
-- Sprint header: goal, dates, days remaining, burndown-style progress, complete sprint (with confirm)
+- Sprint header: goal, dates, days remaining, burndown-style progress, **Start Planning Poker** (with active sprint), complete sprint (with confirm)
+
+### Planning Poker (`/poker/:sessionId`)
+
+Real-time **collaborative estimation**: the team picks story points for sprint backlog items together, votes privately, then reveals all cards at once. Sessions are **ephemeral** (in memory only) — they disappear when everyone leaves or the facilitator closes the session. Nothing is written to the JSON data files except the **agreed story points** when the facilitator confirms a value.
+
+#### How to start
+1. There must be an **active sprint** (Backlog and Active Sprint pages show **Start Planning Poker** only when one exists).
+2. Click **Start Planning Poker** → modal: choose **who you are** (team member; saved in `localStorage` for next time).
+3. **Select stories** in the sprint to estimate (defaults to all **unestimated** stories — `storyPoints: null`). Toggle **Include already-estimated stories** to add pointed work; use **Select all unestimated** and **↑ / ↓** to order the queue.
+4. **Create session & continue** → copy the share link (`/poker/:sessionId`) for teammates → **Open poker room** (or share the URL). Others open the link, pick themselves if needed, and join the same session over the WebSocket.
+
+#### In the room
+- **Full-screen** UI (no sidebar): sprint name, connected participants (green presence dot), **👑** on the current facilitator’s avatar.
+- **Voting:** everyone taps a **Fibonacci** card: `0, 1, 2, 3, 5, 8, 13, 21`, or **`?`** / **`∞`**. Until reveal, others only see that you’ve voted (✓ / ⏳), **not** your number.
+- **Facilitator** (creator’s `memberId` on `POST /api/poker/sessions`, or the **first remaining participant** in join order if the facilitator disconnects): **Reveal votes** → cards flip; summary shows distribution, numeric average, and consensus hint (consensus / near / wide spread). Then choose **agreed points** (defaults to the **median** of numeric votes), **Save & next story** (writes `storyPoints` via the stories API and moves on), **Re-vote** (clear votes, same story), or **Skip story** (no save, next in queue).
+- When the queue is empty, **Estimation complete** shows a summary table; **Close session** ends the room and returns to the sprint board.
+
+#### Technical notes
+| Topic | Detail |
+|--------|--------|
+| **Transport** | **Socket.io** is attached to the **same HTTP server** as Express (`server/src/index.ts`) — not a separate port. Client uses the API origin with `/api` stripped (see `client/src/lib/socketUrl.ts`). CORS defaults to `http://localhost:5173`; override with **`CLIENT_ORIGIN`** if needed. |
+| **State** | In-memory `Map` in `server/src/poker/sessionStore.ts`. Handlers: `server/src/sockets/pokerSocket.ts`. |
+| **REST** | `POST /api/poker/sessions` — `{ sprintId, storyQueue, memberId, memberName, avatarColor }` → `{ sessionId }`. `GET /api/poker/sessions/:id?memberId=` — current snapshot (votes masked until reveal); used after refresh before the socket reconnects. |
+| **Persistence** | Only **story points** on each story when facilitator confirms; session history is not stored on disk. |
+| **Reconnection** | Same `memberId` + `session:join` restores your vote and seat; if the session is gone, the UI shows session ended / not found. |
+
+**Tests:** `server/tests/pokerSocket.test.ts` (Socket.io client against an in-process HTTP server).
 
 ### Sprint Health Score
 A **read-only** 0–100 score (letter grade **A–F**) summarizing how the sprint is going. It is **computed on demand** from existing data (not stored for the active sprint). The **Dashboard** shows a compact grade badge next to the active sprint name; the **Health** tab shows the full breakdown and a sparkline of scores from **completed** sprints (each completion stores a **final** snapshot on the sprint for history).
@@ -152,6 +180,7 @@ Core resources:
 - `GET/POST /api/team-members`, `GET/PATCH/DELETE /api/team-members/:id`
 - `GET/POST /api/teams`, tree, members, hierarchy (see `server/src/routes/teamsRoutes.ts`)
 - `GET/POST /api/sprints`, `GET/PATCH/DELETE /api/sprints/:id`, `POST /api/sprints/:id/complete`, `GET /api/sprints/:id/capacity-context`, `GET /api/sprints/:id/burndown` (snapshots, ideal burndown, projection), `GET /api/sprints/:id/health` (Sprint Health Score + breakdown + history)
+- `POST/GET /api/poker/sessions` — planning poker (WebSockets on same server)
 - `GET/POST /api/stories`, `GET/PATCH/DELETE /api/stories/:id` — `?sprintId=backlog` or sprint id
 - `GET/POST /api/retros`, nested cards & action items under `/api/retros/:id/...`
 - `GET/PUT /api/settings` — extended settings (sprint length, velocity window, story scale, retro defaults, date format)

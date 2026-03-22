@@ -118,7 +118,7 @@ test("POST /api/stories missing title → 400", async () => {
   assertStatus(res, 400);
 });
 
-test("POST /api/stories missing storyPoints → 400", async () => {
+test("POST /api/stories with storyPoints null → 201 (unestimated)", async () => {
   const sprint = await request(app)
     .post("/api/sprints")
     .send({ name: "S4", startDate: "2025-09-01", endDate: "2025-09-12" });
@@ -126,11 +126,13 @@ test("POST /api/stories missing storyPoints → 400", async () => {
 
   const res = await request(app).post("/api/stories").send({
     sprintId: sprint.body.data.id,
-    title: "No points",
+    title: "No points yet",
+    storyPoints: null,
     boardColumn: "backlog",
     description: ""
   });
-  assertStatus(res, 400);
+  assertStatus(res, 201);
+  assert.equal(res.body.data.storyPoints, null);
 });
 
 test("POST/PATCH story assigned to active sprint sets sprintAddedAt", async () => {

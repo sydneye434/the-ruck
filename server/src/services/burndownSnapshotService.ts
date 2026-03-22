@@ -9,10 +9,10 @@ export function computeSnapshotPayload(
   dateStr: string
 ): Omit<SprintDaySnapshot, "id"> {
   const scoped = stories.filter((s) => s.sprintId === sprintId);
-  const totalPoints = scoped.reduce((a, s) => a + s.storyPoints, 0);
+  const totalPoints = scoped.reduce((a, s) => a + (s.storyPoints ?? 0), 0);
   const completedPoints = scoped
     .filter((s) => s.boardColumn === "done")
-    .reduce((a, s) => a + s.storyPoints, 0);
+    .reduce((a, s) => a + (s.storyPoints ?? 0), 0);
   const storiesByColumn = {
     backlog: 0,
     in_progress: 0,
